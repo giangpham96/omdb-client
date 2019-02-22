@@ -1,0 +1,7 @@
+-dontobfuscate
+-optimizationpasses 10
+-dontusemixedcaseclassnames
+-dontskipnonpubliclibraryclasses
+-dontpreverify
+-verbose
+-optimizations !code/simplification/arithmetic,!field/*,!class/merging/*,!code/allocation/variable

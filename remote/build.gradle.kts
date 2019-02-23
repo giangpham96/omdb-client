@@ -10,6 +10,9 @@ dependencies {
         exclude(module = "okhttp")
     }
     implementation(Dependencies.moshi)
+    implementation(Dependencies.retrofitCoroutinesAdapter)
+    implementation(Dependencies.retrofitConverterMoshi)
+
     kapt(Dependencies.moshiCodeGen)
 }
 

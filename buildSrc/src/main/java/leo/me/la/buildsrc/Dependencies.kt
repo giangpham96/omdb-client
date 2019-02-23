@@ -6,6 +6,7 @@ object Versions {
     const val moshi = "1.8.0"
     const val okHttp = "3.11.0"
     const val retrofit = "2.5.0"
+    const val retrofitCoroutinesAdapter = "0.9.2"
 }
 
 object Dependencies {
@@ -17,4 +18,6 @@ object Dependencies {
     const val moshiCodeGen = "com.squareup.moshi:moshi-kotlin-codegen:${Versions.moshi}"
     const val okHttp = "com.squareup.okhttp3:okhttp:${Versions.okHttp}"
     const val retrofit = "com.squareup.retrofit2:retrofit:${Versions.retrofit}"
+    const val retrofitCoroutinesAdapter = "com.jakewharton.retrofit:retrofit2-kotlin-coroutines-adapter:${Versions.retrofitCoroutinesAdapter}"
+    const val retrofitConverterMoshi = "com.squareup.retrofit2:converter-moshi:${Versions.retrofit}"
 }

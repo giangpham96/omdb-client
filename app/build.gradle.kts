@@ -6,6 +6,7 @@ plugins {
 
 apply {
     from("signing.gradle.kts")
+    from("api-key.gradle.kts")
 }
 
 val app_name: String by project
@@ -14,6 +15,7 @@ android {
     compileSdkVersion(AndroidSettings.compileSdkVersion)
 
     defaultConfig {
+        val omdbApiKey: String by extra
         versionName = "0.0.1"
         versionCode = 1
 
@@ -24,6 +26,8 @@ android {
         vectorDrawables.useSupportLibrary = true
 
         base.archivesBaseName = "$versionName-$app_name"
+
+        buildConfigField("String", "OMDB_API_KEY", "\"$omdbApiKey\"")
     }
     signingConfigs {
         create("release") {

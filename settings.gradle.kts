@@ -1,4 +1,5 @@
 include(
     ":app",
+    ":common",
     ":remote"
 )

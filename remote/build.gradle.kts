@@ -4,6 +4,9 @@ plugins {
 }
 
 dependencies {
+    implementation(project(":common"))
+
+    implementation(Dependencies.koinCore)
     implementation(Dependencies.kotlinStdLib)
     implementation(Dependencies.okHttp)
     api(Dependencies.retrofit) {

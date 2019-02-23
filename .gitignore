@@ -6,6 +6,7 @@
 # Built application files
 *.apk
 *.ap_
+app/release
 
 # Files for the Dalvik VM
 *.dex
@@ -24,6 +25,7 @@ local.properties
 
 # Credentials
 sign.properties
+api-key.properties
 
 # Log Files
 *.log

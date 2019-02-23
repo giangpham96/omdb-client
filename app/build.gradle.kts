@@ -4,6 +4,10 @@ plugins {
     id("kotlin-android-extensions")
 }
 
+apply {
+    from("signing.gradle.kts")
+}
+
 val app_name: String by project
 
 android {
@@ -22,7 +26,20 @@ android {
         base.archivesBaseName = "$versionName-$app_name"
     }
     signingConfigs {
-        create("release") {}
+        create("release") {
+            try {
+                val signaturePath: String by extra
+                val signatureKeystorePassword: String by extra
+                val signatureKeystoreAlias: String by extra
+                val signatureKeyPassword: String by extra
+                storeFile = file(signaturePath)
+                storePassword = signatureKeyPassword
+                keyAlias = signatureKeystoreAlias
+                keyPassword = signatureKeystorePassword
+            } catch (ignore: Exception) {
+                logger.log(LogLevel.WARN, "sign.properties file could not be parsed or is missing")
+            }
+        }
     }
     compileOptions {
         sourceCompatibility = AndroidSettings.sourceCompatibility

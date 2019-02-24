@@ -4,8 +4,12 @@ plugins {
 }
 
 dependencies {
+    implementation(project(":common"))
+
+    implementation(Dependencies.koinCore)
     implementation(Dependencies.kotlinStdLib)
     implementation(Dependencies.okHttp)
+    implementation(Dependencies.okHttpLoggingInterceptor)
     api(Dependencies.retrofit) {
         exclude(module = "okhttp")
     }

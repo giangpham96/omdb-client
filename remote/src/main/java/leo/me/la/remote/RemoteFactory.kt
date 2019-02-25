@@ -21,11 +21,13 @@ object RemoteFactory {
     fun <T> buildRestApi(
         baseUrl: String,
         restApi: Class<T>,
+        moshiConverterFactory: MoshiConverterFactory,
         okHttpClient: OkHttpClient
     ): T {
         return buildService(
             baseUrl,
             restApi,
+            moshiConverterFactory,
             okHttpClient
         )
     }
@@ -51,11 +53,12 @@ object RemoteFactory {
     private fun <T> buildService(
         baseUrl: String,
         restApi: Class<T>,
+        moshiConverterFactory: MoshiConverterFactory,
         okHttpClient: OkHttpClient
     ): T {
         return Retrofit.Builder()
             .addCallAdapterFactory(CoroutineCallAdapterFactory())
-            .addConverterFactory(MoshiConverterFactory.create())
+            .addConverterFactory(moshiConverterFactory)
             .baseUrl(baseUrl)
             .client(okHttpClient)
             .build()

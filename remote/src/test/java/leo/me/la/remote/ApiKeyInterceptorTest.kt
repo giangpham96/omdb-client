@@ -6,7 +6,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 
-class ApiKeyInterceptorTest : BaseApiTest() {
+internal class ApiKeyInterceptorTest : BaseApiTest() {
     private lateinit var restApi: OmdbRestApi
     private val interceptor = ApiKeyInterceptor("secret")
 

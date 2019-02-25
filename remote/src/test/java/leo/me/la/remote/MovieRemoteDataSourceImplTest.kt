@@ -29,18 +29,21 @@ internal class MovieRemoteDataSourceImplTest : BaseApiTest(){
                     Movie(
                         "Batman Begins",
                         "2005",
+                        "tt0372784",
                         MovieType.Movie,
                         "https://m.media-amazon.com/images/M/MV5BZmUwNGU2ZmItMmRiNC00MjhlLTg5YWUtODMyNzkxODYzMmZlXkEyXkFqcGdeQXVyNTIzOTk5ODM@._V1_SX300.jpg"
                     ),
                     Movie(
                         "Batman: The Animated Series",
                         "1992–1995",
+                        "tt0103359",
                         MovieType.Series,
                         "https://m.media-amazon.com/images/M/MV5BOTM3MTRkZjQtYjBkMy00YWE1LTkxOTQtNDQyNGY0YjYzNzAzXkEyXkFqcGdeQXVyOTgwMzk1MTA@._V1_SX300.jpg"
                     ),
                     Movie(
                         "Batman: The Dark Knight Returns, Part 1",
                         "2012",
+                        "tt2313197",
                         MovieType.Other,
                         "https://m.media-amazon.com/images/M/MV5BMzIxMDkxNDM2M15BMl5BanBnXkFtZTcwMDA5ODY1OQ@@._V1_SX300.jpg"
                     )

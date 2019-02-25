@@ -3,6 +3,7 @@ package leo.me.la.common.model
 data class Movie(
     val title: String,
     val year: String,
+    val imdbId: String,
     val type: MovieType,
     val poster: String
 )

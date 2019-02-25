@@ -16,6 +16,7 @@ internal class MovieRemoteDataSourceImpl(
                         Movie(
                             movie.title,
                             movie.year,
+                            movie.imdbId,
                             movie.type.let { type ->
                                 when (type) {
                                     "movie" -> MovieType.Movie

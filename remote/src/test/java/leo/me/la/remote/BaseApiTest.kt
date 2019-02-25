@@ -8,7 +8,7 @@ import org.junit.After
 /**
  * Base class to make Api calls
  */
-abstract class BaseApiTest {
+internal abstract class BaseApiTest {
 
     protected val mockServer: MockWebServer = MockWebServer()
 

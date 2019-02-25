@@ -5,6 +5,8 @@ plugins {
 
 dependencies {
     implementation(project(":common"))
+    implementation(project(":data"))
+    implementation(project(":exception"))
 
     implementation(Dependencies.koinCore)
     implementation(Dependencies.kotlinStdLib)

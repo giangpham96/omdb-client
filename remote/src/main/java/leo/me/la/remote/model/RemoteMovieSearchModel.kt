@@ -5,5 +5,6 @@ import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
 data class RemoteMovieSearchModel(
-    @Json(name = "Search") val result: List<RemoteMovieModel>
+    @Json(name = "Search") val result: List<RemoteMovieModel>,
+    val totalResults: Int
 )

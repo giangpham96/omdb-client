@@ -6,6 +6,7 @@ import leo.me.la.common.TAG_INTERCEPTOR_API_KEY
 import leo.me.la.common.TAG_INTERCEPTOR_LOGGING
 import leo.me.la.common.TAG_OMDB_API_KEY
 import leo.me.la.common.TAG_OMDB_RETROFIT
+import leo.me.la.data.source.MovieRemoteDataSource
 import leo.me.la.remote.adapter.MovieSearchAdapter
 import okhttp3.logging.HttpLoggingInterceptor
 import org.koin.dsl.module.module
@@ -23,6 +24,10 @@ val remoteModule = module {
         Moshi.Builder()
             .add(MovieSearchAdapter())
             .build()
+    }
+
+    factory<MovieRemoteDataSource> {
+        MovieRemoteDataSourceImpl(get())
     }
 
     factory(name = TAG_OMDB_RETROFIT) {

@@ -7,7 +7,7 @@ object Versions {
     const val junit = "4.12"
     const val koin = "1.0.2"
     const val kotlin = "1.3.21"
-    const val mockitoKotlin = "1.6.0"
+    const val mockitoKotlin = "2.1.0"
     const val mockWebServer = "3.11.0"
     const val moshi = "1.8.0"
     const val okHttp = "3.11.0"
@@ -35,6 +35,6 @@ object Dependencies {
 object TestDependencies {
     const val assertJ = "org.assertj:assertj-core:${Versions.assertJ}"
     const val junit = "junit:junit:${Versions.junit}"
-    const val mockitoKotlin = "com.nhaarman:mockito-kotlin:${Versions.mockitoKotlin}"
+    const val mockitoKotlin = "com.nhaarman.mockitokotlin2:mockito-kotlin:${Versions.mockitoKotlin}"
     const val mockWebServer = "com.squareup.okhttp3:mockwebserver:${Versions.mockWebServer}"
 }

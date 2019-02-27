@@ -8,6 +8,7 @@ plugins {
 dependencies {
     implementation(project(":common"))
     implementation(Dependencies.coroutinesCore)
+    implementation(Dependencies.koinCore)
     implementation(Dependencies.kotlinStdLib)
 
     testImplementation(TestDependencies.assertJ)

@@ -10,7 +10,7 @@ class SearchMoviesUseCase(
 ) {
     suspend fun execute(
         keyword: String,
-        page: Int
+        page: Int = 1
     ): MovieSearchResult {
         return searchRepository.searchMoviesByKeyword(keyword, page)
     }

@@ -4,5 +4,6 @@ include(
     ":data",
     ":domain",
     ":exception",
+    ":presentation",
     ":remote"
 )

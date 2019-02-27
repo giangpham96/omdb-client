@@ -15,7 +15,7 @@ import org.junit.Test
 
 class SearchMoviesUseCaseTest {
     private val repository: SearchRepository = mock()
-    private val useCase = SearchMoviesUseCase(repository)
+    private val useCase = SearchMoviesUseCaseImpl(repository)
 
 
     @Test

@@ -15,7 +15,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.ObsoleteCoroutinesApi
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.newSingleThreadContext
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.TestCoroutineContext
 import kotlinx.coroutines.test.resetMain
@@ -39,8 +38,8 @@ class SearchViewModelTest {
     @get:Rule
     var rule: TestRule = InstantTaskExecutorRule()
 
-    @ObsoleteCoroutinesApi
-    private val mainThreadSurrogate = newSingleThreadContext("UI thread")
+    @ExperimentalCoroutinesApi
+    private val mainThreadSurrogate = Dispatchers.Unconfined
 
     private val observer: Observer<SearchViewState> = mock()
 
@@ -56,7 +55,6 @@ class SearchViewModelTest {
     @After
     fun tearDown() {
         Dispatchers.resetMain() // reset main dispatcher to the original Main dispatcher
-        mainThreadSurrogate.close()
     }
 
     @Test
@@ -70,7 +68,7 @@ class SearchViewModelTest {
     @Test
     fun `should search successfully and move to MoviesFetched state`() {
         val useCase: SearchMoviesUseCase = mock()
-        val viewModel = SearchViewModel(useCase, testCoroutineContext)
+        val viewModel = SearchViewModel(useCase)
         viewModel.viewStates.observeForever(observer)
         val desiredMovieList = List(3) {
             Movie(
@@ -90,7 +88,6 @@ class SearchViewModelTest {
             )
         }
         viewModel.searchMovies("Batman")
-        testCoroutineContext.advanceTimeBy(200)
         verify(observer).onChanged(eq(SearchViewState.Idling))
         verify(observer).onChanged(eq(SearchViewState.Searching))
         verify(observer).onChanged(
@@ -255,10 +252,9 @@ class SearchViewModelTest {
                 throw OmdbErrorException("Movie not found!")
             }
         }
-        val viewModel = SearchViewModel(useCase, testCoroutineContext)
+        val viewModel = SearchViewModel(useCase)
         viewModel.viewStates.observeForever(observer)
         viewModel.searchMovies("Abc")
-        testCoroutineContext.advanceTimeBy(200)
         verify(observer).onChanged(eq(SearchViewState.Idling))
         verify(observer).onChanged(eq(SearchViewState.MovieNotFound))
         verify(observer, never()).onChanged(
@@ -283,12 +279,10 @@ class SearchViewModelTest {
                     throw Exception()
             }
         }
-        val viewModel = SearchViewModel(useCase, testCoroutineContext)
+        val viewModel = SearchViewModel(useCase)
         viewModel.viewStates.observeForever(observer)
         viewModel.searchMovies("Abc")
-        testCoroutineContext.advanceTimeBy(200)
         viewModel.searchMovies("Def")
-        testCoroutineContext.advanceTimeBy(200)
         verify(observer).onChanged(eq(SearchViewState.Idling))
         verify(observer, times(2)).onChanged(
             eq(SearchViewState.SearchFailed)
@@ -331,12 +325,10 @@ class SearchViewModelTest {
                 execute("Abc", 2)
             } doReturn MovieSearchResult(secondMovieList, 200)
         }
-        val viewModel = SearchViewModel(useCase, testCoroutineContext)
+        val viewModel = SearchViewModel(useCase)
         viewModel.viewStates.observeForever(observer)
         viewModel.searchMovies("Abc")
-        testCoroutineContext.advanceTimeBy(200)
         viewModel.loadNextPage()
-        testCoroutineContext.advanceTimeBy(200)
         verify(observer).onChanged(eq(SearchViewState.Idling))
         verify(observer, never()).onChanged(
             eq(SearchViewState.SearchFailed)
@@ -367,12 +359,10 @@ class SearchViewModelTest {
                 execute("Abc")
             } doReturn MovieSearchResult(firstMovieList, 3)
         }
-        val viewModel = SearchViewModel(useCase, testCoroutineContext)
+        val viewModel = SearchViewModel(useCase)
         viewModel.viewStates.observeForever(observer)
         viewModel.searchMovies("Abc")
-        testCoroutineContext.advanceTimeBy(200)
         viewModel.loadNextPage()
-        testCoroutineContext.advanceTimeBy(200)
         verify(observer).onChanged(eq(SearchViewState.Idling))
         verify(observer).onChanged(eq(SearchViewState.Searching))
         verify(observer).onChanged(
@@ -407,14 +397,11 @@ class SearchViewModelTest {
                 execute("Abc")
             } doReturn MovieSearchResult(firstMovieList, 200)
         }
-        val viewModel = SearchViewModel(useCase, testCoroutineContext)
+        val viewModel = SearchViewModel(useCase)
         viewModel.viewStates.observeForever(observer)
         viewModel.searchMovies("Abc")
-        testCoroutineContext.advanceTimeBy(200)
         viewModel.loadNextPage()
-        testCoroutineContext.advanceTimeBy(200)
         viewModel.loadNextPage()
-        testCoroutineContext.advanceTimeBy(200)
         verify(observer).onChanged(eq(SearchViewState.Idling))
         verify(observer).onChanged(eq(SearchViewState.Searching))
         verify(observer, times(2)).onChanged(

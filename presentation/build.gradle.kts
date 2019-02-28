@@ -22,6 +22,7 @@ dependencies {
     implementation(project(":exception"))
 
     implementation(Dependencies.coroutinesAndroid)
+    implementation(Dependencies.koinViewModel)
     implementation(Dependencies.kotlinStdLib)
     implementation(Dependencies.livecycleExtensions)
     kapt(Dependencies.lifecycleCompiler)

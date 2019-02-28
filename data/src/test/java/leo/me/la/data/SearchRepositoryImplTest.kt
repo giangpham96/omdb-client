@@ -1,10 +1,8 @@
 package leo.me.la.data
 
-import com.nhaarman.mockitokotlin2.doReturn
-import com.nhaarman.mockitokotlin2.doThrow
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.verify
-import com.nhaarman.mockitokotlin2.whenever
+import io.mockk.coEvery
+import io.mockk.coVerify
+import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
 import leo.me.la.common.model.Movie
 import leo.me.la.common.model.MovieSearchResult
@@ -14,7 +12,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 
 class SearchRepositoryImplTest {
-    private val movieRemoteDataSource: MovieRemoteDataSource = mock()
+    private val movieRemoteDataSource: MovieRemoteDataSource = mockk()
     private val searchRepository = SearchRepositoryImpl(movieRemoteDataSource)
 
     @Test
@@ -46,20 +44,21 @@ class SearchRepositoryImplTest {
             3
         )
         runBlocking {
-            whenever(
+            coEvery {
                 movieRemoteDataSource.searchMoviesByKeyword("Batman", 2)
-            ) doReturn desiredResult
+            } returns desiredResult
             val actualResult = searchRepository.searchMoviesByKeyword("Batman", 2)
             assertThat(actualResult).isEqualTo(desiredResult)
-            verify(movieRemoteDataSource).searchMoviesByKeyword("Batman", 2)
+            coVerify { movieRemoteDataSource.searchMoviesByKeyword("Batman", 2) }
         }
     }
+
     @Test(expected = Exception::class)
     fun `should propagate exception if remote data source raises one`() {
         runBlocking {
-            whenever(
+            coEvery {
                 movieRemoteDataSource.searchMoviesByKeyword("Batman", 2)
-            ) doThrow Exception()
+            } throws Exception()
             searchRepository.searchMoviesByKeyword("Batman", 2)
         }
     }

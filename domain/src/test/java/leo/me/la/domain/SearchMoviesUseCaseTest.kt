@@ -1,10 +1,8 @@
 package leo.me.la.domain
 
-import com.nhaarman.mockitokotlin2.doReturn
-import com.nhaarman.mockitokotlin2.doThrow
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.verify
-import com.nhaarman.mockitokotlin2.whenever
+import io.mockk.coEvery
+import io.mockk.coVerify
+import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
 import leo.me.la.common.model.Movie
 import leo.me.la.common.model.MovieSearchResult
@@ -14,7 +12,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 
 class SearchMoviesUseCaseTest {
-    private val repository: SearchRepository = mock()
+    private val repository: SearchRepository = mockk()
     private val useCase = SearchMoviesUseCaseImpl(repository)
 
 
@@ -47,20 +45,20 @@ class SearchMoviesUseCaseTest {
             3
         )
         runBlocking {
-            whenever(
+            coEvery {
                 repository.searchMoviesByKeyword("Batman", 2)
-            ) doReturn desiredResult
+            } returns desiredResult
             val actualResult = useCase.execute("Batman", 2)
             assertThat(actualResult).isEqualTo(desiredResult)
-            verify(repository).searchMoviesByKeyword("Batman", 2)
+            coVerify { repository.searchMoviesByKeyword("Batman", 2) }
         }
     }
     @Test(expected = Exception::class)
     fun `should propagate exception if repository raises one`() {
         runBlocking {
-            whenever(
+            coEvery {
                 repository.searchMoviesByKeyword("Batman", 2)
-            ) doThrow Exception()
+            } throws Exception()
             useCase.execute("Batman", 2)
         }
     }

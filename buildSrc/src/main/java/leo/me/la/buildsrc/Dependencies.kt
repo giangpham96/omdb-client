@@ -8,7 +8,6 @@ object Versions {
     const val koin = "1.0.2"
     const val kotlin = "1.3.21"
     const val lifecycle = "2.0.0"
-    const val mockitoKotlin = "2.1.0"
     const val mockk = "1.9.1"
     const val mockWebServer = "3.11.0"
     const val moshi = "1.8.0"
@@ -42,7 +41,6 @@ object TestDependencies {
     const val assertJ = "org.assertj:assertj-core:${Versions.assertJ}"
     const val coroutinesTest = "org.jetbrains.kotlinx:kotlinx-coroutines-test:${Versions.coroutinesCore}"
     const val junit = "junit:junit:${Versions.junit}"
-    const val mockitoKotlin = "com.nhaarman.mockitokotlin2:mockito-kotlin:${Versions.mockitoKotlin}"
     const val mockk = "io.mockk:mockk:${Versions.mockk}"
     const val mockWebServer = "com.squareup.okhttp3:mockwebserver:${Versions.mockWebServer}"
 }

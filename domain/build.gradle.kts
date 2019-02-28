@@ -10,7 +10,7 @@ dependencies {
 
     testImplementation(TestDependencies.assertJ)
     testImplementation(TestDependencies.junit)
-    testImplementation(TestDependencies.mockitoKotlin)
+    testImplementation(TestDependencies.mockk)
 }
 
 java {

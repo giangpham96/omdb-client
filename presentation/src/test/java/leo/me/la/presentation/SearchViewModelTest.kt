@@ -392,7 +392,7 @@ class SearchViewModelTest {
     }
     @ObsoleteCoroutinesApi
     @Test
-    fun `shouldn move to LoadPageFailed state`() {
+    fun `should move to LoadPageFailed state`() {
         val firstMovieList = List(10) {
             Movie(
                 "Abc",

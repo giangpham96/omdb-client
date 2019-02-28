@@ -10,7 +10,7 @@ import leo.me.la.common.model.Movie
 import leo.me.la.common.model.MovieSearchResult
 import leo.me.la.common.model.MovieType
 import leo.me.la.domain.repository.SearchRepository
-import org.assertj.core.api.Assertions
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 
 class SearchMoviesUseCaseTest {
@@ -51,7 +51,7 @@ class SearchMoviesUseCaseTest {
                 repository.searchMoviesByKeyword("Batman", 2)
             ) doReturn desiredResult
             val actualResult = useCase.execute("Batman", 2)
-            Assertions.assertThat(actualResult).isEqualTo(desiredResult)
+            assertThat(actualResult).isEqualTo(desiredResult)
             verify(repository).searchMoviesByKeyword("Batman", 2)
         }
     }

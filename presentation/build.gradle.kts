@@ -28,7 +28,7 @@ dependencies {
 
     testImplementation(TestDependencies.archCoreTesting)
     testImplementation(TestDependencies.assertJ)
+    testImplementation(TestDependencies.mockk)
     testImplementation(TestDependencies.coroutinesTest)
     testImplementation(TestDependencies.junit)
-    testImplementation(TestDependencies.mockitoKotlin)
 }

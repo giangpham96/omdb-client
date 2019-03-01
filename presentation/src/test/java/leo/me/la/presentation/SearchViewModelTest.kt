@@ -194,7 +194,6 @@ class SearchViewModelTest {
                 "https://m.media-amazon.com/images/M/MV5BZmUwNGU2ZmItMmRiNC00MjhlLTg5YWUtODMyNzkxODYzMmZlXkEyXkFqcGdeQXVyNTIzOTk5ODM@._V1_SX300.jpg"
             )
         )
-        println(System.currentTimeMillis())
         with(useCase) {
             coEvery { execute("Abc") } returns MovieSearchResult(firstMovieList, 200)
             coEvery { execute("Abc", 2) } coAnswers {
@@ -203,7 +202,6 @@ class SearchViewModelTest {
             }
             coEvery { execute("Batman") } returns MovieSearchResult(secondMovieList, 1)
         }
-        println(System.currentTimeMillis())
         viewModel = SearchViewModel(useCase, testCoroutineContext)
         viewModel.viewStates.observeForever(observer)
         viewModel.searchMovies("Abc")

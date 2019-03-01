@@ -252,8 +252,8 @@ class SearchViewModelTest {
         }
         verify(exactly = 0) {
             observer.onChanged(SearchViewState.SearchFailed)
-//            observer.onChanged(ofType(SearchViewState.LoadPageFailed::class))
-//            observer.onChanged(ofType(SearchViewState.MoviesFetched::class))
+            observer.onChanged(ofType(SearchViewState.LoadPageFailed::class))
+            observer.onChanged(ofType(SearchViewState.MoviesFetched::class))
         }
     }
 

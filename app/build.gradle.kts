@@ -94,8 +94,8 @@ android {
 }
 
 dependencies {
-    implementation (Dependencies.appCompat)
-    implementation (Dependencies.coreKtx)
+    implementation(Dependencies.appCompat)
+    implementation(Dependencies.coreKtx)
+    implementation(Dependencies.constraintLayout)
     implementation(Dependencies.kotlinStdLib)
-    implementation (Dependencies.constraintLayout)
 }

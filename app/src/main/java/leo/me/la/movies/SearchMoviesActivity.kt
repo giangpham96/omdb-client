@@ -44,6 +44,7 @@ class SearchMoviesActivity : AppCompatActivity() {
             }
         })
         setSupportActionBar(toolbar)
+        supportActionBar?.setDisplayShowTitleEnabled(false)
 
         moviesList.apply {
             layoutManager = GridLayoutManager(
@@ -88,21 +89,26 @@ class SearchMoviesActivity : AppCompatActivity() {
         menuInflater.inflate(R.menu.menu_search, menu)
         val searchItem = menu.findItem(R.id.action_search)
         (searchItem.actionView as SearchView)
-            .setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-                override fun onQueryTextSubmit(query: String?): Boolean {
-                    return false
-                }
-
-                override fun onQueryTextChange(newText: String?): Boolean {
-                    newText?.let {
-                        if (newText.isEmpty())
-                            viewModel.resetSearch()
-                        else
-                            viewModel.searchMovies(it)
+            .apply {
+                queryHint = "Search Movies"
+                setIconifiedByDefault(false)
+                setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+                    override fun onQueryTextSubmit(query: String?): Boolean {
+                        return false
                     }
-                    return false
-                }
-            })
+
+                    override fun onQueryTextChange(newText: String?): Boolean {
+                        newText?.let {
+                            if (newText.isEmpty())
+                                viewModel.resetSearch()
+                            else
+                                viewModel.searchMovies(it)
+                        }
+                        return false
+                    }
+                })
+                clearFocus()
+            }
         return super.onCreateOptionsMenu(menu)
     }
 }

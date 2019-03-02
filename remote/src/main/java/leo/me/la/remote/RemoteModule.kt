@@ -10,6 +10,7 @@ import leo.me.la.remote.adapter.MovieSearchAdapter
 import okhttp3.Interceptor
 import okhttp3.logging.HttpLoggingInterceptor
 import org.koin.dsl.module.module
+import retrofit2.converter.moshi.MoshiConverterFactory
 
 val remoteModule = module {
 
@@ -37,6 +38,10 @@ val remoteModule = module {
             get(),
             get()
         )
+    }
+
+    single {
+        MoshiConverterFactory.create(get())
     }
 
     factory<Interceptor>(name = TAG_INTERCEPTOR_LOGGING) {

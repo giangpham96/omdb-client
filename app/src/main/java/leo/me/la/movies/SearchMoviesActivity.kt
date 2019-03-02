@@ -23,6 +23,8 @@ import leo.me.la.movies.item.MovieItem
 import leo.me.la.presentation.SearchViewModel
 import leo.me.la.presentation.SearchViewState
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import com.google.android.material.snackbar.Snackbar
+import kotlinx.android.synthetic.main.activity_search_movies.root
 
 class SearchMoviesActivity : AppCompatActivity() {
 
@@ -64,8 +66,10 @@ class SearchMoviesActivity : AppCompatActivity() {
         }
     }
 
+    private var snackBar: Snackbar? = null
     @SuppressLint("SetTextI18n")
     private fun render(viewState: SearchViewState) {
+        snackBar?.dismiss()
         when (viewState) {
             SearchViewState.Idling -> {
                 showInfo(
@@ -101,6 +105,14 @@ class SearchMoviesActivity : AppCompatActivity() {
                     ),
                     R.drawable.unknown
                 )
+                snackBar = Snackbar.make(root, "Something wrong happens", Snackbar.LENGTH_INDEFINITE)
+                    .apply {
+                        setAction("Retry") {
+                            viewModel.searchMovies(viewState.keyword)
+                            dismiss()
+                        }
+                        show()
+                    }
             }
             is SearchViewState.MoviesFetched -> {
                 info.visibility = View.GONE

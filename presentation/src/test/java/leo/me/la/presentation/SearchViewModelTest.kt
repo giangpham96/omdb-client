@@ -165,7 +165,7 @@ class SearchViewModelTest {
                 SearchViewState.LoadingNextPage
             )
             observer.onChanged(
-                SearchViewState.SearchFailed
+                SearchViewState.SearchFailed("Abc")
             )
             observer.onChanged(
                 ofType(SearchViewState.LoadPageFailed::class)
@@ -233,7 +233,7 @@ class SearchViewModelTest {
             )
         }
         verify(exactly = 0) {
-            observer.onChanged(SearchViewState.SearchFailed)
+            observer.onChanged(ofType(SearchViewState.SearchFailed::class))
             observer.onChanged(ofType(SearchViewState.LoadPageFailed::class))
         }
     }
@@ -309,7 +309,7 @@ class SearchViewModelTest {
             )
         }
         verify(exactly = 0) {
-            observer.onChanged(SearchViewState.SearchFailed)
+            observer.onChanged(ofType(SearchViewState.SearchFailed::class))
             observer.onChanged(ofType(SearchViewState.LoadPageFailed::class))
         }
     }
@@ -327,7 +327,7 @@ class SearchViewModelTest {
             observer.onChanged(SearchViewState.MovieNotFound)
         }
         verify(exactly = 0) {
-            observer.onChanged(SearchViewState.SearchFailed)
+            observer.onChanged(ofType(SearchViewState.SearchFailed::class))
             observer.onChanged(ofType(SearchViewState.LoadPageFailed::class))
             observer.onChanged(ofType(SearchViewState.MoviesFetched::class))
         }
@@ -347,9 +347,9 @@ class SearchViewModelTest {
         verifySequence {
             observer.onChanged(SearchViewState.Idling)
             observer.onChanged(SearchViewState.Searching)
-            observer.onChanged(SearchViewState.SearchFailed)
+            observer.onChanged(SearchViewState.SearchFailed("Abc"))
             observer.onChanged(SearchViewState.Searching)
-            observer.onChanged(SearchViewState.SearchFailed)
+            observer.onChanged(SearchViewState.SearchFailed("Def"))
         }
     }
 

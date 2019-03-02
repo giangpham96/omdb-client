@@ -18,6 +18,6 @@ sealed class SearchViewState {
         val totalPages: Int,
         val reason: Throwable? = null
     ) : SearchViewState()
-    object SearchFailed : SearchViewState()
+    data class SearchFailed(val keyword: String) : SearchViewState()
     object MovieNotFound : SearchViewState()
 }

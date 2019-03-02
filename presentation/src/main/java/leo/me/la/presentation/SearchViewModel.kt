@@ -32,6 +32,13 @@ class SearchViewModel(
         _viewStates.value = SearchViewState.Idling
     }
 
+    fun resetSearch() {
+        if (::parentJob.isInitialized) {
+            parentJob.cancel()
+        }
+        _viewStates.value = SearchViewState.Idling
+    }
+
     fun searchMovies(keyword: String) {
         if (::parentJob.isInitialized) {
             parentJob.cancel()

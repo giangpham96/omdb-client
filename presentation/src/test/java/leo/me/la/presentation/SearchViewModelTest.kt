@@ -457,4 +457,58 @@ class SearchViewModelTest {
             useCase.execute("Abc", 2)
         }
     }
+
+    @ObsoleteCoroutinesApi
+    @Test
+    fun `should not allow to load next page if the search is reset`() {
+        val firstMovieList = List(10) {
+            Movie(
+                "Abc",
+                "2001",
+                "tt0372781",
+                MovieType.Series,
+                ""
+            )
+        }
+        val secondMovieList = List(10) {
+            Movie(
+                "Def",
+                "2001",
+                "tt037278e",
+                MovieType.Series,
+                ""
+            )
+        }
+        with(useCase) {
+            coEvery { execute("Abc") } returns MovieSearchResult(firstMovieList, 200)
+            coEvery { execute("Abc", 2) } coAnswers {
+                delay(1000)
+                MovieSearchResult(secondMovieList, 200)
+            }
+        }
+        viewModel = SearchViewModel(useCase, testCoroutineContext)
+        viewModel.viewStates.observeForever(observer)
+        viewModel.searchMovies("Abc")
+        testCoroutineContext.advanceTimeBy(100)
+        viewModel.loadNextPage()
+        viewModel.resetSearch()
+        testCoroutineContext.advanceTimeBy(1000)
+        verifySequence {
+            observer.onChanged(SearchViewState.Idling)
+            observer.onChanged(SearchViewState.Searching)
+            observer.onChanged(ofType(SearchViewState.MoviesFetched::class))
+            observer.onChanged(SearchViewState.LoadingNextPage)
+            observer.onChanged(SearchViewState.Idling)
+        }
+        verify(exactly = 0) {
+            observer.onChanged(
+                SearchViewState.MoviesFetched(
+                    "Abc",
+                    secondMovieList,
+                    2,
+                    20
+                )
+            )
+        }
+    }
 }

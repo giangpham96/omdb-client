@@ -95,7 +95,10 @@ class SearchMoviesActivity : AppCompatActivity() {
 
                 override fun onQueryTextChange(newText: String?): Boolean {
                     newText?.let {
-                        viewModel.searchMovies(it)
+                        if (newText.isEmpty())
+                            viewModel.resetSearch()
+                        else
+                            viewModel.searchMovies(it)
                     }
                     return false
                 }

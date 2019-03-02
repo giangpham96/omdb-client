@@ -511,4 +511,17 @@ class SearchViewModelTest {
             )
         }
     }
+
+    @Test
+    fun `should move to MovieNotFound`() {
+        coEvery { useCase.execute("Abc") } coAnswers {
+            throw OmdbErrorException("Movie not found!")
+        }
+        viewModel = SearchViewModel(useCase)
+        viewModel.viewStates.observeForever(observer)
+        viewModel.searchMovies("Abc")
+        verify {
+            observer.onChanged(SearchViewState.MovieNotFound)
+        }
+    }
 }

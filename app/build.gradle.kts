@@ -2,6 +2,7 @@ plugins {
     id("com.android.application")
     id("kotlin-android")
     id("kotlin-android-extensions")
+    id("kotlin-kapt")
 }
 
 apply {
@@ -78,6 +79,9 @@ android {
         exclude("META-INF/main.kotlin_module")
     }
 
+    androidExtensions {
+        isExperimental = true
+    }
     testOptions {
         animationsDisabled = true
         unitTests(delegateClosureOf<Any?> {
@@ -94,8 +98,25 @@ android {
 }
 
 dependencies {
-    implementation (Dependencies.appCompat)
-    implementation (Dependencies.coreKtx)
+    implementation(project(":common"))
+    implementation(project(":data"))
+    implementation(project(":domain"))
+    implementation(project(":presentation"))
+    implementation(project(":remote"))
+    implementation(Dependencies.appCompat)
+    implementation(Dependencies.cardView)
+    implementation(Dependencies.coreKtx)
+    implementation(Dependencies.coroutinesCore)
+    implementation(Dependencies.constraintLayout)
+    implementation(Dependencies.glide)
+    implementation(Dependencies.glideOkHttp)
+    implementation(Dependencies.groupie)
+    implementation(Dependencies.groupieKotlinAndroidExtension)
+    implementation(Dependencies.koinCore)
+    implementation(Dependencies.koinViewModel)
     implementation(Dependencies.kotlinStdLib)
-    implementation (Dependencies.constraintLayout)
+    implementation(Dependencies.materialDesign)
+    implementation(Dependencies.recyclerView)
+
+    kapt(Dependencies.glideCompiler)
 }

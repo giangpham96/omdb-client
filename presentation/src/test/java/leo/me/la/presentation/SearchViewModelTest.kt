@@ -194,7 +194,6 @@ class SearchViewModelTest {
                 "https://m.media-amazon.com/images/M/MV5BZmUwNGU2ZmItMmRiNC00MjhlLTg5YWUtODMyNzkxODYzMmZlXkEyXkFqcGdeQXVyNTIzOTk5ODM@._V1_SX300.jpg"
             )
         )
-        println(System.currentTimeMillis())
         with(useCase) {
             coEvery { execute("Abc") } returns MovieSearchResult(firstMovieList, 200)
             coEvery { execute("Abc", 2) } coAnswers {
@@ -203,7 +202,6 @@ class SearchViewModelTest {
             }
             coEvery { execute("Batman") } returns MovieSearchResult(secondMovieList, 1)
         }
-        println(System.currentTimeMillis())
         viewModel = SearchViewModel(useCase, testCoroutineContext)
         viewModel.viewStates.observeForever(observer)
         viewModel.searchMovies("Abc")
@@ -242,6 +240,82 @@ class SearchViewModelTest {
 
     @ObsoleteCoroutinesApi
     @Test
+    fun `should reset to page 1 if new search is dispatched`() {
+        val firstMovieList = List(10) {
+            Movie(
+                "Abc",
+                "2001",
+                "tt0372781",
+                MovieType.Series,
+                ""
+            )
+        }
+        val secondMovieList = List(10) {
+            Movie(
+                "Def",
+                "2005",
+                "tt0372789",
+                MovieType.Movie,
+                ""
+            )
+        }
+        val newSearchMovieList = listOf(
+            Movie(
+                "Batman Begins",
+                "2005",
+                "tt0372784",
+                MovieType.Movie,
+                "https://m.media-amazon.com/images/M/MV5BZmUwNGU2ZmItMmRiNC00MjhlLTg5YWUtODMyNzkxODYzMmZlXkEyXkFqcGdeQXVyNTIzOTk5ODM@._V1_SX300.jpg"
+            )
+        )
+        with(useCase) {
+            coEvery { execute("Abc") } returns MovieSearchResult(firstMovieList, 200)
+            coEvery { execute("Abc", 2) } returns MovieSearchResult(secondMovieList, 200)
+            coEvery { execute("Batman") } returns MovieSearchResult(newSearchMovieList, 1)
+        }
+        viewModel = SearchViewModel(useCase)
+        viewModel.viewStates.observeForever(observer)
+        viewModel.searchMovies("Abc")
+        viewModel.loadNextPage()
+        viewModel.searchMovies("Batman")
+        verifySequence {
+            observer.onChanged(SearchViewState.Idling)
+            observer.onChanged(SearchViewState.Searching)
+            observer.onChanged(
+                SearchViewState.MoviesFetched(
+                    "Abc",
+                    firstMovieList,
+                    1,
+                    20
+                )
+            )
+            observer.onChanged(SearchViewState.LoadingNextPage)
+            observer.onChanged(
+                SearchViewState.MoviesFetched(
+                    "Abc",
+                    secondMovieList,
+                    2,
+                    20
+                )
+            )
+            observer.onChanged(SearchViewState.Searching)
+            observer.onChanged(
+                SearchViewState.MoviesFetched(
+                    "Batman",
+                    newSearchMovieList,
+                    1,
+                    1
+                )
+            )
+        }
+        verify(exactly = 0) {
+            observer.onChanged(SearchViewState.SearchFailed)
+            observer.onChanged(ofType(SearchViewState.LoadPageFailed::class))
+        }
+    }
+
+    @ObsoleteCoroutinesApi
+    @Test
     fun `should move to MovieNotFound state`() {
         coEvery { useCase.execute(any(), any()) } throws OmdbErrorException("Movie not found!")
         viewModel = SearchViewModel(useCase)
@@ -254,8 +328,8 @@ class SearchViewModelTest {
         }
         verify(exactly = 0) {
             observer.onChanged(SearchViewState.SearchFailed)
-//            observer.onChanged(ofType(SearchViewState.LoadPageFailed::class))
-//            observer.onChanged(ofType(SearchViewState.MoviesFetched::class))
+            observer.onChanged(ofType(SearchViewState.LoadPageFailed::class))
+            observer.onChanged(ofType(SearchViewState.MoviesFetched::class))
         }
     }
 

@@ -34,6 +34,7 @@ internal class MovieSearchAdapter {
         }
     }
 
+    @Suppress("Unused", "UNUSED_PARAMETER")
     @ToJson
     fun toJson(
         writer: JsonWriter,

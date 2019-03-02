@@ -28,3 +28,13 @@
 -keepnames @kotlin.Metadata class leo.me.la.remote.model.**
 -keep class leo.me.la.remote.model.** { *; }
 -keepclassmembers class leo.me.la.remote.model.** { *; }
+
+## COROUTINES
+-keepnames class kotlinx.coroutines.internal.MainDispatcherFactory {}
+-keepnames class kotlinx.coroutines.CoroutineExceptionHandler {}
+-keepnames class kotlinx.coroutines.android.AndroidExceptionPreHandler {}
+-keepnames class kotlinx.coroutines.android.AndroidDispatcherFactory {}
+
+-keepclassmembernames class kotlinx.** {
+    volatile <fields>;
+}

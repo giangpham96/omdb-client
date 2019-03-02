@@ -97,5 +97,7 @@ dependencies {
     implementation(Dependencies.appCompat)
     implementation(Dependencies.coreKtx)
     implementation(Dependencies.constraintLayout)
+    implementation(Dependencies.koinCore)
+    implementation(Dependencies.koinViewModel)
     implementation(Dependencies.kotlinStdLib)
 }

@@ -45,7 +45,7 @@ internal class MovieRemoteDataSourceImplTest : BaseApiTest(){
                         "2012",
                         "tt2313197",
                         MovieType.Other,
-                        "https://m.media-amazon.com/images/M/MV5BMzIxMDkxNDM2M15BMl5BanBnXkFtZTcwMDA5ODY1OQ@@._V1_SX300.jpg"
+                        null
                     )
                 )
             )

@@ -24,7 +24,7 @@ internal class MovieRemoteDataSourceImpl(
                                     else -> MovieType.Other
                                 }
                             },
-                            movie.poster
+                            movie.poster.let { poster -> if(poster == "N/A") null else poster }
                         )
                     },
                     it.totalResults

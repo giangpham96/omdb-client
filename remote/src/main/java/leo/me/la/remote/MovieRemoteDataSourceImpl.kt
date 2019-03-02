@@ -1,5 +1,6 @@
 package leo.me.la.remote
 
+import com.squareup.moshi.JsonDataException
 import leo.me.la.common.model.Movie
 import leo.me.la.common.model.MovieSearchResult
 import leo.me.la.common.model.MovieType
@@ -9,26 +10,30 @@ internal class MovieRemoteDataSourceImpl(
     private val omdbRestApi: OmdbRestApi
 ) : MovieRemoteDataSource {
     override suspend fun searchMoviesByKeyword(keyword: String, page: Int): MovieSearchResult {
-        return omdbRestApi.searchByKeywords(keyword, page).await()
-            .let {
-                MovieSearchResult(
-                    it.result.map { movie ->
-                        Movie(
-                            movie.title,
-                            movie.year,
-                            movie.imdbId,
-                            movie.type.let { type ->
-                                when (type) {
-                                    "movie" -> MovieType.Movie
-                                    "series" -> MovieType.Series
-                                    else -> MovieType.Other
-                                }
-                            },
-                            movie.poster.let { poster -> if(poster == "N/A") null else poster }
-                        )
-                    },
-                    it.totalResults
-                )
-            }
+        return try {
+            omdbRestApi.searchByKeywords(keyword, page).await()
+                .let {
+                    MovieSearchResult(
+                        it.result.map { movie ->
+                            Movie(
+                                movie.title,
+                                movie.year,
+                                movie.imdbId,
+                                movie.type.let { type ->
+                                    when (type) {
+                                        "movie" -> MovieType.Movie
+                                        "series" -> MovieType.Series
+                                        else -> MovieType.Other
+                                    }
+                                },
+                                movie.poster.let { poster -> if(poster == "N/A") null else poster }
+                            )
+                        },
+                        it.totalResults
+                    )
+                }
+        } catch (e: JsonDataException) {
+            throw e.cause ?: e
+        }
     }
 }

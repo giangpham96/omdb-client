@@ -131,7 +131,7 @@ class SearchViewModelTest {
         coEvery {
             useCase.execute("Batman")
         } returns MovieSearchResult(desiredMovieList, 1)
-        val viewModel = SearchViewModel(useCase, testCoroutineContext)
+        viewModel = SearchViewModel(useCase, testCoroutineContext)
         viewModel.viewStates.observeForever(observer)
         viewModel.searchMovies("Abc")
         testCoroutineContext.advanceTimeBy(500)

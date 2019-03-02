@@ -79,6 +79,9 @@ android {
         exclude("META-INF/main.kotlin_module")
     }
 
+    androidExtensions {
+        isExperimental = true
+    }
     testOptions {
         animationsDisabled = true
         unitTests(delegateClosureOf<Any?> {
@@ -105,6 +108,8 @@ dependencies {
     implementation(Dependencies.constraintLayout)
     implementation(Dependencies.glide)
     implementation(Dependencies.glideOkHttp)
+    implementation(Dependencies.groupie)
+    implementation(Dependencies.groupieKotlinAndroidExtension)
     implementation(Dependencies.koinCore)
     implementation(Dependencies.koinViewModel)
     implementation(Dependencies.kotlinStdLib)

@@ -2,6 +2,7 @@ plugins {
     id("com.android.application")
     id("kotlin-android")
     id("kotlin-android-extensions")
+    id("kotlin-kapt")
 }
 
 apply {
@@ -97,7 +98,11 @@ dependencies {
     implementation(Dependencies.appCompat)
     implementation(Dependencies.coreKtx)
     implementation(Dependencies.constraintLayout)
+    implementation(Dependencies.glide)
+    implementation(Dependencies.glideOkHttp)
     implementation(Dependencies.koinCore)
     implementation(Dependencies.koinViewModel)
     implementation(Dependencies.kotlinStdLib)
+
+    kapt(Dependencies.glideCompiler)
 }

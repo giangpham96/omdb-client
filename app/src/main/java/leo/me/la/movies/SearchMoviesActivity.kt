@@ -1,12 +1,19 @@
 package leo.me.la.movies
 
+import android.annotation.SuppressLint
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Menu
+import android.view.View
+import androidx.annotation.ColorInt
+import androidx.annotation.DrawableRes
 import androidx.appcompat.widget.SearchView
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.GridLayoutManager
 import com.xwray.groupie.Section
+import kotlinx.android.synthetic.main.activity_search_movies.info
+import kotlinx.android.synthetic.main.activity_search_movies.loadMovie
 import kotlinx.android.synthetic.main.activity_search_movies.moviesList
 import kotlinx.android.synthetic.main.activity_search_movies.toolbar
 import leo.me.la.movies.adapter.PagedLoadingHandler
@@ -44,6 +51,7 @@ class SearchMoviesActivity : AppCompatActivity() {
             }
         })
         setSupportActionBar(toolbar)
+        supportActionBar?.setDisplayShowTitleEnabled(false)
 
         moviesList.apply {
             layoutManager = GridLayoutManager(
@@ -56,15 +64,48 @@ class SearchMoviesActivity : AppCompatActivity() {
         }
     }
 
+    @SuppressLint("SetTextI18n")
     private fun render(viewState: SearchViewState) {
         when (viewState) {
             SearchViewState.Idling -> {
-                movieSection.apply {
-                    update(emptyList())
-                    removeFooter()
-                }
+                showInfo(
+                    "Search movie",
+                    ContextCompat.getColor(
+                        this@SearchMoviesActivity,
+                        R.color.colorPrimary
+                    ),
+                    R.drawable.cinema
+                )
+            }
+            SearchViewState.MovieNotFound -> {
+                showInfo(
+                    "Not found",
+                    ContextCompat.getColor(
+                        this@SearchMoviesActivity,
+                        android.R.color.holo_red_dark
+                    ),
+                    R.drawable.not_found
+                )
+            }
+            SearchViewState.Searching -> {
+                loadMovie.visibility = View.VISIBLE
+                info.visibility = View.GONE
+                moviesList.visibility = View.GONE
+            }
+            is SearchViewState.SearchFailed -> {
+                showInfo(
+                    "",
+                    ContextCompat.getColor(
+                        this@SearchMoviesActivity,
+                        android.R.color.holo_red_dark
+                    ),
+                    R.drawable.unknown
+                )
             }
             is SearchViewState.MoviesFetched -> {
+                info.visibility = View.GONE
+                moviesList.visibility = View.VISIBLE
+                loadMovie.visibility = View.GONE
                 movieSection.apply {
                     removeFooter()
                     if (viewState.page == 1)
@@ -81,25 +122,51 @@ class SearchMoviesActivity : AppCompatActivity() {
                     movieSection.setFooter(LoadingFooter)
                 }
             }
+            is SearchViewState.LoadPageFailed -> {
+
+            }
         }
+    }
+
+    private fun showInfo(content: String, @ColorInt color: Int, @DrawableRes icon: Int) {
+        movieSection.apply {
+            update(emptyList())
+            removeFooter()
+        }
+        info.apply {
+            visibility = View.VISIBLE
+            text = content
+            setCompoundDrawablesWithIntrinsicBounds(0, icon, 0, 0)
+            setTextColor(color)
+        }
+        moviesList.visibility = View.GONE
+        loadMovie.visibility = View.GONE
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.menu_search, menu)
         val searchItem = menu.findItem(R.id.action_search)
         (searchItem.actionView as SearchView)
-            .setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-                override fun onQueryTextSubmit(query: String?): Boolean {
-                    return false
-                }
-
-                override fun onQueryTextChange(newText: String?): Boolean {
-                    newText?.let {
-                        viewModel.searchMovies(it)
+            .apply {
+                queryHint = "Search Movies"
+                setIconifiedByDefault(false)
+                setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+                    override fun onQueryTextSubmit(query: String?): Boolean {
+                        return false
                     }
-                    return false
-                }
-            })
+
+                    override fun onQueryTextChange(newText: String?): Boolean {
+                        newText?.let {
+                            if (newText.isEmpty())
+                                viewModel.resetSearch()
+                            else
+                                viewModel.searchMovies(it)
+                        }
+                        return false
+                    }
+                })
+                clearFocus()
+            }
         return super.onCreateOptionsMenu(menu)
     }
 }

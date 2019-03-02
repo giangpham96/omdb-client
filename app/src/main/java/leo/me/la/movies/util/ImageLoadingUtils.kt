@@ -1,9 +1,11 @@
 import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.widget.ImageView
+import androidx.annotation.DrawableRes
 import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.engine.GlideException
+import com.bumptech.glide.load.resource.bitmap.TransformationUtils.centerCrop
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
@@ -16,6 +18,7 @@ fun ImageView.loadUri(
     noFade: Boolean = false,
     noPlaceholder: Boolean = false,
     thumbnail: Uri? = null,
+    @DrawableRes errorImage: Int? = null,
     onSuccess: (() -> Unit)? = null,
     onError: (() -> Unit)? = null
 ) {
@@ -27,6 +30,7 @@ fun ImageView.loadUri(
             cache,
             noFade,
             noPlaceholder,
+            errorImage,
             onSuccess,
             onError
         )
@@ -39,6 +43,7 @@ fun ImageView.loadUri(
     noFade: Boolean = false,
     noPlaceholder: Boolean = false,
     thumbnail: String? = null,
+    @DrawableRes errorImage: Int? = null,
     onSuccess: (() -> Unit)? = null,
     onError: (() -> Unit)? = null
 ) = loadUri(
@@ -47,6 +52,7 @@ fun ImageView.loadUri(
     noFade,
     noPlaceholder,
     thumbnail?.let(Uri::parse),
+    errorImage,
     onSuccess,
     onError
 )
@@ -56,6 +62,7 @@ fun GlideRequest<Drawable>.configure(
     cache: Boolean = true,
     noFade: Boolean = false,
     noPlaceholder: Boolean = false,
+    @DrawableRes errorImage: Int? = null,
     onSuccess: (() -> Unit)? = null,
     onError: (() -> Unit)? = null
 ) = this.diskCacheStrategy(if (cache) DiskCacheStrategy.AUTOMATIC else DiskCacheStrategy.NONE)
@@ -83,6 +90,7 @@ fun GlideRequest<Drawable>.configure(
         }
     })
     .apply {
+        errorImage?.let { error(it) }
         if (centerCrop) centerCrop()
         if (!noPlaceholder) placeholder(android.R.color.darker_gray)
         if (!noFade) transition(DrawableTransitionOptions().crossFade())

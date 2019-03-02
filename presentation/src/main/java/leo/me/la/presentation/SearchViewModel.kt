@@ -32,6 +32,13 @@ class SearchViewModel(
         _viewStates.value = SearchViewState.Idling
     }
 
+    fun resetSearch() {
+        if (::parentJob.isInitialized) {
+            parentJob.cancel()
+        }
+        _viewStates.value = SearchViewState.Idling
+    }
+
     fun searchMovies(keyword: String) {
         if (::parentJob.isInitialized) {
             parentJob.cancel()
@@ -51,11 +58,11 @@ class SearchViewModel(
                 if (e.message == "Movie not found!")
                     _viewStates.value = SearchViewState.MovieNotFound
                 else
-                    _viewStates.value = SearchViewState.SearchFailed
+                    _viewStates.value = SearchViewState.SearchFailed(keyword)
             } catch (ignored: CancellationException) {
 
             } catch (e: Throwable) {
-                _viewStates.value = SearchViewState.SearchFailed
+                _viewStates.value = SearchViewState.SearchFailed(keyword)
             }
         }
     }

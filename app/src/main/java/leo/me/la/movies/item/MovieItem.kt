@@ -16,7 +16,6 @@ class MovieItem(private val movie: Movie) : Item() {
     override fun bind(viewHolder: ViewHolder, position: Int) {
         viewHolder.title.text = movie.title
         viewHolder.year.text = movie.year
-        viewHolder.poster.loadUri(movie.poster)
         viewHolder.type.apply {
             setImageResource(
                 when (movie.type) {
@@ -29,6 +28,19 @@ class MovieItem(private val movie: Movie) : Item() {
                 MovieType.Movie, MovieType.Series -> View.VISIBLE
                 else -> View.GONE
             }
+        }
+        viewHolder.poster.apply {
+            loadUri(
+                movie.poster,
+                errorImage = when (movie.type) {
+                    MovieType.Movie -> R.drawable.error_movie_poster
+                    MovieType.Series -> R.drawable.error_series_poster
+                    else -> R.drawable.error_unknown_poster
+                },
+                onError = {
+                    viewHolder.type.visibility = View.GONE
+                }
+            )
         }
     }
 

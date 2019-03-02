@@ -131,7 +131,7 @@ class SearchViewModelTest {
         coEvery {
             useCase.execute("Batman")
         } returns MovieSearchResult(desiredMovieList, 1)
-        val viewModel = SearchViewModel(useCase, testCoroutineContext)
+        viewModel = SearchViewModel(useCase, testCoroutineContext)
         viewModel.viewStates.observeForever(observer)
         viewModel.searchMovies("Abc")
         testCoroutineContext.advanceTimeBy(500)
@@ -165,7 +165,7 @@ class SearchViewModelTest {
                 SearchViewState.LoadingNextPage
             )
             observer.onChanged(
-                SearchViewState.SearchFailed
+                SearchViewState.SearchFailed("Abc")
             )
             observer.onChanged(
                 ofType(SearchViewState.LoadPageFailed::class)
@@ -233,7 +233,7 @@ class SearchViewModelTest {
             )
         }
         verify(exactly = 0) {
-            observer.onChanged(SearchViewState.SearchFailed)
+            observer.onChanged(ofType(SearchViewState.SearchFailed::class))
             observer.onChanged(ofType(SearchViewState.LoadPageFailed::class))
         }
     }
@@ -309,7 +309,7 @@ class SearchViewModelTest {
             )
         }
         verify(exactly = 0) {
-            observer.onChanged(SearchViewState.SearchFailed)
+            observer.onChanged(ofType(SearchViewState.SearchFailed::class))
             observer.onChanged(ofType(SearchViewState.LoadPageFailed::class))
         }
     }
@@ -327,7 +327,7 @@ class SearchViewModelTest {
             observer.onChanged(SearchViewState.MovieNotFound)
         }
         verify(exactly = 0) {
-            observer.onChanged(SearchViewState.SearchFailed)
+            observer.onChanged(ofType(SearchViewState.SearchFailed::class))
             observer.onChanged(ofType(SearchViewState.LoadPageFailed::class))
             observer.onChanged(ofType(SearchViewState.MoviesFetched::class))
         }
@@ -347,9 +347,9 @@ class SearchViewModelTest {
         verifySequence {
             observer.onChanged(SearchViewState.Idling)
             observer.onChanged(SearchViewState.Searching)
-            observer.onChanged(SearchViewState.SearchFailed)
+            observer.onChanged(SearchViewState.SearchFailed("Abc"))
             observer.onChanged(SearchViewState.Searching)
-            observer.onChanged(SearchViewState.SearchFailed)
+            observer.onChanged(SearchViewState.SearchFailed("Def"))
         }
     }
 
@@ -455,6 +455,73 @@ class SearchViewModelTest {
         }
         coVerify(exactly = 2) {
             useCase.execute("Abc", 2)
+        }
+    }
+
+    @ObsoleteCoroutinesApi
+    @Test
+    fun `should not allow to load next page if the search is reset`() {
+        val firstMovieList = List(10) {
+            Movie(
+                "Abc",
+                "2001",
+                "tt0372781",
+                MovieType.Series,
+                ""
+            )
+        }
+        val secondMovieList = List(10) {
+            Movie(
+                "Def",
+                "2001",
+                "tt037278e",
+                MovieType.Series,
+                ""
+            )
+        }
+        with(useCase) {
+            coEvery { execute("Abc") } returns MovieSearchResult(firstMovieList, 200)
+            coEvery { execute("Abc", 2) } coAnswers {
+                delay(1000)
+                MovieSearchResult(secondMovieList, 200)
+            }
+        }
+        viewModel = SearchViewModel(useCase, testCoroutineContext)
+        viewModel.viewStates.observeForever(observer)
+        viewModel.searchMovies("Abc")
+        testCoroutineContext.advanceTimeBy(100)
+        viewModel.loadNextPage()
+        viewModel.resetSearch()
+        testCoroutineContext.advanceTimeBy(1000)
+        verifySequence {
+            observer.onChanged(SearchViewState.Idling)
+            observer.onChanged(SearchViewState.Searching)
+            observer.onChanged(ofType(SearchViewState.MoviesFetched::class))
+            observer.onChanged(SearchViewState.LoadingNextPage)
+            observer.onChanged(SearchViewState.Idling)
+        }
+        verify(exactly = 0) {
+            observer.onChanged(
+                SearchViewState.MoviesFetched(
+                    "Abc",
+                    secondMovieList,
+                    2,
+                    20
+                )
+            )
+        }
+    }
+
+    @Test
+    fun `should move to MovieNotFound`() {
+        coEvery { useCase.execute("Abc") } coAnswers {
+            throw OmdbErrorException("Movie not found!")
+        }
+        viewModel = SearchViewModel(useCase)
+        viewModel.viewStates.observeForever(observer)
+        viewModel.searchMovies("Abc")
+        verify {
+            observer.onChanged(SearchViewState.MovieNotFound)
         }
     }
 }

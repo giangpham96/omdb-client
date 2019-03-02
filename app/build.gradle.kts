@@ -106,6 +106,7 @@ dependencies {
     implementation(Dependencies.appCompat)
     implementation(Dependencies.cardView)
     implementation(Dependencies.coreKtx)
+    implementation(Dependencies.coroutinesCore)
     implementation(Dependencies.constraintLayout)
     implementation(Dependencies.glide)
     implementation(Dependencies.glideOkHttp)
@@ -115,6 +116,7 @@ dependencies {
     implementation(Dependencies.koinViewModel)
     implementation(Dependencies.kotlinStdLib)
     implementation(Dependencies.materialDesign)
+    implementation(Dependencies.recyclerView)
 
     kapt(Dependencies.glideCompiler)
 }

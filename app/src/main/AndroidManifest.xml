@@ -3,6 +3,7 @@
           xmlns:tools="http://schemas.android.com/tools"
           package="leo.me.la.movies">
 
+    <uses-permission android:name="android.permission.INTERNET"/>
     <application
         android:name=".OmdbApplication"
         android:allowBackup="false"

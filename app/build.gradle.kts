@@ -104,6 +104,7 @@ dependencies {
     implementation(project(":presentation"))
     implementation(project(":remote"))
     implementation(Dependencies.appCompat)
+    implementation(Dependencies.cardView)
     implementation(Dependencies.coreKtx)
     implementation(Dependencies.constraintLayout)
     implementation(Dependencies.glide)
@@ -113,6 +114,7 @@ dependencies {
     implementation(Dependencies.koinCore)
     implementation(Dependencies.koinViewModel)
     implementation(Dependencies.kotlinStdLib)
+    implementation(Dependencies.materialDesign)
 
     kapt(Dependencies.glideCompiler)
 }

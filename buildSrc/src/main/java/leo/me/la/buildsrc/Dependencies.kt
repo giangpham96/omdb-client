@@ -20,6 +20,7 @@ object Versions {
 
 object Dependencies {
     const val appCompat = "androidx.appcompat:appcompat:${Versions.androidX}"
+    const val cardView = "androidx.cardview:cardview:${Versions.androidX}"
     const val constraintLayout = "androidx.constraintlayout:constraintlayout:${Versions.constraintlayout}"
     const val coreKtx = "androidx.core:core-ktx:${Versions.androidX}"
     const val coroutinesAndroid = "org.jetbrains.kotlinx:kotlinx-coroutines-android:${Versions.coroutinesCore}"
@@ -34,6 +35,7 @@ object Dependencies {
     const val kotlinStdLib = "org.jetbrains.kotlin:kotlin-stdlib-jdk8:${Versions.kotlin}"
     const val livecycleExtensions = "androidx.lifecycle:lifecycle-extensions:${Versions.lifecycle}"
     const val lifecycleCompiler = "androidx.lifecycle:lifecycle-compiler:${Versions.lifecycle}"
+    const val materialDesign = "com.google.android.material:material:${Versions.androidX}"
     const val moshi = "com.squareup.moshi:moshi:${Versions.moshi}"
     const val moshiCodeGen = "com.squareup.moshi:moshi-kotlin-codegen:${Versions.moshi}"
     const val okHttp = "com.squareup.okhttp3:okhttp:${Versions.okHttp}"

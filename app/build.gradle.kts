@@ -95,6 +95,11 @@ android {
 }
 
 dependencies {
+    implementation(project(":common"))
+    implementation(project(":data"))
+    implementation(project(":domain"))
+    implementation(project(":presentation"))
+    implementation(project(":remote"))
     implementation(Dependencies.appCompat)
     implementation(Dependencies.coreKtx)
     implementation(Dependencies.constraintLayout)

@@ -4,6 +4,7 @@
           package="leo.me.la.movies">
 
     <application
+        android:name=".OmdbApplication"
         android:allowBackup="false"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"

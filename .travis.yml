@@ -8,6 +8,12 @@ android:
   components:
     - build-tools-$ANDROID_BUILD_TOOLS_VERSION
     - android-$ANDROID_API_LEVEL
+cache:
+  directories:
+  - "$HOME/.gradle/caches/"
+  - "$HOME/.gradle/wrapper/"
+  - "$HOME/.android/build-cache"
+
 script:
   - ./gradlew test --stacktrace
   - ./gradlew assembleDebug assembleRelease --stacktrace

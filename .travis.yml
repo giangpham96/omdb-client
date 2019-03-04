@@ -15,5 +15,7 @@ cache:
   - "$HOME/.android/build-cache"
 
 script:
+  # unit tests
   - ./gradlew test --stacktrace
+  # build debug apk
   - ./gradlew assembleDebug --stacktrace

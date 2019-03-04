@@ -1,10 +1,6 @@
 package leo.me.la.presentation
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
@@ -15,32 +11,22 @@ import kotlin.math.ceil
 
 class SearchViewModel(
     private val searchMoviesUseCase: SearchMoviesUseCase,
-    private val context: CoroutineContext = Dispatchers.Main
-) : ViewModel(), CoroutineScope {
-
-    private lateinit var parentJob: Job
-
-    override val coroutineContext: CoroutineContext
-        get() = context + parentJob
-
-    private val _viewStates: MutableLiveData<SearchViewState> = MutableLiveData()
-
-    val viewStates: LiveData<SearchViewState>
-        get() = _viewStates
+    context: CoroutineContext = Dispatchers.Main
+) : BaseViewModel<SearchViewState>(context) {
 
     init {
         _viewStates.value = SearchViewState.Idling
     }
 
     fun resetSearch() {
-        if (::parentJob.isInitialized) {
+        if (isParentJobInitialized()) {
             parentJob.cancel()
         }
         _viewStates.value = SearchViewState.Idling
     }
 
     fun searchMovies(keyword: String) {
-        if (::parentJob.isInitialized) {
+        if (isParentJobInitialized()) {
             parentJob.cancel()
         }
         parentJob = Job()
@@ -114,10 +100,5 @@ class SearchViewModel(
                 }
             }
         }
-    }
-
-    override fun onCleared() {
-        parentJob.cancel()
-        super.onCleared()
     }
 }

@@ -12,7 +12,7 @@ import leo.me.la.common.model.Movie
 import leo.me.la.common.model.MovieType
 import loadUri
 
-class MovieItem(private val movie: Movie) : Item() {
+internal class MovieItem(private val movie: Movie) : Item() {
     override fun bind(viewHolder: ViewHolder, position: Int) {
         viewHolder.title.text = movie.title
         viewHolder.year.text = movie.year

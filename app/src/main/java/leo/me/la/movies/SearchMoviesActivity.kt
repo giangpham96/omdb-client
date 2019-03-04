@@ -30,7 +30,7 @@ import leo.me.la.movies.item.RetryLoadNextPageFooter
 import leo.me.la.presentation.BaseViewModel
 
 
-class SearchMoviesActivity : AppCompatActivity() {
+internal class SearchMoviesActivity : AppCompatActivity() {
 
     private val _viewModel: BaseViewModel<SearchViewState> by viewModel(TAG_SEARCH_VIEWMODEL)
     private val viewModel by lazy {

@@ -9,7 +9,7 @@ import kotlinx.android.synthetic.main.item_movie.year
 import leo.me.la.common.model.Movie
 import loadUri
 
-object LoadingFooter : Item() {
+internal object LoadingFooter : Item() {
     override fun bind(viewHolder: ViewHolder, position: Int) {}
 
     override fun getLayout() = R.layout.item_loading

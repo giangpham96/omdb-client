@@ -7,7 +7,7 @@ import leo.me.la.presentation.presentationModule
 import leo.me.la.remote.remoteModule
 import org.koin.android.ext.android.startKoin
 
-class OmdbApplication: Application() {
+internal class OmdbApplication: Application() {
     override fun onCreate() {
         super.onCreate()
         // Start Koin

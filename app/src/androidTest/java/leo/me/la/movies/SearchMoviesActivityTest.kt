@@ -27,7 +27,7 @@ import org.koin.standalone.StandAloneContext.loadKoinModules
 import org.koin.test.KoinTest
 
 @LargeTest
-class SearchMoviesActivityTest : KoinTest {
+internal class SearchMoviesActivityTest : KoinTest {
     @get:Rule
     val activityTestRule = ActivityTestRule<SearchMoviesActivity>(SearchMoviesActivity::class.java, false, false)
 

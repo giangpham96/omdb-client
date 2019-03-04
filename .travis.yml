@@ -16,4 +16,4 @@ cache:
 
 script:
   - ./gradlew test --stacktrace
-  - ./gradlew assembleDebug assembleRelease --stacktrace
+  - ./gradlew assembleDebug --stacktrace

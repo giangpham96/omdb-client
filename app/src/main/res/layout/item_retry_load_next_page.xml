@@ -13,10 +13,10 @@
         android:layout_gravity="center"
         android:layout_margin="8dp"
         android:background="@android:color/transparent"
-        android:drawableTop="@drawable/icon_retry"
         android:text="Retry"
         android:textAllCaps="false"
         android:textColor="@android:color/darker_gray"
+        tools:drawableTop="@drawable/icon_retry"
         tools:ignore="HardcodedText"
         />
 </FrameLayout>

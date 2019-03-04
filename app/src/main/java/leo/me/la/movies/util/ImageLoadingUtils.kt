@@ -18,7 +18,7 @@ fun ImageView.loadUri(
     noFade: Boolean = false,
     noPlaceholder: Boolean = false,
     thumbnail: Uri? = null,
-    @DrawableRes errorImage: Int? = null,
+    errorImage: Drawable? = null,
     onSuccess: (() -> Unit)? = null,
     onError: (() -> Unit)? = null
 ) {
@@ -43,7 +43,7 @@ fun ImageView.loadUri(
     noFade: Boolean = false,
     noPlaceholder: Boolean = false,
     thumbnail: String? = null,
-    @DrawableRes errorImage: Int? = null,
+    errorImage: Drawable? = null,
     onSuccess: (() -> Unit)? = null,
     onError: (() -> Unit)? = null
 ) = loadUri(
@@ -62,7 +62,7 @@ fun GlideRequest<Drawable>.configure(
     cache: Boolean = true,
     noFade: Boolean = false,
     noPlaceholder: Boolean = false,
-    @DrawableRes errorImage: Int? = null,
+    errorImage: Drawable? = null,
     onSuccess: (() -> Unit)? = null,
     onError: (() -> Unit)? = null
 ) = this.diskCacheStrategy(if (cache) DiskCacheStrategy.AUTOMATIC else DiskCacheStrategy.NONE)

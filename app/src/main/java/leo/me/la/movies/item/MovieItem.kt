@@ -1,6 +1,7 @@
 package leo.me.la.movies.item
 
 import android.view.View
+import androidx.appcompat.content.res.AppCompatResources
 import com.xwray.groupie.kotlinandroidextensions.Item
 import com.xwray.groupie.kotlinandroidextensions.ViewHolder
 import kotlinx.android.synthetic.main.item_movie.poster
@@ -13,6 +14,16 @@ import leo.me.la.common.model.MovieType
 import loadUri
 
 internal class MovieItem(private val movie: Movie) : Item() {
+    override fun createViewHolder(itemView: View): ViewHolder {
+        return super.createViewHolder(itemView)
+            .apply {
+                type.background = AppCompatResources.getDrawable(
+                    itemView.context,
+                    R.drawable.type_background
+                )
+            }
+    }
+
     override fun bind(viewHolder: ViewHolder, position: Int) {
         viewHolder.title.text = movie.title
         viewHolder.year.text = movie.year
@@ -32,11 +43,12 @@ internal class MovieItem(private val movie: Movie) : Item() {
         viewHolder.poster.apply {
             loadUri(
                 movie.poster,
-                errorImage = when (movie.type) {
-                    MovieType.Movie -> R.drawable.error_movie_poster
-                    MovieType.Series -> R.drawable.error_series_poster
-                    else -> R.drawable.error_unknown_poster
-                },
+                errorImage = AppCompatResources.getDrawable(this.context,
+                    when (movie.type) {
+                        MovieType.Movie -> R.drawable.error_movie_poster
+                        MovieType.Series -> R.drawable.error_series_poster
+                        else -> R.drawable.error_unknown_poster
+                    }),
                 onError = {
                     viewHolder.type.visibility = View.GONE
                 }

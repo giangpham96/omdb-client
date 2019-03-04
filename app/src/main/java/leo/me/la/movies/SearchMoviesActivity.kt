@@ -7,6 +7,7 @@ import android.view.Menu
 import android.view.View
 import androidx.annotation.ColorInt
 import androidx.annotation.DrawableRes
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.appcompat.widget.SearchView
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
@@ -163,7 +164,12 @@ internal class SearchMoviesActivity : AppCompatActivity() {
         info.apply {
             visibility = View.VISIBLE
             text = content
-            setCompoundDrawablesWithIntrinsicBounds(0, icon, 0, 0)
+            setCompoundDrawablesWithIntrinsicBounds(
+                null,
+                AppCompatResources.getDrawable(this@SearchMoviesActivity, icon),
+                null,
+                null
+            )
             setTextColor(color)
         }
         moviesList.visibility = View.GONE

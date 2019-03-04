@@ -1,9 +1,12 @@
 object Versions {
     const val androidGradlePlugin = "3.3.1"
+    const val androidTest = "1.1.0"
     const val androidX = "1.0.0"
     const val assertJ = "3.11.1"
+    const val assertJAndroid = "1.2.0"
     const val constraintlayout = "1.1.3"
     const val coroutinesCore = "1.1.1"
+    const val espresso = "3.1.0"
     const val groupie = "2.3.0"
     const val glide = "4.8.0"
     const val junit = "4.12"
@@ -50,8 +53,14 @@ object Dependencies {
 object TestDependencies {
     const val archCoreTesting = "android.arch.core:core-testing:${Versions.lifecycle}"
     const val assertJ = "org.assertj:assertj-core:${Versions.assertJ}"
+    const val assertJAndroid = "com.squareup.assertj:assertj-android:${Versions.assertJAndroid}"
+    const val espresso = "androidx.test.espresso:espresso-core:${Versions.espresso}"
+    const val espressoCont = "androidx.test.espresso:espresso-contrib:${Versions.espresso}"
     const val coroutinesTest = "org.jetbrains.kotlinx:kotlinx-coroutines-test:${Versions.coroutinesCore}"
     const val junit = "junit:junit:${Versions.junit}"
+    const val koinTest = "org.koin:koin-test:${Versions.koin}"
     const val mockk = "io.mockk:mockk:${Versions.mockk}"
     const val mockWebServer = "com.squareup.okhttp3:mockwebserver:${Versions.mockWebServer}"
+    const val testRule = "androidx.test:rules:${Versions.androidTest}"
+    const val testRunner = "androidx.test:runner:${Versions.androidTest}"
 }

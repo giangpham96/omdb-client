@@ -25,12 +25,17 @@ import leo.me.la.presentation.SearchViewState
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.activity_search_movies.root
+import leo.me.la.common.TAG_SEARCH_VIEWMODEL
 import leo.me.la.movies.item.RetryLoadNextPageFooter
+import leo.me.la.presentation.BaseViewModel
 
 
 class SearchMoviesActivity : AppCompatActivity() {
 
-    private val viewModel: SearchViewModel by viewModel()
+    private val _viewModel: BaseViewModel<SearchViewState> by viewModel(TAG_SEARCH_VIEWMODEL)
+    private val viewModel by lazy {
+        _viewModel as SearchViewModel
+    }
 
     private val movieSection = Section()
     private val pagedLoadingHandler = object : PagedLoadingHandler() {
@@ -49,7 +54,7 @@ class SearchMoviesActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_search_movies)
-        viewModel.viewStates.observe(this, Observer {
+        _viewModel.viewStates.observe(this, Observer {
             it?.let { viewState ->
                 render(viewState)
             }

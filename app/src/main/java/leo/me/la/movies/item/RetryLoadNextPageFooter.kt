@@ -1,11 +1,28 @@
 package leo.me.la.movies.item
 
+import android.view.View
+import androidx.appcompat.content.res.AppCompatResources
 import com.xwray.groupie.kotlinandroidextensions.Item
 import com.xwray.groupie.kotlinandroidextensions.ViewHolder
 import kotlinx.android.synthetic.main.item_retry_load_next_page.retry
 import leo.me.la.movies.R
 
-class RetryLoadNextPageFooter(private val onRetryClickListener: () -> Unit) : Item() {
+internal class RetryLoadNextPageFooter(private val onRetryClickListener: () -> Unit) : Item() {
+    override fun createViewHolder(itemView: View): ViewHolder {
+        return super.createViewHolder(itemView)
+            .apply {
+                retry.setOnClickListener {
+                    onRetryClickListener()
+                }
+                retry.setCompoundDrawablesWithIntrinsicBounds(
+                    null,
+                    AppCompatResources.getDrawable(itemView.context, R.drawable.icon_retry),
+                    null,
+                    null
+                )
+            }
+    }
+
     override fun bind(viewHolder: ViewHolder, position: Int) {
         viewHolder.retry.setOnClickListener {
             onRetryClickListener()

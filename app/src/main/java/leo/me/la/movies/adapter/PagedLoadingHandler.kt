@@ -1,6 +1,6 @@
 package leo.me.la.movies.adapter
 
-abstract class PagedLoadingHandler {
+internal abstract class PagedLoadingHandler {
 
     var pageSize: Int = 10
 

@@ -12,7 +12,7 @@ import java.io.InputStream
 import java.util.concurrent.TimeUnit
 
 @GlideModule
-class MyGlideModule : AppGlideModule() {
+internal class MyGlideModule : AppGlideModule() {
 
     override fun registerComponents(
         context: Context,

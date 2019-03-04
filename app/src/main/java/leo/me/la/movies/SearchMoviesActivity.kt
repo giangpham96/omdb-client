@@ -7,6 +7,7 @@ import android.view.Menu
 import android.view.View
 import androidx.annotation.ColorInt
 import androidx.annotation.DrawableRes
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.appcompat.widget.SearchView
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
@@ -25,12 +26,17 @@ import leo.me.la.presentation.SearchViewState
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.activity_search_movies.root
+import leo.me.la.common.TAG_SEARCH_VIEWMODEL
 import leo.me.la.movies.item.RetryLoadNextPageFooter
+import leo.me.la.presentation.BaseViewModel
 
 
-class SearchMoviesActivity : AppCompatActivity() {
+internal class SearchMoviesActivity : AppCompatActivity() {
 
-    private val viewModel: SearchViewModel by viewModel()
+    private val _viewModel: BaseViewModel<SearchViewState> by viewModel(TAG_SEARCH_VIEWMODEL)
+    private val viewModel by lazy {
+        _viewModel as SearchViewModel
+    }
 
     private val movieSection = Section()
     private val pagedLoadingHandler = object : PagedLoadingHandler() {
@@ -49,7 +55,7 @@ class SearchMoviesActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_search_movies)
-        viewModel.viewStates.observe(this, Observer {
+        _viewModel.viewStates.observe(this, Observer {
             it?.let { viewState ->
                 render(viewState)
             }
@@ -158,7 +164,12 @@ class SearchMoviesActivity : AppCompatActivity() {
         info.apply {
             visibility = View.VISIBLE
             text = content
-            setCompoundDrawablesWithIntrinsicBounds(0, icon, 0, 0)
+            setCompoundDrawablesWithIntrinsicBounds(
+                null,
+                AppCompatResources.getDrawable(this@SearchMoviesActivity, icon),
+                null,
+                null
+            )
             setTextColor(color)
         }
         moviesList.visibility = View.GONE

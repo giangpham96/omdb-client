@@ -118,5 +118,12 @@ dependencies {
     implementation(Dependencies.materialDesign)
     implementation(Dependencies.recyclerView)
 
+    androidTestImplementation(TestDependencies.assertJAndroid)
+    androidTestImplementation(TestDependencies.espresso)
+    androidTestImplementation(TestDependencies.espressoCont)
+    androidTestImplementation(TestDependencies.koinTest)
+    androidTestImplementation(TestDependencies.mockk)
+    androidTestImplementation(TestDependencies.testRule)
+    androidTestImplementation(TestDependencies.testRunner)
     kapt(Dependencies.glideCompiler)
 }

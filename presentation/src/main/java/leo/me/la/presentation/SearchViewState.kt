@@ -2,7 +2,7 @@ package leo.me.la.presentation
 
 import leo.me.la.common.model.Movie
 
-sealed class SearchViewState {
+sealed class SearchViewState : BaseViewState {
     object Idling : SearchViewState()
     object Searching : SearchViewState()
     object LoadingNextPage : SearchViewState()

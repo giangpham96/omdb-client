@@ -5,7 +5,6 @@ import com.squareup.moshi.JsonReader
 import com.squareup.moshi.JsonWriter
 import com.squareup.moshi.ToJson
 import leo.me.la.common.model.Movie
-import leo.me.la.common.model.MovieSearchResult
 import leo.me.la.common.model.MovieType
 import leo.me.la.exception.OmdbErrorException
 import java.rmi.UnexpectedException

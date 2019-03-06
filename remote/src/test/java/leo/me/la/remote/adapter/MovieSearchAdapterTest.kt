@@ -1,8 +1,8 @@
 package leo.me.la.remote.adapter
 
 import com.squareup.moshi.JsonReader
+import leo.me.la.common.model.MovieSearchResult
 import leo.me.la.exception.OmdbErrorException
-import leo.me.la.remote.model.RemoteMovieSearchModel
 import leo.me.la.remote.readFileContent
 import okio.Buffer
 import org.assertj.core.api.Assertions.assertThat
@@ -17,7 +17,7 @@ class MovieSearchAdapterTest {
     fun `should parse successfully if Response field is "True" and json fields are not missing`() {
         val json = "json/search-result.json".readFileContent()
         val parsingResult = parseJsonToRemoteMovieSearchModel(json)
-        assertThat(parsingResult.result.size == 3)
+        assertThat(parsingResult.movies.size == 3)
         assertThat(parsingResult.totalResults == 3)
     }
 
@@ -39,7 +39,7 @@ class MovieSearchAdapterTest {
         parseJsonToRemoteMovieSearchModel(json)
     }
 
-    private fun parseJsonToRemoteMovieSearchModel(json: String) : RemoteMovieSearchModel {
+    private fun parseJsonToRemoteMovieSearchModel(json: String) : MovieSearchResult {
         return movieSearchAdapter.fromJson(
             JsonReader.of(Buffer().writeUtf8(json))
         )

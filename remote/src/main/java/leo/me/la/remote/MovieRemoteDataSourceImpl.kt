@@ -1,9 +1,7 @@
 package leo.me.la.remote
 
 import com.squareup.moshi.JsonDataException
-import leo.me.la.common.model.Movie
 import leo.me.la.common.model.MovieSearchResult
-import leo.me.la.common.model.MovieType
 import leo.me.la.data.source.MovieRemoteDataSource
 
 internal class MovieRemoteDataSourceImpl(
@@ -12,26 +10,6 @@ internal class MovieRemoteDataSourceImpl(
     override suspend fun searchMoviesByKeyword(keyword: String, page: Int): MovieSearchResult {
         return try {
             omdbRestApi.searchByKeywords(keyword, page).await()
-                .let {
-                    MovieSearchResult(
-                        it.result.map { movie ->
-                            Movie(
-                                movie.title,
-                                movie.year,
-                                movie.imdbId,
-                                movie.type.let { type ->
-                                    when (type) {
-                                        "movie" -> MovieType.Movie
-                                        "series" -> MovieType.Series
-                                        else -> MovieType.Other
-                                    }
-                                },
-                                movie.poster
-                            )
-                        },
-                        it.totalResults
-                    )
-                }
         } catch (e: JsonDataException) {
             throw e.cause ?: e
         }

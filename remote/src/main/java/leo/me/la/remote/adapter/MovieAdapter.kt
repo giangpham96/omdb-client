@@ -1,25 +1,24 @@
 package leo.me.la.remote.adapter
 
 import com.squareup.moshi.FromJson
-import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.JsonReader
 import com.squareup.moshi.JsonWriter
 import com.squareup.moshi.ToJson
+import leo.me.la.common.model.Movie
+import leo.me.la.common.model.MovieSearchResult
+import leo.me.la.common.model.MovieType
 import leo.me.la.exception.OmdbErrorException
-import leo.me.la.remote.model.RemoteMovieModel
-import leo.me.la.remote.model.RemoteMovieSearchModel
 import java.rmi.UnexpectedException
-
 internal class MovieAdapter {
     @FromJson
     fun fromJson(
         reader: JsonReader
-    ): RemoteMovieModel {
+    ): Movie {
         var title = ""
         var year = ""
         var poster: String? = null
         var imdbId = ""
-        var type = ""
+        var type: MovieType? = null
         reader.apply {
             beginObject()
             while (hasNext()) {
@@ -28,7 +27,11 @@ internal class MovieAdapter {
                     "Year" -> year = nextString()
                     "Poster" -> poster = nextString()?.let { if (it == "N/A") null else it }
                     "imdbID" -> imdbId = nextString()
-                    "Type" -> type = nextString()
+                    "Type" -> type = when (nextString()) {
+                        "movie" -> MovieType.Movie
+                        "series" -> MovieType.Series
+                        else -> MovieType.Other
+                    }
                     "Error" -> {
                         val errorMessage = nextString()
                         endObject()
@@ -39,10 +42,10 @@ internal class MovieAdapter {
             }
             endObject()
         }
-        if (title.isEmpty() || year.isEmpty() || imdbId.isEmpty() || type.isEmpty()) {
+        if (!title.isEmpty() && !year.isEmpty() && !imdbId.isEmpty() && type != null) {
+            return Movie(title, year, imdbId, type!!, poster)
+        } else
             throw UnexpectedException("Response misses field(s)")
-        }
-        return RemoteMovieModel(title, year, imdbId, type, poster)
     }
 
     @Suppress("Unused", "UNUSED_PARAMETER")

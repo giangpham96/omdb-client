@@ -19,10 +19,10 @@ internal class MovieSearchAdapter(private val movieAdapter: MovieAdapter) {
         reader.apply {
             beginObject()
             while (hasNext()) {
-                when(nextName()) {
+                when (nextName()) {
                     "Search" -> {
                         beginArray()
-                        while(hasNext()) {
+                        while (hasNext()) {
                             result.add(movieAdapter.fromJson(this))
                         }
                         endArray()

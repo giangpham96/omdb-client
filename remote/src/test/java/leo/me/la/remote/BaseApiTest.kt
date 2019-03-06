@@ -1,6 +1,7 @@
 package leo.me.la.remote
 
 import com.squareup.moshi.Moshi
+import leo.me.la.remote.adapter.MovieAdapter
 import leo.me.la.remote.adapter.MovieSearchAdapter
 import okhttp3.Interceptor
 import okhttp3.mockwebserver.MockResponse
@@ -23,12 +24,14 @@ internal abstract class BaseApiTest {
         restApiInterceptors: List<Interceptor>? = null,
         restApiNetworkInterceptors: List<Interceptor>? = null
     ): T {
+        val movieAdapter = MovieAdapter()
         return RemoteFactory.buildRestApi(
             mockServer.url("/").toString(),
             T::class.java,
             MoshiConverterFactory.create(
                 Moshi.Builder()
-                    .add(MovieSearchAdapter())
+                    .add(movieAdapter)
+                    .add(MovieSearchAdapter(movieAdapter))
                     .build()
             ),
             RemoteFactory.buildOkHttpClient(restApiInterceptors, restApiNetworkInterceptors)

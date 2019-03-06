@@ -1,6 +1,7 @@
 package leo.me.la.remote.adapter
 
 import com.squareup.moshi.FromJson
+import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.JsonReader
 import com.squareup.moshi.JsonWriter
 import com.squareup.moshi.ToJson
@@ -9,27 +10,25 @@ import leo.me.la.remote.model.RemoteMovieModel
 import leo.me.la.remote.model.RemoteMovieSearchModel
 import java.rmi.UnexpectedException
 
-internal class MovieSearchAdapter(private val movieAdapter: MovieAdapter) {
+internal class MovieAdapter {
     @FromJson
     fun fromJson(
         reader: JsonReader
-    ): RemoteMovieSearchModel {
-        val result = mutableListOf<RemoteMovieModel>()
-        var totalResults = 0
+    ): RemoteMovieModel {
+        var title = ""
+        var year = ""
+        var poster: String? = null
+        var imdbId = ""
+        var type = ""
         reader.apply {
             beginObject()
             while (hasNext()) {
                 when(nextName()) {
-                    "Search" -> {
-                        beginArray()
-                        while(hasNext()) {
-                            result.add(movieAdapter.fromJson(this))
-                        }
-                        endArray()
-                    }
-                    "totalResults" -> {
-                        totalResults = nextInt()
-                    }
+                    "Title" -> title = nextString()
+                    "Year" -> year = nextString()
+                    "Poster" -> poster = nextString()?.let { if (it == "N/A") null else it }
+                    "imdbID" -> imdbId = nextString()
+                    "Type" -> type = nextString()
                     "Error" -> {
                         val errorMessage = nextString()
                         endObject()
@@ -39,19 +38,19 @@ internal class MovieSearchAdapter(private val movieAdapter: MovieAdapter) {
                 }
             }
             endObject()
-            if (result.size == 0 || totalResults == 0) {
-                throw UnexpectedException("Response misses field(s)")
-            }
-            return RemoteMovieSearchModel(result, totalResults)
         }
+        if (title.isEmpty() || year.isEmpty() || imdbId.isEmpty() || type.isEmpty()) {
+            throw UnexpectedException("Response misses field(s)")
+        }
+        return RemoteMovieModel(title, year, imdbId, type, poster)
     }
 
     @Suppress("Unused", "UNUSED_PARAMETER")
     @ToJson
     fun toJson(
         writer: JsonWriter,
-        content: RemoteMovieSearchModel?
+        content: Movie?
     ) {
-        throw UnsupportedOperationException("Cannot deserialize RemoteMovieSearchModel")
+        throw UnsupportedOperationException("Cannot deserialize Movie")
     }
 }

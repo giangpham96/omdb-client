@@ -6,6 +6,7 @@ import leo.me.la.common.TAG_INTERCEPTOR_API_KEY
 import leo.me.la.common.TAG_INTERCEPTOR_LOGGING
 import leo.me.la.common.TAG_OMDB_API_KEY
 import leo.me.la.data.source.MovieRemoteDataSource
+import leo.me.la.remote.adapter.MovieAdapter
 import leo.me.la.remote.adapter.MovieSearchAdapter
 import okhttp3.Interceptor
 import okhttp3.logging.HttpLoggingInterceptor
@@ -22,8 +23,10 @@ val remoteModule = module {
     }
 
     single {
+        val movieAdapter = MovieAdapter()
         Moshi.Builder()
-            .add(MovieSearchAdapter())
+            .add(movieAdapter)
+            .add(MovieSearchAdapter(movieAdapter))
             .build()
     }
 

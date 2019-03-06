@@ -1,9 +1,7 @@
 package leo.me.la.remote.adapter
 
 import com.squareup.moshi.JsonReader
-import com.squareup.moshi.Moshi
 import leo.me.la.exception.OmdbErrorException
-import leo.me.la.remote.model.RemoteMovieModel
 import leo.me.la.remote.model.RemoteMovieSearchModel
 import leo.me.la.remote.readFileContent
 import okio.Buffer
@@ -13,9 +11,7 @@ import java.rmi.UnexpectedException
 
 class MovieSearchAdapterTest {
 
-    private val moshi = Moshi.Builder().build()
-    private val movieSearchAdapter = MovieSearchAdapter()
-    private val movieAdapter = moshi.adapter(RemoteMovieModel::class.java)
+    private val movieSearchAdapter = MovieSearchAdapter(MovieAdapter())
 
     @Test
     fun `should parse successfully if Response field is "True" and json fields are not missing`() {
@@ -45,8 +41,7 @@ class MovieSearchAdapterTest {
 
     private fun parseJsonToRemoteMovieSearchModel(json: String) : RemoteMovieSearchModel {
         return movieSearchAdapter.fromJson(
-            JsonReader.of(Buffer().writeUtf8(json)),
-            movieAdapter
+            JsonReader.of(Buffer().writeUtf8(json))
         )
     }
 }

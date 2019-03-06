@@ -9,7 +9,6 @@ import leo.me.la.remote.readFileContent
 import okio.Buffer
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
-import java.lang.NullPointerException
 import java.rmi.UnexpectedException
 
 class MovieSearchAdapterTest {
@@ -41,12 +40,6 @@ class MovieSearchAdapterTest {
     @Test(expected = UnexpectedException::class)
     fun `should throw UnexpectedException if Response field is "True" but "totalResults" field is missing`() {
         val json = "json/search-result-without-total-results-field.json".readFileContent()
-        parseJsonToRemoteMovieSearchModel(json)
-    }
-
-    @Test(expected = NullPointerException::class)
-    fun `should throw NullPointerException if at least one movie is null`() {
-        val json = "json/search-result-with-null-movie.json".readFileContent()
         parseJsonToRemoteMovieSearchModel(json)
     }
 

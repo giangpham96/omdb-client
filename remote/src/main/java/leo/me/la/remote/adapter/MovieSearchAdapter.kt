@@ -16,21 +16,37 @@ internal class MovieSearchAdapter {
         reader: JsonReader,
         movieAdapter: JsonAdapter<RemoteMovieModel>
     ): RemoteMovieSearchModel {
-        @Suppress("UNCHECKED_CAST") // This is a JSON object.
-        val value = reader.readJsonValue() as Map<String, Any>
-        when {
-            value["Response"] == "True" -> {
-                val searchResults = value["Search"] as? List<*> ?: throw UnexpectedException("Response misses `Search` field")
-                val totalResults = value["totalResults"] as? String ?: throw UnexpectedException("Response misses `totalResults` field")
-                return RemoteMovieSearchModel(
-                    searchResults.map {
-                        movieAdapter.fromJsonValue(it) ?: throw NullPointerException("Movie must not be null")
-                    },
-                    totalResults.toInt()
-                )
+        val result = mutableListOf<RemoteMovieModel>()
+        var totalResults = 0
+        reader.apply {
+            beginObject()
+            while (hasNext()) {
+                when(nextName()) {
+                    "Search" -> {
+                        beginArray()
+                        while(hasNext()) {
+                            movieAdapter.fromJson(this)?.let {
+                                result.add(it)
+                            }
+                        }
+                        endArray()
+                    }
+                    "totalResults" -> {
+                        totalResults = nextInt()
+                    }
+                    "Error" -> {
+                        val errorMessage = nextString()
+                        endObject()
+                        throw OmdbErrorException(errorMessage)
+                    }
+                    else -> skipValue()
+                }
             }
-            value["Response"] == "False" -> throw OmdbErrorException(value["Error"] as? String ?: "Unknown Error")
-            else -> throw UnexpectedException("Unexpected response")
+            endObject()
+            if (result.size == 0 || totalResults == 0) {
+                throw UnexpectedException("Response misses field(s)")
+            }
+            return RemoteMovieSearchModel(result, totalResults)
         }
     }
 

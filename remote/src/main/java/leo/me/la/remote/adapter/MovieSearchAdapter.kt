@@ -1,36 +1,48 @@
 package leo.me.la.remote.adapter
 
 import com.squareup.moshi.FromJson
-import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.JsonReader
 import com.squareup.moshi.JsonWriter
 import com.squareup.moshi.ToJson
+import leo.me.la.common.model.Movie
+import leo.me.la.common.model.MovieSearchResult
 import leo.me.la.exception.OmdbErrorException
-import leo.me.la.remote.model.RemoteMovieModel
-import leo.me.la.remote.model.RemoteMovieSearchModel
 import java.rmi.UnexpectedException
 
-internal class MovieSearchAdapter {
+internal class MovieSearchAdapter(private val movieAdapter: MovieAdapter) {
     @FromJson
     fun fromJson(
-        reader: JsonReader,
-        movieAdapter: JsonAdapter<RemoteMovieModel>
-    ): RemoteMovieSearchModel {
-        @Suppress("UNCHECKED_CAST") // This is a JSON object.
-        val value = reader.readJsonValue() as Map<String, Any>
-        when {
-            value["Response"] == "True" -> {
-                val searchResults = value["Search"] as? List<*> ?: throw UnexpectedException("Response misses `Search` field")
-                val totalResults = value["totalResults"] as? String ?: throw UnexpectedException("Response misses `totalResults` field")
-                return RemoteMovieSearchModel(
-                    searchResults.map {
-                        movieAdapter.fromJsonValue(it) ?: throw NullPointerException("Movie must not be null")
-                    },
-                    totalResults.toInt()
-                )
+        reader: JsonReader
+    ): MovieSearchResult {
+        val result = mutableListOf<Movie>()
+        var totalResults = 0
+        reader.apply {
+            beginObject()
+            while (hasNext()) {
+                when (nextName()) {
+                    "Search" -> {
+                        beginArray()
+                        while (hasNext()) {
+                            result.add(movieAdapter.fromJson(this))
+                        }
+                        endArray()
+                    }
+                    "totalResults" -> {
+                        totalResults = nextInt()
+                    }
+                    "Error" -> {
+                        val errorMessage = nextString()
+                        endObject()
+                        throw OmdbErrorException(errorMessage)
+                    }
+                    else -> skipValue()
+                }
             }
-            value["Response"] == "False" -> throw OmdbErrorException(value["Error"] as? String ?: "Unknown Error")
-            else -> throw UnexpectedException("Unexpected response")
+            endObject()
+            if (result.size == 0 || totalResults == 0) {
+                throw UnexpectedException("Response misses field(s)")
+            } else
+                return MovieSearchResult(result, totalResults)
         }
     }
 
@@ -38,7 +50,7 @@ internal class MovieSearchAdapter {
     @ToJson
     fun toJson(
         writer: JsonWriter,
-        content: RemoteMovieSearchModel?
+        content: MovieSearchResult?
     ) {
         throw UnsupportedOperationException("Cannot deserialize RemoteMovieSearchModel")
     }

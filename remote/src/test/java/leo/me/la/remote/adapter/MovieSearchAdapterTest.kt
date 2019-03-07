@@ -16,30 +16,30 @@ class MovieSearchAdapterTest {
     @Test
     fun `should parse successfully if Response field is "True" and json fields are not missing`() {
         val json = "json/search-result.json".readFileContent()
-        val parsingResult = parseJsonToRemoteMovieSearchModel(json)
+        val parsingResult = parseJsonToMovieSearchResult(json)
         assertThat(parsingResult.movies.size == 3)
         assertThat(parsingResult.totalResults == 3)
     }
 
     @Test(expected = OmdbErrorException::class)
-    fun `should throw OmdbErrorException if Response field is "False"`() {
+    fun `should throw OmdbErrorException if Error field exists`() {
         val json = "json/error-result.json".readFileContent()
-        parseJsonToRemoteMovieSearchModel(json)
+        parseJsonToMovieSearchResult(json)
     }
 
     @Test(expected = UnexpectedException::class)
-    fun `should throw UnexpectedException if Response field is "True" but "Search" field is missing`() {
+    fun `should throw UnexpectedException if "Search" field is missing`() {
         val json = "json/search-result-without-search-field.json".readFileContent()
-        parseJsonToRemoteMovieSearchModel(json)
+        parseJsonToMovieSearchResult(json)
     }
 
     @Test(expected = UnexpectedException::class)
-    fun `should throw UnexpectedException if Response field is "True" but "totalResults" field is missing`() {
+    fun `should throw UnexpectedException if "totalResults" field is missing`() {
         val json = "json/search-result-without-total-results-field.json".readFileContent()
-        parseJsonToRemoteMovieSearchModel(json)
+        parseJsonToMovieSearchResult(json)
     }
 
-    private fun parseJsonToRemoteMovieSearchModel(json: String) : MovieSearchResult {
+    private fun parseJsonToMovieSearchResult(json: String) : MovieSearchResult {
         return movieSearchAdapter.fromJson(
             JsonReader.of(Buffer().writeUtf8(json))
         )

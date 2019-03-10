@@ -73,7 +73,8 @@ class SearchViewModel(
                     else -> throw IllegalStateException("The state ${this.javaClass.simpleName} is unexpected")
                 }
                 _viewStates.value = SearchViewState.LoadingNextPage
-
+                if (parentJob.isCancelled)
+                    parentJob = Job()
                 launch {
                     try {
                         val nextPageMovieResult = searchMoviesUseCase.execute(keyword, nextPage)

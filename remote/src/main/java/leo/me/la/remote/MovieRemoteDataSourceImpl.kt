@@ -9,7 +9,7 @@ internal class MovieRemoteDataSourceImpl(
 ) : MovieRemoteDataSource {
     override suspend fun searchMoviesByKeyword(keyword: String, page: Int): MovieSearchResult {
         return try {
-            omdbRestApi.searchByKeywords(keyword, page).await()
+            omdbRestApi.searchByKeyword(keyword, page).await()
         } catch (e: JsonDataException) {
             throw e.cause ?: e
         }

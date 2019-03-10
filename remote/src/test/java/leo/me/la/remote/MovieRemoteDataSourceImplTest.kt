@@ -14,7 +14,7 @@ internal class MovieRemoteDataSourceImplTest : BaseApiTest(){
     private val movieRemoteDataSource = MovieRemoteDataSourceImpl(omdbRestApi)
 
     @Test
-    fun `should map successfully to application model if response is parsed successfully`() {
+    fun `should map successfully to search model if response is parsed successfully`() {
         runBlocking {
             mockServer.enqueue(
                 MockResponse()
@@ -54,7 +54,7 @@ internal class MovieRemoteDataSourceImplTest : BaseApiTest(){
     }
 
     @Test(expected = HttpException::class)
-    fun `should propagate Exception if it happens`() {
+    fun `should propagate Exception if it happens when search movies by keyword`() {
         runBlocking {
             mockServer.enqueue(
                 MockResponse()

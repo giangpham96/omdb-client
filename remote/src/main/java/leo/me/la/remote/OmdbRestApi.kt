@@ -7,7 +7,7 @@ import retrofit2.http.Query
 
 internal interface OmdbRestApi {
     @GET("/")
-    fun searchByKeywords(
+    fun searchByKeyword(
         @Query("s")
         keyword: String,
         @Query("page")

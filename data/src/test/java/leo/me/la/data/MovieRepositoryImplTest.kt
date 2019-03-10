@@ -11,9 +11,9 @@ import leo.me.la.data.source.MovieRemoteDataSource
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 
-class SearchRepositoryImplTest {
+class MovieRepositoryImplTest {
     private val movieRemoteDataSource: MovieRemoteDataSource = mockk()
-    private val searchRepository = SearchRepositoryImpl(movieRemoteDataSource)
+    private val searchRepository = MovieRepositoryImpl(movieRemoteDataSource)
 
     @Test
     fun `should get correct movies if remote data source fetches successfully`() {

@@ -1,16 +1,16 @@
 package leo.me.la.domain
 
 import leo.me.la.common.model.MovieSearchResult
-import leo.me.la.domain.repository.SearchRepository
+import leo.me.la.domain.repository.MovieRepository
 
 class SearchMoviesUseCaseImpl(
-    private val searchRepository: SearchRepository
+    private val movieRepository: MovieRepository
 ) : SearchMoviesUseCase {
     override suspend fun execute(
         keyword: String,
         page: Int
     ): MovieSearchResult {
-        return searchRepository.searchMoviesByKeyword(keyword, page)
+        return movieRepository.searchMoviesByKeyword(keyword, page)
     }
 }
 

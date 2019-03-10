@@ -1,10 +1,10 @@
 package leo.me.la.data
 
-import leo.me.la.domain.repository.SearchRepository
+import leo.me.la.domain.repository.MovieRepository
 import org.koin.dsl.module.module
 
 val dataModule = module {
-    factory<SearchRepository> {
-        SearchRepositoryImpl(get())
+    factory<MovieRepository> {
+        MovieRepositoryImpl(get())
     }
 }

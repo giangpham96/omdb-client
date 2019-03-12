@@ -5,18 +5,24 @@ import leo.me.la.common.model.Movie
 sealed class SearchViewState : BaseViewState {
     object Idling : SearchViewState()
     object Searching : SearchViewState()
-    object LoadingNextPage : SearchViewState()
+    data class LoadingNextPage(
+        val movies: List<Movie>,
+        val currentPosition: Int? = null
+    ) : SearchViewState()
     data class MoviesFetched(
         val keyword: String,
         val movies: List<Movie>,
         val page: Int,
-        val totalPages: Int
+        val totalPages: Int,
+        val currentPosition: Int? = null
     ) : SearchViewState()
     data class LoadPageFailed(
         val keyword: String,
+        val movies: List<Movie>,
         val pageFailedToLoad: Int,
         val totalPages: Int,
-        val reason: Throwable? = null
+        val reason: Throwable? = null,
+        val currentPosition: Int? = null
     ) : SearchViewState()
     data class SearchFailed(val keyword: String) : SearchViewState()
     object MovieNotFound : SearchViewState()

@@ -58,7 +58,24 @@ internal class MovieItem(private val movie: Movie) : Item() {
 
     override fun getLayout() = R.layout.item_movie
 
+    override fun isSameAs(other: com.xwray.groupie.Item<*>?): Boolean {
+        if (other is MovieItem) {
+            return movie.imdbId == other.movie.imdbId
+        }
+        return super.isSameAs(other)
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (other is MovieItem)
+            return movie == other.movie
+        return super.equals(other)
+    }
+
     override fun getSpanSize(spanCount: Int, position: Int): Int {
         return spanCount / 2
+    }
+
+    override fun hashCode(): Int {
+        return movie.hashCode()
     }
 }

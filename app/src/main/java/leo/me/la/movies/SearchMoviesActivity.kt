@@ -132,25 +132,29 @@ internal class SearchMoviesActivity : AppCompatActivity() {
                 loadMovie.visibility = View.GONE
                 movieSection.apply {
                     removeFooter()
-                    if (viewState.page == 1)
-                        update(emptyList())
-                    addAll(viewState.movies.map { MovieItem(it) })
+                    update(viewState.movies.map { MovieItem(it) })
                 }
                 pagedLoadingHandler.nextPage = if (viewState.page < viewState.totalPages)
                     viewState.page + 1
                 else
                     null
             }
-            SearchViewState.LoadingNextPage -> {
-                movieSection.removeFooter()
+            is SearchViewState.LoadingNextPage -> {
                 moviesList.post {
-                    movieSection.setFooter(LoadingFooter)
+                    movieSection.apply {
+                        removeFooter()
+                        update(viewState.movies.map { MovieItem(it) })
+                        setFooter(LoadingFooter)
+                    }
                 }
             }
             is SearchViewState.LoadPageFailed -> {
-                movieSection.removeFooter()
                 moviesList.post {
-                    movieSection.setFooter(retryLoadNextPageFooter)
+                    movieSection.apply {
+                        setFooter(retryLoadNextPageFooter)
+                        removeFooter()
+                        update(viewState.movies.map { MovieItem(it) })
+                    }
                 }
             }
         }

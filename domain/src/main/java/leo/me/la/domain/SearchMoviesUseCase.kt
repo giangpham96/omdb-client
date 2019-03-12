@@ -3,7 +3,7 @@ package leo.me.la.domain
 import leo.me.la.common.model.MovieSearchResult
 import leo.me.la.domain.repository.MovieRepository
 
-class SearchMoviesUseCaseImpl(
+internal class SearchMoviesUseCaseImpl(
     private val movieRepository: MovieRepository
 ) : SearchMoviesUseCase {
     override suspend fun execute(

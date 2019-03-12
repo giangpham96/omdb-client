@@ -7,12 +7,12 @@ import kotlinx.coroutines.runBlocking
 import leo.me.la.common.model.Movie
 import leo.me.la.common.model.MovieSearchResult
 import leo.me.la.common.model.MovieType
-import leo.me.la.domain.repository.SearchRepository
+import leo.me.la.domain.repository.MovieRepository
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 
 class SearchMoviesUseCaseTest {
-    private val repository: SearchRepository = mockk()
+    private val repository: MovieRepository = mockk()
     private val useCase = SearchMoviesUseCaseImpl(repository)
 
 

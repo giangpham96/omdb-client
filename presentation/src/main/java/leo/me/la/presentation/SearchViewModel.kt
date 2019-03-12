@@ -19,16 +19,12 @@ class SearchViewModel(
     }
 
     fun resetSearch() {
-        if (isParentJobInitialized()) {
-            parentJob.cancel()
-        }
+        parentJob.cancel()
         _viewStates.value = SearchViewState.Idling
     }
 
     fun searchMovies(keyword: String) {
-        if (isParentJobInitialized()) {
-            parentJob.cancel()
-        }
+        parentJob.cancel()
         parentJob = Job()
         launch {
             _viewStates.value = SearchViewState.Searching
@@ -68,6 +64,11 @@ class SearchViewModel(
                     is SearchViewState.LoadPageFailed -> this.pageFailedToLoad
                     else -> throw IllegalStateException("The state ${this.javaClass.simpleName} is unexpected")
                 }
+                val fetchedMovies = when (this) {
+                    is SearchViewState.MoviesFetched -> this.movies
+                    is SearchViewState.LoadPageFailed -> this.movies
+                    else -> throw IllegalStateException("The state ${this.javaClass.simpleName} is unexpected")
+                }
                 if (totalPages < nextPage || totalPages >= 100) {
                     return@with
                 }
@@ -76,14 +77,15 @@ class SearchViewModel(
                     is SearchViewState.LoadPageFailed -> this.keyword
                     else -> throw IllegalStateException("The state ${this.javaClass.simpleName} is unexpected")
                 }
-                _viewStates.value = SearchViewState.LoadingNextPage
-
+                _viewStates.value = SearchViewState.LoadingNextPage(fetchedMovies)
+                if (parentJob.isCancelled)
+                    parentJob = Job()
                 launch {
                     try {
                         val nextPageMovieResult = searchMoviesUseCase.execute(keyword, nextPage)
                         _viewStates.value = SearchViewState.MoviesFetched(
                             keyword,
-                            nextPageMovieResult.movies,
+                            fetchedMovies + nextPageMovieResult.movies,
                             nextPage,
                             ceil(nextPageMovieResult.totalResults.toFloat() / 10).toInt()
                         )
@@ -92,6 +94,7 @@ class SearchViewModel(
                     } catch (e: Throwable) {
                         _viewStates.value = SearchViewState.LoadPageFailed(
                             keyword,
+                            fetchedMovies,
                             nextPage,
                             totalPages,
                             e

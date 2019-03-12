@@ -24,7 +24,7 @@ internal class ApiKeyInterceptorTest : BaseApiTest() {
                     .setResponseCode(200)
             )
             // execute
-            restApi.searchByKeywords("Batman", 2).await()
+            restApi.searchByKeyword("Batman", 2).await()
             // verify
             assertThat(
                 mockServer.takeRequest()

@@ -162,7 +162,7 @@ class SearchViewModelTest {
                 )
             )
             observer.onChanged(
-                SearchViewState.LoadingNextPage
+                ofType(SearchViewState.LoadingNextPage::class)
             )
             observer.onChanged(
                 SearchViewState.SearchFailed("Abc")
@@ -221,7 +221,9 @@ class SearchViewModelTest {
                     20
                 )
             )
-            observer.onChanged(SearchViewState.LoadingNextPage)
+            observer.onChanged(SearchViewState.LoadingNextPage(
+                firstMovieList
+            ))
             observer.onChanged(SearchViewState.Searching)
             observer.onChanged(
                 SearchViewState.MoviesFetched(
@@ -289,11 +291,13 @@ class SearchViewModelTest {
                     20
                 )
             )
-            observer.onChanged(SearchViewState.LoadingNextPage)
+            observer.onChanged(SearchViewState.LoadingNextPage(
+                firstMovieList
+            ))
             observer.onChanged(
                 SearchViewState.MoviesFetched(
                     "Abc",
-                    secondMovieList,
+                    firstMovieList + secondMovieList,
                     2,
                     20
                 )
@@ -385,9 +389,21 @@ class SearchViewModelTest {
         verifySequence {
             observer.onChanged(SearchViewState.Idling)
             observer.onChanged(SearchViewState.Searching)
-            observer.onChanged(ofType(SearchViewState.MoviesFetched::class))
-            observer.onChanged(SearchViewState.LoadingNextPage)
-            observer.onChanged(ofType(SearchViewState.MoviesFetched::class))
+            observer.onChanged(SearchViewState.MoviesFetched(
+                "Abc",
+                firstMovieList,
+                1,
+                20
+            ))
+            observer.onChanged(SearchViewState.LoadingNextPage(
+                firstMovieList
+            ))
+            observer.onChanged(SearchViewState.MoviesFetched(
+                "Abc",
+                firstMovieList + secondMovieList,
+                2,
+                20
+            ))
         }
     }
 
@@ -416,7 +432,7 @@ class SearchViewModelTest {
             observer.onChanged(ofType(SearchViewState.MoviesFetched::class))
         }
         verify(exactly = 0) {
-            observer.onChanged(SearchViewState.LoadingNextPage)
+            observer.onChanged(ofType(SearchViewState.LoadingNextPage::class))
         }
         coVerify { useCase.execute(any(), any()) }
     }
@@ -448,9 +464,9 @@ class SearchViewModelTest {
             observer.onChanged(SearchViewState.Idling)
             observer.onChanged(SearchViewState.Searching)
             observer.onChanged(ofType(SearchViewState.MoviesFetched::class))
-            observer.onChanged(SearchViewState.LoadingNextPage)
+            observer.onChanged(SearchViewState.LoadingNextPage(firstMovieList))
             observer.onChanged(ofType(SearchViewState.LoadPageFailed::class))
-            observer.onChanged(SearchViewState.LoadingNextPage)
+            observer.onChanged(SearchViewState.LoadingNextPage(firstMovieList))
             observer.onChanged(ofType(SearchViewState.LoadPageFailed::class))
         }
         coVerify(exactly = 2) {
@@ -497,7 +513,7 @@ class SearchViewModelTest {
             observer.onChanged(SearchViewState.Idling)
             observer.onChanged(SearchViewState.Searching)
             observer.onChanged(ofType(SearchViewState.MoviesFetched::class))
-            observer.onChanged(SearchViewState.LoadingNextPage)
+            observer.onChanged(ofType(SearchViewState.LoadingNextPage::class))
             observer.onChanged(SearchViewState.Idling)
         }
         verify(exactly = 0) {

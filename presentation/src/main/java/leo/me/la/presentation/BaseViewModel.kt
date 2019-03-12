@@ -11,7 +11,7 @@ import kotlin.coroutines.CoroutineContext
 abstract class BaseViewModel<VS : BaseViewState>(
     private val context: CoroutineContext = Dispatchers.Main
 ) : ViewModel(), CoroutineScope {
-    protected lateinit var parentJob: Job
+    protected var parentJob = Job()
 
     override val coroutineContext: CoroutineContext
         get() = context + parentJob
@@ -21,11 +21,8 @@ abstract class BaseViewModel<VS : BaseViewState>(
     val viewStates: LiveData<VS>
         get() = _viewStates
 
-    protected fun isParentJobInitialized() = ::parentJob.isInitialized
-
     override fun onCleared() {
-        if (isParentJobInitialized())
-            parentJob.cancel()
+        parentJob.cancel()
         super.onCleared()
     }
 }

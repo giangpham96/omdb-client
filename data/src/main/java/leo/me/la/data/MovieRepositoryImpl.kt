@@ -2,11 +2,11 @@ package leo.me.la.data
 
 import leo.me.la.common.model.MovieSearchResult
 import leo.me.la.data.source.MovieRemoteDataSource
-import leo.me.la.domain.repository.SearchRepository
+import leo.me.la.domain.repository.MovieRepository
 
-internal class SearchRepositoryImpl(
+internal class MovieRepositoryImpl(
     private val movieRemoteDataSource: MovieRemoteDataSource
-) : SearchRepository {
+) : MovieRepository {
     override suspend fun searchMoviesByKeyword(
         keyword: String,
         page: Int

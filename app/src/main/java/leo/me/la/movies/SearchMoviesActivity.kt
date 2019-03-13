@@ -161,8 +161,8 @@ internal class SearchMoviesActivity : AppCompatActivity() {
             is SearchViewState.LoadPageFailed -> {
                 moviesList.post {
                     movieSection.apply {
-                        setFooter(retryLoadNextPageFooter)
                         removeFooter()
+                        setFooter(retryLoadNextPageFooter)
                         update(viewState.movies.map { MovieItem(it) })
                     }
                 }

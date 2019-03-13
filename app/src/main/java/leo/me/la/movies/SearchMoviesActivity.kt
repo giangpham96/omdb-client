@@ -10,7 +10,10 @@ import androidx.annotation.DrawableRes
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.appcompat.widget.SearchView
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.Observer
+import androidx.lifecycle.OnLifecycleEvent
 import androidx.recyclerview.widget.GridLayoutManager
 import com.xwray.groupie.Section
 import kotlinx.android.synthetic.main.activity_search_movies.info
@@ -26,6 +29,11 @@ import leo.me.la.presentation.SearchViewState
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.activity_search_movies.root
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import leo.me.la.common.TAG_SEARCH_VIEWMODEL
 import leo.me.la.movies.item.RetryLoadNextPageFooter
 import leo.me.la.presentation.BaseViewModel
@@ -104,9 +112,12 @@ internal class SearchMoviesActivity : AppCompatActivity() {
                 )
             }
             SearchViewState.Searching -> {
+                movieSection.apply {
+                    update(emptyList())
+                    removeFooter()
+                }
                 loadMovie.visibility = View.VISIBLE
                 info.visibility = View.GONE
-                moviesList.visibility = View.GONE
             }
             is SearchViewState.SearchFailed -> {
                 showInfo(
@@ -128,7 +139,6 @@ internal class SearchMoviesActivity : AppCompatActivity() {
             }
             is SearchViewState.MoviesFetched -> {
                 info.visibility = View.GONE
-                moviesList.visibility = View.VISIBLE
                 loadMovie.visibility = View.GONE
                 movieSection.apply {
                     removeFooter()
@@ -151,8 +161,8 @@ internal class SearchMoviesActivity : AppCompatActivity() {
             is SearchViewState.LoadPageFailed -> {
                 moviesList.post {
                     movieSection.apply {
-                        setFooter(retryLoadNextPageFooter)
                         removeFooter()
+                        setFooter(retryLoadNextPageFooter)
                         update(viewState.movies.map { MovieItem(it) })
                     }
                 }
@@ -176,7 +186,6 @@ internal class SearchMoviesActivity : AppCompatActivity() {
             )
             setTextColor(color)
         }
-        moviesList.visibility = View.GONE
         loadMovie.visibility = View.GONE
     }
 
@@ -187,23 +196,55 @@ internal class SearchMoviesActivity : AppCompatActivity() {
             .apply {
                 queryHint = "Search Movies"
                 setIconifiedByDefault(false)
-                setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-                    override fun onQueryTextSubmit(query: String?): Boolean {
-                        return false
-                    }
-
-                    override fun onQueryTextChange(newText: String?): Boolean {
+                setOnQueryTextListener(
+                    ThrottleQueryTextListener(
+                        this@SearchMoviesActivity.lifecycle
+                    ) { newText ->
                         newText?.let {
-                            if (newText.isEmpty())
+                            if (it.isEmpty()) {
                                 viewModel.resetSearch()
-                            else
+                            } else {
                                 viewModel.searchMovies(it)
+                            }
                         }
-                        return false
                     }
-                })
+                )
                 clearFocus()
             }
         return super.onCreateOptionsMenu(menu)
+    }
+}
+
+internal class ThrottleQueryTextListener(
+    lifecycle: Lifecycle,
+    private val onThrottleQueryTextChange: (String?) -> Unit
+) : SearchView.OnQueryTextListener, LifecycleObserver {
+
+    private val coroutineScope: CoroutineScope = CoroutineScope(Dispatchers.Main)
+
+    private var throttleSearchJob: Job? = null
+
+    init {
+        lifecycle.addObserver(this)
+    }
+
+    override fun onQueryTextSubmit(query: String?): Boolean {
+        return false
+    }
+
+    override fun onQueryTextChange(newText: String?): Boolean {
+        throttleSearchJob?.cancel()
+        throttleSearchJob = coroutineScope.launch {
+            newText?.let {
+                delay(500)
+                onThrottleQueryTextChange(newText)
+            }
+        }
+        return false
+    }
+
+    @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
+    private fun destroy() {
+        throttleSearchJob?.cancel()
     }
 }

@@ -106,6 +106,7 @@ dependencies {
     implementation(Dependencies.appCompat)
     implementation(Dependencies.cardView)
     implementation(Dependencies.coreKtx)
+    implementation(Dependencies.coroutinesAndroid)
     implementation(Dependencies.coroutinesCore)
     implementation(Dependencies.constraintLayout)
     implementation(Dependencies.glide)

@@ -10,10 +10,7 @@ import androidx.annotation.DrawableRes
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.appcompat.widget.SearchView
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.Observer
-import androidx.lifecycle.OnLifecycleEvent
 import androidx.recyclerview.widget.GridLayoutManager
 import com.xwray.groupie.Section
 import kotlinx.android.synthetic.main.activity_search_movies.info
@@ -29,13 +26,9 @@ import leo.me.la.presentation.SearchViewState
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.activity_search_movies.root
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import leo.me.la.common.TAG_SEARCH_VIEWMODEL
 import leo.me.la.movies.item.RetryLoadNextPageFooter
+import leo.me.la.movies.util.DebouncingQueryTextListener
 import leo.me.la.presentation.BaseViewModel
 
 
@@ -212,39 +205,5 @@ internal class SearchMoviesActivity : AppCompatActivity() {
                 clearFocus()
             }
         return super.onCreateOptionsMenu(menu)
-    }
-}
-
-internal class DebouncingQueryTextListener(
-    lifecycle: Lifecycle,
-    private val onDebouncingQueryTextChange: (String?) -> Unit
-) : SearchView.OnQueryTextListener, LifecycleObserver {
-
-    private val coroutineScope: CoroutineScope = CoroutineScope(Dispatchers.Main)
-
-    private var searchJob: Job? = null
-
-    init {
-        lifecycle.addObserver(this)
-    }
-
-    override fun onQueryTextSubmit(query: String?): Boolean {
-        return false
-    }
-
-    override fun onQueryTextChange(newText: String?): Boolean {
-        searchJob?.cancel()
-        searchJob = coroutineScope.launch {
-            newText?.let {
-                delay(500)
-                onDebouncingQueryTextChange(newText)
-            }
-        }
-        return false
-    }
-
-    @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
-    private fun destroy() {
-        searchJob?.cancel()
     }
 }

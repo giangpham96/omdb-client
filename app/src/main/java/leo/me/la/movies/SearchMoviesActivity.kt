@@ -197,7 +197,7 @@ internal class SearchMoviesActivity : AppCompatActivity() {
                 queryHint = "Search Movies"
                 setIconifiedByDefault(false)
                 setOnQueryTextListener(
-                    ThrottleQueryTextListener(
+                    DebouncingQueryTextListener(
                         this@SearchMoviesActivity.lifecycle
                     ) { newText ->
                         newText?.let {
@@ -215,14 +215,14 @@ internal class SearchMoviesActivity : AppCompatActivity() {
     }
 }
 
-internal class ThrottleQueryTextListener(
+internal class DebouncingQueryTextListener(
     lifecycle: Lifecycle,
-    private val onThrottleQueryTextChange: (String?) -> Unit
+    private val onDebouncingQueryTextChange: (String?) -> Unit
 ) : SearchView.OnQueryTextListener, LifecycleObserver {
 
     private val coroutineScope: CoroutineScope = CoroutineScope(Dispatchers.Main)
 
-    private var throttleSearchJob: Job? = null
+    private var searchJob: Job? = null
 
     init {
         lifecycle.addObserver(this)
@@ -233,11 +233,11 @@ internal class ThrottleQueryTextListener(
     }
 
     override fun onQueryTextChange(newText: String?): Boolean {
-        throttleSearchJob?.cancel()
-        throttleSearchJob = coroutineScope.launch {
+        searchJob?.cancel()
+        searchJob = coroutineScope.launch {
             newText?.let {
                 delay(500)
-                onThrottleQueryTextChange(newText)
+                onDebouncingQueryTextChange(newText)
             }
         }
         return false
@@ -245,6 +245,6 @@ internal class ThrottleQueryTextListener(
 
     @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
     private fun destroy() {
-        throttleSearchJob?.cancel()
+        searchJob?.cancel()
     }
 }

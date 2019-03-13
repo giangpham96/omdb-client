@@ -112,9 +112,12 @@ internal class SearchMoviesActivity : AppCompatActivity() {
                 )
             }
             SearchViewState.Searching -> {
+                movieSection.apply {
+                    update(emptyList())
+                    removeFooter()
+                }
                 loadMovie.visibility = View.VISIBLE
                 info.visibility = View.GONE
-                moviesList.visibility = View.GONE
             }
             is SearchViewState.SearchFailed -> {
                 showInfo(
@@ -136,7 +139,6 @@ internal class SearchMoviesActivity : AppCompatActivity() {
             }
             is SearchViewState.MoviesFetched -> {
                 info.visibility = View.GONE
-                moviesList.visibility = View.VISIBLE
                 loadMovie.visibility = View.GONE
                 movieSection.apply {
                     removeFooter()
@@ -184,7 +186,6 @@ internal class SearchMoviesActivity : AppCompatActivity() {
             )
             setTextColor(color)
         }
-        moviesList.visibility = View.GONE
         loadMovie.visibility = View.GONE
     }
 

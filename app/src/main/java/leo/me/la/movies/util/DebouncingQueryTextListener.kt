@@ -10,11 +10,11 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-
 internal class DebouncingQueryTextListener(
     lifecycle: Lifecycle,
     private val onDebouncingQueryTextChange: (String?) -> Unit
 ) : SearchView.OnQueryTextListener, LifecycleObserver {
+    var debouncePeriod: Long = 500
 
     private val coroutineScope: CoroutineScope = CoroutineScope(Dispatchers.Main)
 
@@ -32,7 +32,7 @@ internal class DebouncingQueryTextListener(
         searchJob?.cancel()
         searchJob = coroutineScope.launch {
             newText?.let {
-                delay(500)
+                delay(debouncePeriod)
                 onDebouncingQueryTextChange(newText)
             }
         }

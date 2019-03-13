@@ -44,7 +44,6 @@ internal class SearchMoviesActivityTest : KoinTest {
     @Test
     fun shouldRenderIdlingState() {
         viewModel.moveToState(SearchViewState.Idling)
-        R.id.moviesList.checkInvisible()
         R.id.loadMovie.checkInvisible()
         R.id.toolbar.checkVisible()
         R.id.info.run {
@@ -63,7 +62,6 @@ internal class SearchMoviesActivityTest : KoinTest {
     @Test
     fun shouldRenderSearchingState() {
         viewModel.moveToState(SearchViewState.Searching)
-        R.id.moviesList.checkInvisible()
         R.id.info.checkInvisible()
         R.id.loadMovie.checkVisible()
         R.id.toolbar.checkVisible()
@@ -142,8 +140,38 @@ internal class SearchMoviesActivityTest : KoinTest {
 
     @Test
     fun shouldRenderLoadingNextPageState() {
-        shouldRenderMoviesFetchedState()
-        viewModel.moveToState(SearchViewState.LoadingNextPage)
+        viewModel.moveToState(SearchViewState.LoadingNextPage(
+                listOf(
+                    Movie(
+                        "Batman Begins",
+                        "2005",
+                        "tt0372784",
+                        MovieType.Movie,
+                        "https://m.media-amazon.com/images/M/MV5BZmUwNGU2ZmItMmRiNC00MjhlLTg5YWUtODMyNzkxODYzMmZlXkEyXkFqcGdeQXVyNTIzOTk5ODM@._V1_SX300.jpg"
+                    ),
+                    Movie(
+                        "Batman: The Animated Series",
+                        "1992–1995",
+                        "tt0103359",
+                        MovieType.Series,
+                        "https://m.media-amazon.com/images/M/MV5BOTM3MTRkZjQtYjBkMy00YWE1LTkxOTQtNDQyNGY0YjYzNzAzXkEyXkFqcGdeQXVyOTgwMzk1MTA@._V1_SX300.jpg"
+                    ),
+                    Movie(
+                        "Batman: The Dark Knight Returns, Part 1",
+                        "2012",
+                        "tt2313197",
+                        MovieType.Series,
+                        null
+                    ),
+                    Movie(
+                        "Batman: The Dark Knight Returns, Part 2",
+                        "2013",
+                        "tt2313198",
+                        MovieType.Other,
+                        "https://m.media-amazon.com/images/M/MV5BOTM3MTRkZjQtYjBkMy00YWE1LTkxOTQtNDQyNGY0YjYzNzAzXkEyXkFqcGdeQXVyOTgwMzk1MTA@._V1_SX300.jpg"
+                    )
+                )
+        ))
         R.id.moviesList.checkItemAtPosition<ViewHolder>(
             4,
             hasDescendant(allOf(withId(R.id.loadMore), isDisplayed()))
@@ -152,8 +180,41 @@ internal class SearchMoviesActivityTest : KoinTest {
 
     @Test
     fun shouldRenderLoadPageFailedState() {
-        shouldRenderMoviesFetchedState()
-        viewModel.moveToState(SearchViewState.LoadPageFailed("Batman", 2, 10))
+        viewModel.moveToState(SearchViewState.LoadPageFailed(
+            "Batman",
+            listOf(
+                Movie(
+                    "Batman Begins",
+                    "2005",
+                    "tt0372784",
+                    MovieType.Movie,
+                    "https://m.media-amazon.com/images/M/MV5BZmUwNGU2ZmItMmRiNC00MjhlLTg5YWUtODMyNzkxODYzMmZlXkEyXkFqcGdeQXVyNTIzOTk5ODM@._V1_SX300.jpg"
+                ),
+                Movie(
+                    "Batman: The Animated Series",
+                    "1992–1995",
+                    "tt0103359",
+                    MovieType.Series,
+                    "https://m.media-amazon.com/images/M/MV5BOTM3MTRkZjQtYjBkMy00YWE1LTkxOTQtNDQyNGY0YjYzNzAzXkEyXkFqcGdeQXVyOTgwMzk1MTA@._V1_SX300.jpg"
+                ),
+                Movie(
+                    "Batman: The Dark Knight Returns, Part 1",
+                    "2012",
+                    "tt2313197",
+                    MovieType.Series,
+                    null
+                ),
+                Movie(
+                    "Batman: The Dark Knight Returns, Part 2",
+                    "2013",
+                    "tt2313198",
+                    MovieType.Other,
+                    "https://m.media-amazon.com/images/M/MV5BOTM3MTRkZjQtYjBkMy00YWE1LTkxOTQtNDQyNGY0YjYzNzAzXkEyXkFqcGdeQXVyOTgwMzk1MTA@._V1_SX300.jpg"
+                )
+            ),
+            2,
+            10
+        ))
         R.id.moviesList.checkItemAtPosition<ViewHolder>(
             4,
             hasDescendant(allOf(withId(R.id.retry), isDisplayed()))
@@ -163,7 +224,6 @@ internal class SearchMoviesActivityTest : KoinTest {
     @Test
     fun shouldRenderSearchFailedState() {
         viewModel.moveToState(SearchViewState.SearchFailed("Batman"))
-        R.id.moviesList.checkInvisible()
         R.id.loadMovie.checkInvisible()
         R.id.toolbar.checkVisible()
         R.id.info.run {
@@ -184,7 +244,6 @@ internal class SearchMoviesActivityTest : KoinTest {
     @Test
     fun shouldRenderMovieNotFoundState() {
         viewModel.moveToState(SearchViewState.MovieNotFound)
-        R.id.moviesList.checkInvisible()
         R.id.loadMovie.checkInvisible()
         R.id.toolbar.checkVisible()
         R.id.info.run {

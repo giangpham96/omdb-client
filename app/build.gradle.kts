@@ -116,6 +116,8 @@ dependencies {
     implementation(Dependencies.koinCore)
     implementation(Dependencies.koinViewModel)
     implementation(Dependencies.kotlinStdLib)
+    debugImplementation(Dependencies.leakCanary)
+    releaseImplementation(Dependencies.leakCanaryNoOp)
     implementation(Dependencies.materialDesign)
     implementation(Dependencies.recyclerView)
 

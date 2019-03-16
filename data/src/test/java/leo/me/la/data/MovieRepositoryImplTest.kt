@@ -7,6 +7,8 @@ import kotlinx.coroutines.runBlocking
 import leo.me.la.common.model.Movie
 import leo.me.la.common.model.MovieSearchResult
 import leo.me.la.common.model.MovieType
+import leo.me.la.data.model.MovieDataModel
+import leo.me.la.data.model.MovieSearchResultDataModel
 import leo.me.la.data.source.MovieRemoteDataSource
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
@@ -46,7 +48,32 @@ class MovieRepositoryImplTest {
         runBlocking {
             coEvery {
                 movieRemoteDataSource.searchMoviesByKeyword("Batman", 2)
-            } returns desiredResult
+            } returns MovieSearchResultDataModel(
+                listOf(
+                    MovieDataModel(
+                        "Batman Begins",
+                        "2005",
+                        "tt0372784",
+                        "movie",
+                        "https://m.media-amazon.com/images/M/MV5BZmUwNGU2ZmItMmRiNC00MjhlLTg5YWUtODMyNzkxODYzMmZlXkEyXkFqcGdeQXVyNTIzOTk5ODM@._V1_SX300.jpg"
+                    ),
+                    MovieDataModel(
+                        "Batman: The Animated Series",
+                        "1992–1995",
+                        "tt0103359",
+                        "series",
+                        "https://m.media-amazon.com/images/M/MV5BOTM3MTRkZjQtYjBkMy00YWE1LTkxOTQtNDQyNGY0YjYzNzAzXkEyXkFqcGdeQXVyOTgwMzk1MTA@._V1_SX300.jpg"
+                    ),
+                    MovieDataModel(
+                        "Batman: The Dark Knight Returns, Part 1",
+                        "2012",
+                        "tt2313197",
+                        "game",
+                        "https://m.media-amazon.com/images/M/MV5BMzIxMDkxNDM2M15BMl5BanBnXkFtZTcwMDA5ODY1OQ@@._V1_SX300.jpg"
+                    )
+                ),
+                3
+            )
             val actualResult = searchRepository.searchMoviesByKeyword("Batman", 2)
             assertThat(actualResult).isEqualTo(desiredResult)
             coVerify { movieRemoteDataSource.searchMoviesByKeyword("Batman", 2) }

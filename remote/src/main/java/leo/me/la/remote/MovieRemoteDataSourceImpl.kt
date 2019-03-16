@@ -1,26 +1,76 @@
 package leo.me.la.remote
 
 import com.squareup.moshi.JsonDataException
-import leo.me.la.common.model.Movie
-import leo.me.la.common.model.MovieSearchResult
+import leo.me.la.data.model.MovieDataModel
+import leo.me.la.data.model.MovieSearchResultDataModel
 import leo.me.la.data.source.MovieRemoteDataSource
+import leo.me.la.remote.model.MovieRemoteModel
 
 internal class MovieRemoteDataSourceImpl(
     private val omdbRestApi: OmdbRestApi
 ) : MovieRemoteDataSource {
-    override suspend fun searchMoviesByImdbId(imdbId: String): Movie {
+    override suspend fun searchMoviesByImdbId(imdbId: String): MovieDataModel {
         return try {
-            omdbRestApi.searchByImdbId(imdbId).await()
+            omdbRestApi
+                .searchByImdbId(imdbId)
+                .await()
+                .let {
+                    mapMovieRemoteModelToMovieDataModel(it)
+                }
         } catch (e: JsonDataException) {
             throw e.cause ?: e
         }
     }
 
-    override suspend fun searchMoviesByKeyword(keyword: String, page: Int): MovieSearchResult {
+    override suspend fun searchMoviesByKeyword(keyword: String, page: Int): MovieSearchResultDataModel {
         return try {
-            omdbRestApi.searchByKeyword(keyword, page).await()
+            omdbRestApi
+                .searchByKeyword(keyword, page)
+                .await()
+                .let {
+                    MovieSearchResultDataModel(
+                        it.movies.map {
+                            mapMovieRemoteModelToMovieDataModel(it)
+                        },
+                        it.totalResults
+                    )
+                }
         } catch (e: JsonDataException) {
             throw e.cause ?: e
         }
+    }
+
+    private fun mapMovieRemoteModelToMovieDataModel(
+        movieRemoteModel: MovieRemoteModel
+    ) : MovieDataModel {
+        return MovieDataModel(
+            movieRemoteModel.title,
+            movieRemoteModel.year,
+            movieRemoteModel.imdbId,
+            movieRemoteModel.type,
+            movieRemoteModel.poster,
+            movieRemoteModel.rated?.simplifyRemoteField(),
+            movieRemoteModel.released?.simplifyRemoteField(),
+            movieRemoteModel.runtime?.simplifyRemoteField(),
+            movieRemoteModel.genres?.simplifyRemoteField(),
+            movieRemoteModel.directors?.simplifyRemoteField(),
+            movieRemoteModel.writers?.simplifyRemoteField(),
+            movieRemoteModel.actors?.simplifyRemoteField(),
+            movieRemoteModel.plot?.simplifyRemoteField(),
+            movieRemoteModel.languages?.simplifyRemoteField(),
+            movieRemoteModel.country?.simplifyRemoteField(),
+            movieRemoteModel.awards?.simplifyRemoteField(),
+            try { movieRemoteModel.metaScore?.toInt() } catch (t: Throwable) { null },
+            try { movieRemoteModel.imdbRating?.toDouble() } catch (t: Throwable) { null },
+            try { movieRemoteModel.imdbVotes?.replace(",", "")?.toInt() } catch (t: Throwable) { null },
+            movieRemoteModel.boxOffice?.simplifyRemoteField(),
+            movieRemoteModel.dvdRelease?.simplifyRemoteField(),
+            movieRemoteModel.production?.simplifyRemoteField(),
+            movieRemoteModel.website?.simplifyRemoteField()
+        )
+    }
+
+    private fun String.simplifyRemoteField() : String? {
+        return if (this == "N/A") null else this
     }
 }

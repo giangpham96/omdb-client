@@ -1,7 +1,7 @@
 package leo.me.la.data.source
 
-import leo.me.la.common.model.Movie
-import leo.me.la.common.model.MovieSearchResult
+import leo.me.la.data.model.MovieDataModel
+import leo.me.la.data.model.MovieSearchResultDataModel
 
 interface MovieRemoteDataSource {
     /**
@@ -12,7 +12,7 @@ interface MovieRemoteDataSource {
     suspend fun searchMoviesByKeyword(
         keyword: String,
         page: Int = 1
-    ) : MovieSearchResult
+    ) : MovieSearchResultDataModel
 
     /**
      * fetch a movie from remote data source given its imdb id
@@ -20,5 +20,5 @@ interface MovieRemoteDataSource {
      */
     suspend fun searchMoviesByImdbId(
         imdbId: String
-    ) : Movie
+    ) : MovieDataModel
 }

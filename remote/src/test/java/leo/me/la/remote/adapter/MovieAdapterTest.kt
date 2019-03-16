@@ -1,9 +1,8 @@
 package leo.me.la.remote.adapter
 
 import com.squareup.moshi.JsonReader
-import leo.me.la.common.model.Movie
-import leo.me.la.common.model.MovieType
 import leo.me.la.exception.OmdbErrorException
+import leo.me.la.remote.model.MovieRemoteModel
 import leo.me.la.remote.readFileContent
 import okio.Buffer
 import org.assertj.core.api.Assertions.assertThat
@@ -18,32 +17,28 @@ class MovieAdapterTest {
         val json = "json/imdb-id-search-result.json".readFileContent()
         val parsingResult = parseJsonToMovie(json)
         assertThat(parsingResult).isEqualTo(
-            Movie(
+            MovieRemoteModel(
                 "Spider-Man: Into the Spider-Verse",
                 "2018",
                 "tt4633694",
-                MovieType.Movie,
+                "movie",
                 "https://m.media-amazon.com/images/M/MV5BMjMwNDkxMTgzOF5BMl5BanBnXkFtZTgwNTkwNTQ3NjM@._V1_SX300.jpg",
                 "PG",
                 "14 Dec 2018",
                 "117 min",
-                listOf("Animation", "Action", "Adventure", "Family", "Sci-Fi"),
-                listOf("Bob Persichetti", "Peter Ramsey", "Rodney Rothman"),
-                listOf(
-                    "Phil Lord (screenplay by)",
-                    "Rodney Rothman (screenplay by)",
-                    "Phil Lord (story by)"
-                ),
-                listOf("Shameik Moore", "Jake Johnson", "Hailee Steinfeld", "Mahershala Ali"),
+                "Animation, Action, Adventure, Family, Sci-Fi",
+                "Bob Persichetti, Peter Ramsey, Rodney Rothman",
+                "Phil Lord (screenplay by), Rodney Rothman (screenplay by), Phil Lord (story by)",
+                "Shameik Moore, Jake Johnson, Hailee Steinfeld, Mahershala Ali",
                 "Teen Miles Morales becomes Spider-Man of his reality, crossing his path with " +
                     "five counterparts from other dimensions to stop a threat for all realities.",
-                listOf("English", "Spanish"),
+                "English, Spanish",
                 "USA",
-                null,
-                87,
-                8.6,
-                122126,
-                null,
+                "N/A",
+                "87",
+                "8.6",
+                "122,126",
+                "N/A",
                 "26 Feb 2019",
                 "Sony Pictures",
                 "http://www.intothespiderverse.movie/"
@@ -81,7 +76,7 @@ class MovieAdapterTest {
         parseJsonToMovie(json)
     }
 
-    private fun parseJsonToMovie(json: String) : Movie {
+    private fun parseJsonToMovie(json: String) : MovieRemoteModel {
         return movieAdapter.fromJson(
             JsonReader.of(Buffer().writeUtf8(json))
         )

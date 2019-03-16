@@ -4,17 +4,18 @@ import com.squareup.moshi.FromJson
 import com.squareup.moshi.JsonReader
 import com.squareup.moshi.JsonWriter
 import com.squareup.moshi.ToJson
-import leo.me.la.common.model.Movie
 import leo.me.la.common.model.MovieSearchResult
 import leo.me.la.exception.OmdbErrorException
+import leo.me.la.remote.model.MovieRemoteModel
+import leo.me.la.remote.model.MovieSearchResultRemoteModel
 import java.rmi.UnexpectedException
 
 internal class MovieSearchAdapter(private val movieAdapter: MovieAdapter) {
     @FromJson
     fun fromJson(
         reader: JsonReader
-    ): MovieSearchResult {
-        val result = mutableListOf<Movie>()
+    ): MovieSearchResultRemoteModel {
+        val result = mutableListOf<MovieRemoteModel>()
         var totalResults = 0
         reader.apply {
             beginObject()
@@ -42,7 +43,7 @@ internal class MovieSearchAdapter(private val movieAdapter: MovieAdapter) {
             if (result.size == 0 || totalResults == 0) {
                 throw UnexpectedException("Response misses field(s)")
             } else
-                return MovieSearchResult(result, totalResults)
+                return MovieSearchResultRemoteModel(result, totalResults)
         }
     }
 

@@ -1,8 +1,8 @@
 package leo.me.la.remote
 
 import kotlinx.coroutines.Deferred
-import leo.me.la.common.model.Movie
-import leo.me.la.common.model.MovieSearchResult
+import leo.me.la.remote.model.MovieRemoteModel
+import leo.me.la.remote.model.MovieSearchResultRemoteModel
 import retrofit2.http.GET
 import retrofit2.http.Query
 
@@ -13,7 +13,7 @@ internal interface OmdbRestApi {
         keyword: String,
         @Query("page")
         page: Int = 1
-    ) : Deferred<MovieSearchResult>
+    ) : Deferred<MovieSearchResultRemoteModel>
 
     @GET("/")
     fun searchByImdbId(
@@ -21,5 +21,5 @@ internal interface OmdbRestApi {
         imdbId: String,
         @Query("plot")
         plot: String = "full"
-    ) : Deferred<Movie>
+    ) : Deferred<MovieRemoteModel>
 }

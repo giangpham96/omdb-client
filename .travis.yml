@@ -2,12 +2,12 @@ language: android
 
 env:
   global:
-    - ANDROID_API_LEVEL=28
-    - ANDROID_BUILD_TOOLS_VERSION=28.0.3
+  - ANDROID_API_LEVEL=28
+  - ANDROID_BUILD_TOOLS_VERSION=28.0.3
 android:
   components:
-    - build-tools-$ANDROID_BUILD_TOOLS_VERSION
-    - android-$ANDROID_API_LEVEL
+  - build-tools-$ANDROID_BUILD_TOOLS_VERSION
+  - android-$ANDROID_API_LEVEL
 cache:
   directories:
   - "$HOME/.gradle/caches/"
@@ -20,7 +20,7 @@ before_install:
 - tar xvf app/secret.tar
 
 script:
-  # unit tests
-  - ./gradlew test --stacktrace
-  # build debug apk
-  - ./gradlew assembleDebug --stacktrace
+# unit tests
+- ./gradlew test --stacktrace
+# build debug apk
+- ./gradlew assembleDebug --stacktrace

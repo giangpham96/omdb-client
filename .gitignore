@@ -26,6 +26,7 @@ local.properties
 # Credentials
 sign.properties
 api-key.properties
+secret.tar
 
 # Log Files
 *.log

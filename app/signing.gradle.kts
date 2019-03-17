@@ -20,7 +20,7 @@ private val signProperties: Map<String, String> by lazy {
                 it.value as String
             }
     } else {
-        System.getenv()
+        throw RuntimeException("Cannot read sign properties")
     }
 }
 

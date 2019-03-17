@@ -20,7 +20,7 @@ private val apiKeys: Map<String, String> by lazy {
                 it.value as String
             }
     } else {
-        System.getenv()
+        throw RuntimeException("Cannot read api key")
     }
 }
 

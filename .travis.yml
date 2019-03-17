@@ -14,6 +14,11 @@ cache:
   - "$HOME/.gradle/wrapper/"
   - "$HOME/.android/build-cache"
 
+before_install:
+- openssl aes-256-cbc -K $encrypted_3e81a6209f09_key -iv $encrypted_3e81a6209f09_iv
+  -in app/secret.tar.enc -out app/secret.tar -d
+- tar xvf app/secret.tar
+
 script:
   # unit tests
   - ./gradlew test --stacktrace

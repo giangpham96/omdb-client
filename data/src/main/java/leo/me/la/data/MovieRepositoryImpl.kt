@@ -16,42 +16,44 @@ internal class MovieRepositoryImpl(
         return movieRemoteDataSource.searchMoviesByKeyword(keyword, page)
             .let { result ->
                 MovieSearchResult(
-                    result.movies.map {
-                        Movie(
-                            it.title,
-                            it.year,
-                            it.imdbId,
-                            when(it.type) {
-                                "movie" -> MovieType.Movie
-                                "series" -> MovieType.Series
-                                else -> MovieType.Other
-                            },
-                            it.poster,
-                            it.rated,
-                            it.released,
-                            it.runtime,
-                            it.genres?.splitToList(),
-                            it.directors?.splitToList(),
-                            it.writers?.splitToList(),
-                            it.actors?.splitToList(),
-                            it.plot,
-                            it.languages?.splitToList(),
-                            it.country,
-                            it.awards,
-                            it.metaScore,
-                            it.imdbRating,
-                            it.imdbVotes,
-                            it.boxOffice,
-                            it.dvdRelease,
-                            it.production,
-                            it.website
-                        )
-                    },
+                    result.movies.map { it.toMovie() },
                     result.totalResults
                 )
             }
     }
     private fun String.splitToList() : List<String> {
         return this.split(", ")
+    }
+
+    private fun MovieDataModel.toMovie() : Movie {
+        return Movie(
+            title,
+            year,
+            imdbId,
+            when(type) {
+                "movie" -> MovieType.Movie
+                "series" -> MovieType.Series
+                else -> MovieType.Other
+            },
+            poster,
+            rated,
+            released,
+            runtime,
+            genres?.splitToList(),
+            directors?.splitToList(),
+            writers?.splitToList(),
+            actors?.splitToList(),
+            plot,
+            languages?.splitToList(),
+            country,
+            awards,
+            metaScore,
+            imdbRating,
+            imdbVotes,
+            boxOffice,
+            dvdRelease,
+            production,
+            website
+        )
     }
 }

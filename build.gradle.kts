@@ -9,7 +9,6 @@ buildscript {
     dependencies {
         classpath("com.android.tools.build:gradle:${Versions.androidGradlePlugin}")
         classpath(kotlin("gradle-plugin", version = Versions.kotlin))
-        classpath(kotlin("allopen", version = Versions.kotlin))
     }
 }
 

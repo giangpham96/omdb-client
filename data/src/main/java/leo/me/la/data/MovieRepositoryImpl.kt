@@ -14,9 +14,9 @@ internal class MovieRepositoryImpl(
         page: Int
     ): MovieSearchResult {
         return movieRemoteDataSource.searchMoviesByKeyword(keyword, page)
-            .let {
+            .let { result ->
                 MovieSearchResult(
-                    it.movies.map {
+                    result.movies.map {
                         Movie(
                             it.title,
                             it.year,
@@ -47,7 +47,7 @@ internal class MovieRepositoryImpl(
                             it.website
                         )
                     },
-                    it.totalResults
+                    result.totalResults
                 )
             }
     }

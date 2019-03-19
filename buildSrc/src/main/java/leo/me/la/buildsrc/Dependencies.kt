@@ -20,6 +20,7 @@ object Versions {
     const val okHttp = "3.11.0"
     const val retrofit = "2.5.0"
     const val retrofitCoroutinesAdapter = "0.9.2"
+    const val room = "2.1.0-alpha05"
 }
 
 object Dependencies {
@@ -50,6 +51,9 @@ object Dependencies {
     const val retrofit = "com.squareup.retrofit2:retrofit:${Versions.retrofit}"
     const val retrofitCoroutinesAdapter = "com.jakewharton.retrofit:retrofit2-kotlin-coroutines-adapter:${Versions.retrofitCoroutinesAdapter}"
     const val retrofitConverterMoshi = "com.squareup.retrofit2:converter-moshi:${Versions.retrofit}"
+    const val roomCompiler = "androidx.room:room-compiler:${Versions.room}"
+    const val roomKtx = "androidx.room:room-ktx:${Versions.room}"
+    const val roomRuntime = "androidx.room:room-runtime:${Versions.room}"
 }
 
 
@@ -64,6 +68,8 @@ object TestDependencies {
     const val koinTest = "org.koin:koin-test:${Versions.koin}"
     const val mockk = "io.mockk:mockk:${Versions.mockk}"
     const val mockWebServer = "com.squareup.okhttp3:mockwebserver:${Versions.mockWebServer}"
+    const val roomTest = "androidx.room:room-testing:${Versions.room}"
+    const val testExt = "androidx.test.ext:junit:${Versions.androidTest}"
     const val testRule = "androidx.test:rules:${Versions.androidTest}"
     const val testRunner = "androidx.test:runner:${Versions.androidTest}"
 }

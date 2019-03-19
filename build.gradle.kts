@@ -4,7 +4,7 @@ buildscript {
     repositories {
         google()
         jcenter()
-        
+        maven("https://kotlin.bintray.com/kotlinx/")
     }
     dependencies {
         classpath("com.android.tools.build:gradle:${Versions.androidGradlePlugin}")
@@ -16,6 +16,7 @@ allprojects {
     repositories {
         google()
         jcenter()
+        maven("https://kotlin.bintray.com/kotlinx/")
     }
 }
 

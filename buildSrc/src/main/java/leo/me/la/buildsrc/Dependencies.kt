@@ -1,5 +1,5 @@
 object Versions {
-    const val androidGradlePlugin = "3.3.1"
+    const val androidGradlePlugin = "3.3.2"
     const val androidTest = "1.1.0"
     const val androidX = "1.0.0"
     const val assertJ = "3.11.1"

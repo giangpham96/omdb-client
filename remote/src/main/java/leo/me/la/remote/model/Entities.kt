@@ -20,7 +20,7 @@ data class MovieRemoteModel(
     val actors: String? = null,
     val plot: String? = null,
     val languages: String? = null,
-    val country: String? = null,
+    val countries: String? = null,
     val awards: String? = null,
     val metaScore: String? = null,
     val imdbRating: String? = null,

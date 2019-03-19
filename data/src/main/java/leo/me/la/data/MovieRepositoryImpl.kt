@@ -45,7 +45,7 @@ internal class MovieRepositoryImpl(
             actors?.splitToList(),
             plot,
             languages?.splitToList(),
-            country,
+            country?.splitToList(),
             awards,
             metaScore,
             imdbRating,

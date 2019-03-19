@@ -15,7 +15,7 @@ data class Movie(
     val actors: List<String>? = null,
     val plot: String? = null,
     val languages: List<String>? = null,
-    val country: String? = null,
+    val countries: List<String>? = null,
     val awards: String? = null,
     val metaScore: Int? = null,
     val imdbRating: Double? = null,

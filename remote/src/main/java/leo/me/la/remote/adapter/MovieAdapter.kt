@@ -90,7 +90,7 @@ internal class MovieAdapter {
     @ToJson
     fun toJson(
         writer: JsonWriter,
-        content: Movie?
+        content: MovieRemoteModel?
     ) {
         throw UnsupportedOperationException("Cannot deserialize Movie")
     }

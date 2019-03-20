@@ -58,7 +58,7 @@ internal class MovieRemoteDataSourceImpl(
             movieRemoteModel.actors?.simplifyRemoteField(),
             movieRemoteModel.plot?.simplifyRemoteField(),
             movieRemoteModel.languages?.simplifyRemoteField(),
-            movieRemoteModel.country?.simplifyRemoteField(),
+            movieRemoteModel.countries?.simplifyRemoteField(),
             movieRemoteModel.awards?.simplifyRemoteField(),
             try { movieRemoteModel.metaScore?.toInt() } catch (t: Throwable) { null },
             try { movieRemoteModel.imdbRating?.toDouble() } catch (t: Throwable) { null },

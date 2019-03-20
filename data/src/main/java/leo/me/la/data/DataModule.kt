@@ -5,6 +5,6 @@ import org.koin.dsl.module.module
 
 val dataModule = module {
     factory<MovieRepository> {
-        MovieRepositoryImpl(get())
+        MovieRepositoryImpl(get(), get())
     }
 }

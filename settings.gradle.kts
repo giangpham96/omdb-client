@@ -1,5 +1,6 @@
 include(
     ":app",
+    ":cache",
     ":common",
     ":data",
     ":domain",

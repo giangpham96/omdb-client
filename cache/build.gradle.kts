@@ -28,6 +28,10 @@ dependencies {
 
     kapt(Dependencies.roomCompiler)
 
+    testImplementation(TestDependencies.assertJ)
+    testImplementation(TestDependencies.junit)
+    testImplementation(TestDependencies.mockk)
+
     androidTestImplementation(TestDependencies.assertJ)
     androidTestImplementation(TestDependencies.junit)
     androidTestImplementation(TestDependencies.roomTest)

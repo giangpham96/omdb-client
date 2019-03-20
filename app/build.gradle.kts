@@ -98,6 +98,7 @@ android {
 }
 
 dependencies {
+    implementation(project(":cache"))
     implementation(project(":common"))
     implementation(project(":data"))
     implementation(project(":domain"))

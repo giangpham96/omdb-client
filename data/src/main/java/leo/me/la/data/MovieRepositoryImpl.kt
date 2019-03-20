@@ -3,12 +3,34 @@ package leo.me.la.data
 import leo.me.la.common.model.Movie
 import leo.me.la.common.model.MovieSearchResult
 import leo.me.la.common.model.MovieType
+import leo.me.la.data.model.MovieDataModel
+import leo.me.la.data.source.MovieCacheDataSource
 import leo.me.la.data.source.MovieRemoteDataSource
 import leo.me.la.domain.repository.MovieRepository
 
 internal class MovieRepositoryImpl(
-    private val movieRemoteDataSource: MovieRemoteDataSource
+    private val movieRemoteDataSource: MovieRemoteDataSource,
+    private val movieCacheDataSource: MovieCacheDataSource
 ) : MovieRepository {
+
+    override suspend fun searchMovieByImdbId(imdbId: String): Movie {
+        val movieCacheModel = try {
+            movieCacheDataSource.loadMovieByImdbId(imdbId)
+        } catch (ignored: Throwable) {
+            null
+        }
+
+        val movieDataModel = movieCacheModel?.let {
+            if(System.currentTimeMillis() - it.second > 5 * 60 * 1000) {
+                fetchMovieFromRemoteAndSaveToCache(imdbId)
+            } else {
+                it.first
+            }
+        } ?: fetchMovieFromRemoteAndSaveToCache(imdbId)
+
+        return movieDataModel.toMovie()
+    }
+
     override suspend fun searchMoviesByKeyword(
         keyword: String,
         page: Int
@@ -21,6 +43,18 @@ internal class MovieRepositoryImpl(
                 )
             }
     }
+
+    private suspend fun fetchMovieFromRemoteAndSaveToCache(imdbId: String) : MovieDataModel {
+        return movieRemoteDataSource.searchMoviesByImdbId(imdbId)
+            .also {
+                try {
+                    movieCacheDataSource.saveMovie(it)
+                } catch (ignored: Throwable) {
+                    // Doesn't matter if something wrong happens when saving
+                }
+            }
+    }
+
     private fun String.splitToList() : List<String> {
         return this.split(", ")
     }

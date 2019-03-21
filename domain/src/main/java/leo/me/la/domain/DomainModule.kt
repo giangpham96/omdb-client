@@ -6,4 +6,7 @@ val domainModule = module {
     factory<SearchMoviesUseCase> {
         SearchMoviesUseCaseImpl(get())
     }
+    factory<LoadMovieInfoUseCase> {
+        LoadMovieInfoUseCaseImpl(get())
+    }
 }

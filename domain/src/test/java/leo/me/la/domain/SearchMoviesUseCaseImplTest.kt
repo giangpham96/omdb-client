@@ -11,7 +11,7 @@ import leo.me.la.domain.repository.MovieRepository
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 
-class SearchMoviesUseCaseTest {
+class SearchMoviesUseCaseImplTest {
     private val repository: MovieRepository = mockk()
     private val useCase = SearchMoviesUseCaseImpl(repository)
 

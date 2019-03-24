@@ -2,12 +2,7 @@ package leo.me.la.movies.item
 
 import com.xwray.groupie.kotlinandroidextensions.Item
 import com.xwray.groupie.kotlinandroidextensions.ViewHolder
-import kotlinx.android.synthetic.main.item_movie.poster
 import leo.me.la.movies.R
-import kotlinx.android.synthetic.main.item_movie.title
-import kotlinx.android.synthetic.main.item_movie.year
-import leo.me.la.common.model.Movie
-import loadUri
 
 internal object LoadingFooter : Item() {
     override fun bind(viewHolder: ViewHolder, position: Int) {}

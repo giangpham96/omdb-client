@@ -6,7 +6,7 @@ data class Movie(
     val imdbId: String,
     val type: MovieType,
     val poster: String? = null,
-    val rated: String? = null,
+    val rated: MovieRate = MovieRate.UNKNOWN,
     val released: String? = null,
     val runtime: String? = null,
     val genres: List<String>? = null,
@@ -35,4 +35,8 @@ enum class MovieType {
     Movie,
     Series,
     Other
+}
+
+enum class MovieRate {
+    TV_Y, TV_Y7, TV_G, TV_PG, TV_14, TV_MA, G, PG, PG_13, R, NC_17, UNKNOWN
 }

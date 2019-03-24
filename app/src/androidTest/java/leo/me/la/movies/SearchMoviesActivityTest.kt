@@ -16,12 +16,12 @@ import leo.me.la.common.model.Movie
 import leo.me.la.common.model.MovieType
 import leo.me.la.presentation.BaseViewModel
 import leo.me.la.presentation.SearchViewState
+import leo.me.la.presentation.baseViewModel
 import org.hamcrest.Matchers.allOf
 import org.hamcrest.Matchers.not
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import org.koin.androidx.viewmodel.ext.koin.viewModel
 import org.koin.dsl.module.module
 import org.koin.standalone.StandAloneContext.loadKoinModules
 import org.koin.test.KoinTest
@@ -36,7 +36,7 @@ internal class SearchMoviesActivityTest : KoinTest {
     @Before
     fun setup() {
         loadKoinModules(module(override = true) {
-            viewModel<BaseViewModel<SearchViewState>>(TAG_SEARCH_VIEWMODEL) { viewModel }
+            baseViewModel(TAG_SEARCH_VIEWMODEL) { viewModel }
         })
         activityTestRule.launchActivity(null)
     }

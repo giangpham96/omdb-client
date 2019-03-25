@@ -5,6 +5,7 @@ import io.mockk.coVerify
 import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
 import leo.me.la.common.model.Movie
+import leo.me.la.common.model.MovieRate
 import leo.me.la.common.model.MovieType
 import leo.me.la.domain.repository.MovieRepository
 import org.assertj.core.api.Assertions.assertThat
@@ -23,7 +24,7 @@ class LoadMovieInfoUseCaseImplTest {
             "tt4633694",
             MovieType.Movie,
             "https://m.media-amazon.com/images/M/MV5BMjMwNDkxMTgzOF5BMl5BanBnXkFtZTgwNTkwNTQ3NjM@._V1_SX300.jpg",
-            "PG",
+            MovieRate.PG,
             "14 Dec 2018",
             "117 min",
             listOf("Animation", "Action", "Adventure", "Family", "Sci-Fi"),

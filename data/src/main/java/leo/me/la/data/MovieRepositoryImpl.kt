@@ -1,6 +1,7 @@
 package leo.me.la.data
 
 import leo.me.la.common.model.Movie
+import leo.me.la.common.model.MovieRate
 import leo.me.la.common.model.MovieSearchResult
 import leo.me.la.common.model.MovieType
 import leo.me.la.data.model.MovieDataModel
@@ -70,7 +71,13 @@ internal class MovieRepositoryImpl(
                 else -> MovieType.Other
             },
             poster,
-            rated,
+            rated?.let {
+                try {
+                    MovieRate.valueOf(it.toUpperCase().replace("-", "_"))
+                } catch (ignored: Throwable) {
+                    MovieRate.UNKNOWN
+                }
+            } ?: MovieRate.UNKNOWN,
             released,
             runtime,
             genres?.splitToList(),

@@ -9,6 +9,7 @@ import io.mockk.just
 import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
 import leo.me.la.common.model.Movie
+import leo.me.la.common.model.MovieRate
 import leo.me.la.common.model.MovieSearchResult
 import leo.me.la.common.model.MovieType
 import leo.me.la.data.model.MovieDataModel
@@ -32,21 +33,24 @@ class MovieRepositoryImplTest {
                     "2005",
                     "tt0372784",
                     MovieType.Movie,
-                    "https://m.media-amazon.com/images/M/MV5BZmUwNGU2ZmItMmRiNC00MjhlLTg5YWUtODMyNzkxODYzMmZlXkEyXkFqcGdeQXVyNTIzOTk5ODM@._V1_SX300.jpg"
+                    "https://m.media-amazon.com/images/M/MV5BZmUwNGU2ZmItMmRiNC00MjhlLTg5YWUtODMyNzkxODYzMmZlXkEyXkFqcGdeQXVyNTIzOTk5ODM@._V1_SX300.jpg",
+                    MovieRate.PG_13
                 ),
                 Movie(
                     "Batman: The Animated Series",
                     "1992–1995",
                     "tt0103359",
                     MovieType.Series,
-                    "https://m.media-amazon.com/images/M/MV5BOTM3MTRkZjQtYjBkMy00YWE1LTkxOTQtNDQyNGY0YjYzNzAzXkEyXkFqcGdeQXVyOTgwMzk1MTA@._V1_SX300.jpg"
+                    "https://m.media-amazon.com/images/M/MV5BOTM3MTRkZjQtYjBkMy00YWE1LTkxOTQtNDQyNGY0YjYzNzAzXkEyXkFqcGdeQXVyOTgwMzk1MTA@._V1_SX300.jpg",
+                    MovieRate.UNKNOWN
                 ),
                 Movie(
                     "Batman: The Dark Knight Returns, Part 1",
                     "2012",
                     "tt2313197",
                     MovieType.Other,
-                    "https://m.media-amazon.com/images/M/MV5BMzIxMDkxNDM2M15BMl5BanBnXkFtZTcwMDA5ODY1OQ@@._V1_SX300.jpg"
+                    "https://m.media-amazon.com/images/M/MV5BMzIxMDkxNDM2M15BMl5BanBnXkFtZTcwMDA5ODY1OQ@@._V1_SX300.jpg",
+                    MovieRate.TV_MA
                 )
             ),
             3
@@ -61,21 +65,24 @@ class MovieRepositoryImplTest {
                         "2005",
                         "tt0372784",
                         "movie",
-                        "https://m.media-amazon.com/images/M/MV5BZmUwNGU2ZmItMmRiNC00MjhlLTg5YWUtODMyNzkxODYzMmZlXkEyXkFqcGdeQXVyNTIzOTk5ODM@._V1_SX300.jpg"
+                        "https://m.media-amazon.com/images/M/MV5BZmUwNGU2ZmItMmRiNC00MjhlLTg5YWUtODMyNzkxODYzMmZlXkEyXkFqcGdeQXVyNTIzOTk5ODM@._V1_SX300.jpg",
+                        "PG-13"
                     ),
                     MovieDataModel(
                         "Batman: The Animated Series",
                         "1992–1995",
                         "tt0103359",
                         "series",
-                        "https://m.media-amazon.com/images/M/MV5BOTM3MTRkZjQtYjBkMy00YWE1LTkxOTQtNDQyNGY0YjYzNzAzXkEyXkFqcGdeQXVyOTgwMzk1MTA@._V1_SX300.jpg"
+                        "https://m.media-amazon.com/images/M/MV5BOTM3MTRkZjQtYjBkMy00YWE1LTkxOTQtNDQyNGY0YjYzNzAzXkEyXkFqcGdeQXVyOTgwMzk1MTA@._V1_SX300.jpg",
+                        "Not a valid rate"
                     ),
                     MovieDataModel(
                         "Batman: The Dark Knight Returns, Part 1",
                         "2012",
                         "tt2313197",
                         "game",
-                        "https://m.media-amazon.com/images/M/MV5BMzIxMDkxNDM2M15BMl5BanBnXkFtZTcwMDA5ODY1OQ@@._V1_SX300.jpg"
+                        "https://m.media-amazon.com/images/M/MV5BMzIxMDkxNDM2M15BMl5BanBnXkFtZTcwMDA5ODY1OQ@@._V1_SX300.jpg",
+                        "TV-MA"
                     )
                 ),
                 3

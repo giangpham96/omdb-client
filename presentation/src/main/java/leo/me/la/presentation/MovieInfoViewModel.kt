@@ -22,7 +22,6 @@ class MovieInfoViewModel(
                 val movie = loadMovieInfoUseCase.execute(imdb)
                 _viewStates.value = MovieInfoViewState.LoadMovieInfoSuccess(
                     movie.title,
-                    movie.year,
                     movie.type,
                     movie.poster,
                     movie.rated,

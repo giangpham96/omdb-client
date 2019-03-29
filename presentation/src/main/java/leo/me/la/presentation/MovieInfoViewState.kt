@@ -7,7 +7,6 @@ sealed class MovieInfoViewState : BaseViewState {
     object Loading: MovieInfoViewState()
     data class LoadMovieInfoSuccess(
         val title: String,
-        val year: String,
         val type: MovieType,
         val poster: String?,
         val rated: MovieRate,

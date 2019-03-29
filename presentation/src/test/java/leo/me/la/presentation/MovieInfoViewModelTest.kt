@@ -101,7 +101,6 @@ class MovieInfoViewModelTest {
         assertThat(viewModel.viewStates.value).isEqualTo(
             MovieInfoViewState.LoadMovieInfoSuccess(
                 "Spider-Man: Into the Spider-Verse",
-                "2018",
                 MovieType.Movie,
                 "https://m.media-amazon.com/images/M/MV5BMjMwNDkxMTgzOF5BMl5BanBnXkFtZTgwNTkwNTQ3NjM@._V1_SX300.jpg",
                 MovieRate.PG,

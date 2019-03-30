@@ -12,7 +12,7 @@ sealed class MovieInfoViewState : BaseViewState {
         val rated: MovieRate,
         val released: String,
         val runtime: String,
-        val genres: String,
+        val genres: List<String>,
         val directors: List<String>,
         val writers: String,
         val actors: List<String>,

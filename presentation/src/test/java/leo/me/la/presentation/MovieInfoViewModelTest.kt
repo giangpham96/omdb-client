@@ -106,7 +106,7 @@ class MovieInfoViewModelTest {
                 MovieRate.PG,
                 "14 Dec 2018",
                 "117 min",
-                "Animation, Action, Adventure, Family and Sci-Fi",
+                listOf("Animation", "Action", "Adventure", "Family", "Sci-Fi"),
                 listOf("Bob Persichetti", "Peter Ramsey", "Rodney Rothman"),
                 "Phil Lord (screenplay by), Rodney Rothman (screenplay by) and Phil Lord (story by)",
                 listOf("Shameik Moore", "Jake Johnson", "Hailee Steinfeld", "Mahershala Ali"),

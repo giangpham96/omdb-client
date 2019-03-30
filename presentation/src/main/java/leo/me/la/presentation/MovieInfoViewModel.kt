@@ -27,7 +27,7 @@ class MovieInfoViewModel(
                     movie.rated,
                     movie.released ?: "Unknown",
                     movie.runtime ?: "Unknown runtime",
-                    movie.genres?.joinNames() ?: "Unknown",
+                    movie.genres ?: emptyList(),
                     movie.directors ?: emptyList(),
                     movie.writers?.joinNames() ?: "Unknown",
                     movie.actors ?: emptyList(),

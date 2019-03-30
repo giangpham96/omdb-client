@@ -39,9 +39,9 @@ class MovieInfoViewModel(
                         }
                         ?.joinToString(" ") ?: "Unknown",
                     movie.awards ?: "None",
-                    movie.metaScore?.toString() ?: "?",
-                    movie.imdbRating?.toString() ?: "?",
-                    movie.imdbVotes?.toString() ?: "?",
+                    movie.metaScore?.toString()?.let { "$it/100" } ?: "???/100",
+                    movie.imdbRating?.toString()?.let { "$it/10 IMDb" } ?: "???/10 IMDb",
+                    movie.imdbVotes?.toString()?.let { "$it votes" } ?: "??? votes",
                     movie.boxOffice ?: "Unknown",
                     movie.dvdRelease ?: "Unknown",
                     movie.production ?: "Unknown",

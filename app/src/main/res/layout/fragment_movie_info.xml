@@ -35,9 +35,10 @@
     <TextView
         android:id="@+id/title"
         android:layout_width="0dp"
+        app:layout_constraintWidth_default="wrap"
         android:layout_height="wrap_content"
         android:layout_marginLeft="16dp"
-        android:layout_marginRight="16dp"
+        android:layout_marginStart="16dp"
         android:ellipsize="marquee"
         android:focusable="true"
         android:focusableInTouchMode="true"
@@ -53,6 +54,8 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.43"
         tools:text="Thor: The Dark World"
+        app:layout_constraintHorizontal_chainStyle="packed"
+        app:layout_constraintHorizontal_bias="0"
         />
 
     <TextView
@@ -162,11 +165,12 @@
         android:id="@+id/type"
         android:layout_width="32dp"
         android:layout_height="32dp"
-        android:layout_marginEnd="16dp"
         android:layout_marginRight="16dp"
+        android:layout_marginLeft="16dp"
         app:layout_constraintBottom_toBottomOf="@+id/title"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/title"
+        app:layout_constraintStart_toEndOf="@+id/title"
         tools:ignore="ContentDescription"
         tools:srcCompat="@drawable/icon_movie"
         />

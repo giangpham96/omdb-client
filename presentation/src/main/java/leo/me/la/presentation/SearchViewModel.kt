@@ -1,5 +1,7 @@
 package leo.me.la.presentation
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -22,6 +24,10 @@ class SearchViewModel(
         parentJob.cancel()
         _viewStates.value = SearchViewState.Idling
     }
+
+    private val _navigationRequest = MutableLiveData<MovieInfoEvent>()
+    val navigationRequest: LiveData<MovieInfoEvent>
+        get() = _navigationRequest
 
     fun searchMovies(keyword: String) {
         parentJob.cancel()
@@ -104,4 +110,29 @@ class SearchViewModel(
             }
         }
     }
+
+    fun onItemClick(selectedMovie: String) {
+        with(viewStates.value) {
+            when (this) {
+                is SearchViewState.MoviesFetched -> {
+                    _navigationRequest.value = MovieInfoEvent(
+                        this.movies.map { it.imdbId },
+                        selectedMovie
+                    )
+                }
+                is SearchViewState.LoadPageFailed -> {
+                    _navigationRequest.value = MovieInfoEvent(
+                        this.movies.map { it.imdbId },
+                        selectedMovie
+                    )
+                }
+                else -> Unit
+            }
+        }
+    }
 }
+
+data class MovieInfoEvent(
+    val movies: List<String>,
+    val selectedMovie: String
+)

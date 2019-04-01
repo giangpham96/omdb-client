@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="EasyFlipView">
+        <attr name="flipOnTouch" format="boolean" />
+        <attr name="flipDuration" format="integer" />
+        <attr name="flipType" format="enum">
+            <enum name="horizontal" value="0" />
+            <enum name="vertical" value="1" />
+        </attr>
+        <attr name="flipEnabled" format="boolean" />
+        <attr name="animFlipInId" format="reference" />
+        <attr name="animFlipOutId" format="reference" />
+    </declare-styleable>
+    <integer name="anim_length">500</integer>
+    <integer name="anim_length_half">250</integer>
+
+    <item name="common_app_bar" type="id" />
+</resources>

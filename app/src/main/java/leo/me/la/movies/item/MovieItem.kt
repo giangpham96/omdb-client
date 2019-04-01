@@ -13,7 +13,10 @@ import leo.me.la.common.model.Movie
 import leo.me.la.common.model.MovieType
 import loadUri
 
-internal class MovieItem(private val movie: Movie) : Item() {
+internal class MovieItem(
+    private val movie: Movie,
+    private val onClickListener: (String) -> Unit
+) : Item() {
     override fun createViewHolder(itemView: View): ViewHolder {
         return super.createViewHolder(itemView)
             .apply {
@@ -53,6 +56,9 @@ internal class MovieItem(private val movie: Movie) : Item() {
                     viewHolder.type.visibility = View.GONE
                 }
             )
+        }
+        viewHolder.itemView.setOnClickListener {
+            onClickListener(movie.imdbId)
         }
     }
 

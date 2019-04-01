@@ -1,0 +1,314 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:expandableTextView="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingLeft="16dp"
+    android:paddingRight="16dp"
+    tools:background="#af000000"
+    >
+
+    <TextView
+        android:id="@+id/releasedSection"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:clickable="false"
+        android:text="Release:"
+        android:textColor="@android:color/white"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/productionSection"
+        tools:ignore="HardcodedText"
+        />
+
+    <TextView
+        android:id="@+id/dvdReleaseSection"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:clickable="false"
+        android:text="DVD release:"
+        android:textColor="@android:color/white"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/releasedSection"
+        tools:ignore="HardcodedText"
+        />
+
+    <TextView
+        android:id="@+id/boxOfficeSection"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:clickable="false"
+        android:text="Box Office:"
+        android:textColor="@android:color/white"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/dvdReleaseSection"
+        tools:ignore="HardcodedText"
+        />
+
+    <TextView
+        android:id="@+id/directors"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:clickable="false"
+        android:text="Directors"
+        android:textColor="@android:color/white"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/boxOfficeSection"
+        tools:ignore="HardcodedText"
+        />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/directorsRecyclerView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/directors"
+        tools:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+        tools:spanCount="3"
+        />
+
+    <TextView
+        android:id="@+id/writersSection"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:clickable="false"
+        android:text="Writers:"
+        android:textColor="@android:color/white"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/directorsRecyclerView"
+        tools:ignore="HardcodedText"
+        />
+
+    <com.ms.square.android.expandabletextview.ExpandableTextView
+        android:id="@+id/writers"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/writersSection"
+        app:layout_constraintTop_toBottomOf="@+id/directorsRecyclerView"
+        expandableTextView:expandDrawable="@drawable/icon_more"
+        >
+
+        <TextView
+            android:id="@id/expandable_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:clickable="false"
+            android:textColor="#C5C5C5"
+            />
+
+        <ImageButton
+            android:id="@id/expand_collapse"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end|bottom"
+            android:background="@android:color/transparent"
+            tools:ignore="ContentDescription"
+            />
+    </com.ms.square.android.expandabletextview.ExpandableTextView>
+
+    <TextView
+        android:id="@+id/actors"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:clickable="false"
+        android:text="Actors"
+        android:textColor="@android:color/white"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/writers"
+        tools:ignore="HardcodedText"
+        />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/actorsRecyclerview"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/actors"
+        tools:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+        tools:spanCount="3"
+        />
+
+    <TextView
+        android:id="@+id/languagesSection"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:clickable="false"
+        android:text="Languages:"
+        android:textColor="@android:color/white"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/actorsRecyclerview"
+        tools:ignore="HardcodedText"
+        />
+
+    <TextView
+        android:id="@+id/countriesSection"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:clickable="false"
+        android:text="Countries:"
+        android:textColor="@android:color/white"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/languagesSection"
+        tools:ignore="HardcodedText"
+        />
+
+    <TextView
+        android:id="@+id/awardsSection"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_marginTop="8dp"
+        android:clickable="false"
+        android:text="Awards:"
+        android:textColor="@android:color/white"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/countriesSection"
+        tools:ignore="HardcodedText"
+        />
+
+    <TextView
+        android:id="@+id/productionSection"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:clickable="false"
+        android:text="From:"
+        android:textColor="@android:color/white"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="HardcodedText"
+        />
+
+    <TextView
+        android:id="@+id/production"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="32dp"
+        android:layout_marginStart="32dp"
+        android:clickable="false"
+        android:textColor="#C5C5C5"
+        app:layout_constraintBottom_toBottomOf="@+id/productionSection"
+        app:layout_constraintStart_toEndOf="@+id/dvdReleaseSection"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="Marvel Entertainment"
+        />
+
+    <TextView
+        android:id="@+id/released"
+        android:layout_width="wrap_content"
+        android:layout_height="20dp"
+        android:layout_marginLeft="32dp"
+        android:layout_marginStart="32dp"
+        android:clickable="false"
+        android:textColor="#C5C5C5"
+        android:textStyle="italic"
+        app:layout_constraintBottom_toBottomOf="@+id/releasedSection"
+        app:layout_constraintStart_toEndOf="@+id/dvdReleaseSection"
+        app:layout_constraintTop_toTopOf="@+id/releasedSection"
+        tools:text="29 Apr 2019"
+        />
+
+    <TextView
+        android:id="@+id/dvdReleased"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="32dp"
+        android:layout_marginStart="32dp"
+        android:clickable="false"
+        android:textColor="#C5C5C5"
+        android:textStyle="italic"
+        app:layout_constraintBottom_toBottomOf="@+id/dvdReleaseSection"
+        app:layout_constraintStart_toEndOf="@+id/dvdReleaseSection"
+        app:layout_constraintTop_toTopOf="@+id/dvdReleaseSection"
+        tools:text="29 Dec 2019"
+        />
+
+    <TextView
+        android:id="@+id/boxOffice"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="32dp"
+        android:layout_marginStart="32dp"
+        android:clickable="false"
+        android:textColor="#C5C5C5"
+        app:layout_constraintBottom_toBottomOf="@+id/boxOfficeSection"
+        app:layout_constraintStart_toEndOf="@+id/dvdReleaseSection"
+        app:layout_constraintTop_toTopOf="@+id/boxOfficeSection"
+        tools:text="$1,234,567,232"
+        />
+
+    <TextView
+        android:id="@+id/languages"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="32dp"
+        android:layout_marginStart="32dp"
+        android:clickable="false"
+        android:textColor="#C5C5C5"
+        android:textStyle="italic"
+        app:layout_constraintBottom_toBottomOf="@+id/languagesSection"
+        app:layout_constraintStart_toEndOf="@+id/dvdReleaseSection"
+        app:layout_constraintTop_toTopOf="@+id/languagesSection"
+        tools:text="English, Spanish"
+        />
+
+    <TextView
+        android:id="@+id/countries"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="32dp"
+        android:layout_marginStart="32dp"
+        android:clickable="false"
+        android:textColor="#C5C5C5"
+        app:layout_constraintBottom_toBottomOf="@+id/countriesSection"
+        app:layout_constraintStart_toEndOf="@+id/dvdReleaseSection"
+        app:layout_constraintTop_toTopOf="@+id/countriesSection"
+        tools:text="🇺🇸🇪🇸"
+        />
+
+    <TextView
+        android:id="@+id/awards"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="32dp"
+        android:layout_marginStart="32dp"
+        android:clickable="false"
+        android:textColor="#C5C5C5"
+        android:textStyle="italic"
+        app:layout_constraintBottom_toBottomOf="@+id/awardsSection"
+        app:layout_constraintStart_toEndOf="@+id/dvdReleaseSection"
+        app:layout_constraintTop_toTopOf="@+id/awardsSection"
+        tools:text="15 nominees for Oscar"
+        />
+</androidx.constraintlayout.widget.ConstraintLayout>

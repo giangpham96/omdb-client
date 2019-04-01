@@ -34,7 +34,7 @@ import leo.me.la.presentation.BaseViewModel
 
 internal class SearchMoviesActivity : AppCompatActivity() {
 
-    private val _viewModel: BaseViewModel<SearchViewState> by viewModel(TAG_SEARCH_VIEWMODEL)
+    private val _viewModel: BaseViewModel<SearchViewState> by viewModel(name = TAG_SEARCH_VIEWMODEL)
     private val viewModel by lazy {
         _viewModel as SearchViewModel
     }
@@ -56,9 +56,18 @@ internal class SearchMoviesActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_search_movies)
-        _viewModel.viewStates.observe(this, Observer {
+        viewModel.viewStates.observe(this, Observer {
             it?.let { viewState ->
                 render(viewState)
+            }
+        })
+        viewModel.navigationRequest.observe(this, Observer { event ->
+            event?.let {
+                MovieInfoActivity.launch(
+                    this@SearchMoviesActivity,
+                    it.movies,
+                    it.selectedMovie
+                )
             }
         })
         setSupportActionBar(toolbar)
@@ -135,7 +144,11 @@ internal class SearchMoviesActivity : AppCompatActivity() {
                 loadMovie.visibility = View.GONE
                 movieSection.apply {
                     removeFooter()
-                    update(viewState.movies.map { MovieItem(it) })
+                    update(viewState.movies.map {
+                        MovieItem(it) {
+                            viewModel.onItemClick(it)
+                        }
+                    })
                 }
                 pagedLoadingHandler.nextPage = if (viewState.page < viewState.totalPages)
                     viewState.page + 1
@@ -146,7 +159,11 @@ internal class SearchMoviesActivity : AppCompatActivity() {
                 moviesList.post {
                     movieSection.apply {
                         removeFooter()
-                        update(viewState.movies.map { MovieItem(it) })
+                        update(viewState.movies.map {
+                            MovieItem(it) {
+                                viewModel.onItemClick(it)
+                            }
+                        })
                         setFooter(LoadingFooter)
                     }
                 }
@@ -156,7 +173,11 @@ internal class SearchMoviesActivity : AppCompatActivity() {
                     movieSection.apply {
                         removeFooter()
                         setFooter(retryLoadNextPageFooter)
-                        update(viewState.movies.map { MovieItem(it) })
+                        update(viewState.movies.map {
+                            MovieItem(it) {
+                                viewModel.onItemClick(it)
+                            }
+                        })
                     }
                 }
             }

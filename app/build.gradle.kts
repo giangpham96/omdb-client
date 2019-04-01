@@ -110,6 +110,7 @@ dependencies {
     implementation(Dependencies.coroutinesAndroid)
     implementation(Dependencies.coroutinesCore)
     implementation(Dependencies.constraintLayout)
+    implementation(Dependencies.expandableTextview)
     implementation(Dependencies.glide)
     implementation(Dependencies.glideOkHttp)
     implementation(Dependencies.groupie)

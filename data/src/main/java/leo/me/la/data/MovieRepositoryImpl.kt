@@ -75,9 +75,9 @@ internal class MovieRepositoryImpl(
                 try {
                     MovieRate.valueOf(it.toUpperCase().replace("-", "_"))
                 } catch (ignored: Throwable) {
-                    MovieRate.UNKNOWN
+                    MovieRate.UNRATED
                 }
-            } ?: MovieRate.UNKNOWN,
+            } ?: MovieRate.UNRATED,
             released,
             runtime,
             genres?.splitToList(),

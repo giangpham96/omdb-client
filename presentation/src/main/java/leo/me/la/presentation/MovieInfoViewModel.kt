@@ -22,13 +22,12 @@ class MovieInfoViewModel(
                 val movie = loadMovieInfoUseCase.execute(imdb)
                 _viewStates.value = MovieInfoViewState.LoadMovieInfoSuccess(
                     movie.title,
-                    movie.year,
                     movie.type,
                     movie.poster,
                     movie.rated,
                     movie.released ?: "Unknown",
                     movie.runtime ?: "Unknown runtime",
-                    movie.genres?.joinNames() ?: "Unknown",
+                    movie.genres ?: emptyList(),
                     movie.directors ?: emptyList(),
                     movie.writers?.joinNames() ?: "Unknown",
                     movie.actors ?: emptyList(),
@@ -40,9 +39,9 @@ class MovieInfoViewModel(
                         }
                         ?.joinToString(" ") ?: "Unknown",
                     movie.awards ?: "None",
-                    movie.metaScore?.toString() ?: "?",
-                    movie.imdbRating?.toString() ?: "?",
-                    movie.imdbVotes?.toString() ?: "?",
+                    movie.metaScore?.toString()?.let { "$it/100" } ?: "???/100",
+                    movie.imdbRating?.toString()?.let { "$it/10 IMDb" } ?: "???/10 IMDb",
+                    movie.imdbVotes?.toString()?.let { "$it votes" } ?: "??? votes",
                     movie.boxOffice ?: "Unknown",
                     movie.dvdRelease ?: "Unknown",
                     movie.production ?: "Unknown",

@@ -42,7 +42,7 @@ class MovieRepositoryImplTest {
                     "tt0103359",
                     MovieType.Series,
                     "https://m.media-amazon.com/images/M/MV5BOTM3MTRkZjQtYjBkMy00YWE1LTkxOTQtNDQyNGY0YjYzNzAzXkEyXkFqcGdeQXVyOTgwMzk1MTA@._V1_SX300.jpg",
-                    MovieRate.UNKNOWN
+                    MovieRate.UNRATED
                 ),
                 Movie(
                     "Batman: The Dark Knight Returns, Part 1",

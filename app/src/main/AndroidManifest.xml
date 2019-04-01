@@ -18,6 +18,7 @@
         tools:ignore="GoogleAppIndexingWarning"
         tools:targetApi="m"
         >
+        <activity android:name=".MovieInfoActivity" />
         <activity android:name=".SearchMoviesActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

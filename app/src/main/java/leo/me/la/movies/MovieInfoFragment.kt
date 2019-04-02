@@ -25,13 +25,15 @@ import kotlinx.android.synthetic.main.back_view_movie_info.released
 import kotlinx.android.synthetic.main.back_view_movie_info.writers
 import kotlinx.android.synthetic.main.fragment_movie_info.imdbRate
 import kotlinx.android.synthetic.main.fragment_movie_info.imdbVotes
+import kotlinx.android.synthetic.main.fragment_movie_info.info
 import kotlinx.android.synthetic.main.fragment_movie_info.metaScore
 import kotlinx.android.synthetic.main.fragment_movie_info.poster
-import kotlinx.android.synthetic.main.fragment_movie_info.rate
 import kotlinx.android.synthetic.main.fragment_movie_info.runtime
 import kotlinx.android.synthetic.main.fragment_movie_info.title
 import kotlinx.android.synthetic.main.fragment_movie_info.type
 import kotlinx.android.synthetic.main.front_view_movie_info.plot
+import kotlinx.android.synthetic.main.front_view_movie_info.plotContainer
+import kotlinx.android.synthetic.main.front_view_movie_info.rate
 import leo.me.la.common.TAG_MOVIE_INFO_VIEWMODEL
 import leo.me.la.common.model.MovieType
 import leo.me.la.movies.item.NameItem
@@ -109,6 +111,13 @@ internal class MovieInfoFragment : Fragment() {
                 render(viewState)
             }
         })
+        info.post {
+            val scrollViewHeight = info.measuredHeight
+            plotContainer.post {
+                plotContainer.layoutParams = plotContainer.layoutParams
+                    .apply { height = scrollViewHeight }
+            }
+        }
     }
 
     private fun render(viewState: MovieInfoViewState) {

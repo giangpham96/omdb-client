@@ -107,6 +107,7 @@
         app:layout_constraintStart_toEndOf="@+id/writersSection"
         app:layout_constraintTop_toBottomOf="@+id/directorsRecyclerView"
         expandableTextView:expandDrawable="@drawable/icon_more"
+        expandableTextView:maxCollapsedLines="3"
         >
 
         <TextView

@@ -54,9 +54,13 @@ class MovieInfoViewModel(
     }
 
     private fun List<String>.joinNames(): String {
-        return listOf(
-            subList(0, size - 1).joinToString(", "),
-            last()
-        ).joinToString(" and ")
+        return when {
+            size > 1 -> listOf(
+                subList(0, size - 1).joinToString(", "),
+                last()
+            ).joinToString(" and ")
+            size == 1 -> first()
+            else -> "Unknown"
+        }
     }
 }

@@ -44,7 +44,7 @@ internal class MovieAdapter {
                     "Title" -> title = nextString()
                     "Year" -> year = nextString()
                     "Poster" -> poster = nextString()
-                    "imdbID" -> imdbId = nextString()
+                    "imdbID" -> imdbId = nextString().trim()
                     "Type" -> type = nextString()
                     "Rated" -> rated = nextString()
                     "Released" -> released = nextString()

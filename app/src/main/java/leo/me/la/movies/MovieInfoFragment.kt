@@ -114,8 +114,7 @@ internal class MovieInfoFragment : Fragment() {
         info.post {
             val scrollViewHeight = info.measuredHeight
             plotContainer.post {
-                plotContainer.layoutParams = plotContainer.layoutParams
-                    .apply { height = scrollViewHeight }
+                plotContainer.minimumHeight = scrollViewHeight
             }
         }
     }

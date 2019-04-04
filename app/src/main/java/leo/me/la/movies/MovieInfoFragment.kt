@@ -1,5 +1,7 @@
 package leo.me.la.movies
 
+import android.content.res.ColorStateList
+import android.graphics.Color
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -10,6 +12,7 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.GridLayoutManager
+import com.google.android.material.chip.Chip
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.Section
 import com.xwray.groupie.kotlinandroidextensions.ViewHolder
@@ -31,6 +34,7 @@ import kotlinx.android.synthetic.main.fragment_movie_info.poster
 import kotlinx.android.synthetic.main.fragment_movie_info.runtime
 import kotlinx.android.synthetic.main.fragment_movie_info.title
 import kotlinx.android.synthetic.main.fragment_movie_info.type
+import kotlinx.android.synthetic.main.front_view_movie_info.genres
 import kotlinx.android.synthetic.main.front_view_movie_info.plot
 import kotlinx.android.synthetic.main.front_view_movie_info.plotContainer
 import kotlinx.android.synthetic.main.front_view_movie_info.rate
@@ -161,15 +165,15 @@ internal class MovieInfoFragment : Fragment() {
                         NameItem(it)
                     })
                 }
-//                viewState.genres.forEach { genre ->
-//                    genres.addView(
-//                        Chip(this@MovieInfoFragment.requireContext()).also {
-//                            it.text = genre
-//                            it.chipBackgroundColor = ColorStateList.valueOf(Color.GRAY)
-//                            it.setTextColor(Color.WHITE)
-//                        }
-//                    )
-//                }
+                viewState.genres.forEach { genre ->
+                    genres.addView(
+                        Chip(genres.context).also {
+                            it.text = genre
+                            it.chipBackgroundColor = ColorStateList.valueOf(Color.GRAY)
+                            it.setTextColor(Color.WHITE)
+                        }
+                    )
+                }
             }
             is MovieInfoViewState.LoadMovieInfoFailure -> {
 

@@ -13,6 +13,4 @@
     </declare-styleable>
     <integer name="anim_length">500</integer>
     <integer name="anim_length_half">250</integer>
-
-    <item name="common_app_bar" type="id" />
 </resources>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="padding_margin_normal">16dp</dimen>
+    <dimen name="padding_margin_large">32dp</dimen>
+    <dimen name="padding_margin_small">8dp</dimen>
+    <dimen name="padding_margin_extra_small">4dp</dimen>
+    <dimen name="low_elevation">4dp</dimen>
+    <dimen name="icon_size">16dp</dimen>
+    <dimen name="corner_radius">8dp</dimen>
+</resources>

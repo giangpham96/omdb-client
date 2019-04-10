@@ -3,6 +3,29 @@ This is the repository for the Android client of OMDB.
 The purpose of this repository is to illustrate the use of Kotlin Coroutines to achieve 
 concurrency in Android programming, which is normally done by RxJava.
 
+## Language, libraries and tools
+- [Kotlin](https://kotlinlang.org/docs/reference/) the project is 100% written in Kotlin
+- [Coroutines](https://kotlinlang.org/docs/reference/coroutines/coroutines-guide.html) a Kotlin
+light-weighted concurrency library. This project uses it as a RxJava alternative to demonstrate how
+it simplifies the code base
+- [Koin](https://insert-koin.io/) a Kotlin light-weighted dependency injection framework. This
+project use it as a Dagger alternative to demonstrate how simple it is to understand
+- [Retrofit](https://square.github.io/retrofit/) A type-safe HTTP client for Android
+- [Moshi](https://github.com/square/moshi) A modern JSON library for Kotlin and Java
+- [Room](https://developer.android.com/training/data-storage/room/index.html) The Room persistence
+library provides an abstraction layer over SQLite to allow for more robust database access while
+harnessing the full power of SQLite
+- [AndroidX libraries](https://developer.android.com/jetpack/androidx/)
+- [Architecture components](https://developer.android.com/topic/libraries/architecture/) provides
+the life-cycle aware components and observable data
+- [Glide](https://github.com/bumptech/glide) An image loading and caching library for Android
+focused on smooth scrolling
+- [JUnit4](https://junit.org/junit4/) supports writing Kotlin unit tests
+- [Espresso](https://developer.android.com/training/testing/espresso) supports writing Android UI
+tests
+- [Mockk](https://mockk.io/) an alternative of Mockito. Mockk is Kotlin friendly. It has better
+support for coroutines mocking compared to Mockito
+
 ## Architecture
 The architecture of the project follows the principles of Clean Architecture. 
 ![architecture](https://preview.ibb.co/hyTZMc/architecture.png)
@@ -43,19 +66,7 @@ to retrieve data from the API.
 
 
 ### Cache
-The Cache layer handles all communication with the local databasea. 
-
-## Languages, libraries and tools used
-* [Kotlin](https://kotlinlang.org/)
-* [Retrofit](http://square.github.io/retrofit/)
-* [OkHttp](http://square.github.io/okhttp/)
-* [Moshi](https://github.com/square/moshi)
-* AndroidX Libraries
-* [KotlinCoroutines](https://kotlinlang.org/docs/reference/coroutines-overview.html)
-* [Koin](https://insert-koin.io/docs/1.0/documentation/reference/index.html)
-* [Mockk](https://mockk.io/)
-* [Espresso](https://developer.android.com/training/testing/espresso/index.html)
-* [JUnit4](https://github.com/junit-team/junit4/wiki/Getting-started)
+The Cache layer handles all communication with the local databasea.
 
 ## Tests
 

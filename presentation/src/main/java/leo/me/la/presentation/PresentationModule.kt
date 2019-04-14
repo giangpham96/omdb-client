@@ -11,8 +11,8 @@ val presentationModule = module {
     baseViewModel(TAG_SEARCH_VIEWMODEL) {
         SearchViewModel(get())
     }
-    baseViewModel(TAG_MOVIE_INFO_VIEWMODEL) { (imdbId : String) ->
-        MovieInfoViewModel(get(), imdbId = imdbId)
+    baseViewModel(TAG_MOVIE_INFO_VIEWMODEL) { (imdbId : String, poster: String?) ->
+        MovieInfoViewModel(get(), imdbId = imdbId, poster = poster)
     }
 }
 

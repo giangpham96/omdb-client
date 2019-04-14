@@ -65,7 +65,7 @@ internal class SearchMoviesActivity : AppCompatActivity() {
             event?.let {
                 MovieInfoActivity.launch(
                     this@SearchMoviesActivity,
-                    it.movies,
+                    it.movies.map { ParcelableMovie(it.imdbId, it.poster)},
                     it.selectedMovie
                 )
             }

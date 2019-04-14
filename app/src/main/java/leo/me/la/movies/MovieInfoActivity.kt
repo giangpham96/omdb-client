@@ -11,19 +11,26 @@ import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentStatePagerAdapter
 import kotlinx.android.synthetic.main.activity_movie_info.viewPager
 
-const val MOVIE_IDS = "movie_ids"
+const val MOVIES = "movies"
 const val SELECTED_IMDB_ID = "selected_imdb_id"
+
 internal class MovieInfoActivity : AppCompatActivity() {
     companion object {
-        /**
-         * Launches LogInActivity
-         * @param activity [Activity] that is launching the [LogInActivity]
-         */
-        fun launch(activity: Activity, movieIds: List<String>, selectedMovieId: String) {
+        fun launch(
+            activity: Activity, movies: List<ParcelableMovie>, selectedMovieId:
+            String
+        ) {
             val intent = Intent(activity, MovieInfoActivity::class.java)
                 .apply {
-                    putExtra(MOVIE_IDS, arrayListOf<String>().apply { addAll(movieIds) })
-                    putExtra(SELECTED_IMDB_ID, selectedMovieId)
+                    putExtras(
+                        Bundle().apply {
+                            putParcelableArrayList(
+                                MOVIES,
+                                arrayListOf<ParcelableMovie>().apply { addAll(movies) }
+                            )
+                            putString(SELECTED_IMDB_ID, selectedMovieId)
+                        }
+                    )
                 }
             ActivityCompat.startActivity(
                 activity,
@@ -35,37 +42,35 @@ internal class MovieInfoActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_movie_info)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
 
-            window.setFlags(
-                WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
-                WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
-            )
-        }
-
-        val movieIds = intent?.extras?.getStringArrayList(MOVIE_IDS)
-            ?: throw IllegalStateException("${javaClass.simpleName} needs a list of movie imdb ids")
+        val movieIds =
+            intent?.extras?.getParcelableArrayList<ParcelableMovie>(MOVIES)
+                ?: throw IllegalStateException("${javaClass.simpleName} needs a map of movie image and imdb ids")
         viewPager.apply {
+            val movieList = movieIds.toList()
             adapter = ScreenSlidePagerAdapter(
-                movieIds,
+                movieList,
                 supportFragmentManager
             )
-            currentItem = intent?.extras?.getString(SELECTED_IMDB_ID)?.let {
-                movieIds.indexOf(it).let { index ->
-                    if (index >= 0)
-                        index
-                    else
-                        throw IllegalStateException("SELECTED_IMDB_ID is not inside MOVIE_IDS")
-                }
+            currentItem = intent?.extras?.getString(SELECTED_IMDB_ID)?.let { id ->
+                movieList.map { it.imdbId }
+                    .indexOf(id)
+                    .let { index ->
+                        if (index >= 0)
+                            index
+                        else
+                            throw IllegalStateException("SELECTED_IMDB_ID is not inside MOVIES")
+                    }
             } ?: throw IllegalStateException("${javaClass.simpleName} needs to know selected movie")
         }
     }
     private inner class ScreenSlidePagerAdapter(
-        private val movieIds: List<String>,
+        private val movieImageIds: List<ParcelableMovie>,
         fm: FragmentManager
     ) : FragmentStatePagerAdapter(fm) {
-        override fun getCount(): Int = movieIds.size
+        override fun getCount(): Int = movieImageIds.size
 
-        override fun getItem(position: Int) = MovieInfoFragment.newInstance(movieIds[position])
+        override fun getItem(position: Int) = MovieInfoFragment
+            .newInstance(movieImageIds[position].imdbId, movieImageIds[position].posterUrl)
     }
 }

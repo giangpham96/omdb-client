@@ -1,7 +1,6 @@
 package leo.me.la.movies
 
 import android.app.Application
-import androidx.appcompat.app.AppCompatDelegate
 import com.squareup.leakcanary.LeakCanary
 import leo.me.la.cache.cacheModule
 import leo.me.la.data.dataModule
@@ -17,7 +16,6 @@ internal class OmdbApplication: Application() {
             return
         }
         LeakCanary.install(this)
-        AppCompatDelegate.setCompatVectorFromResourcesEnabled(true)
         // Start Koin
         startKoin(this, listOf(
             appModule,

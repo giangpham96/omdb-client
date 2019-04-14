@@ -15,11 +15,6 @@ const val MOVIE_IDS = "movie_ids"
 const val SELECTED_IMDB_ID = "selected_imdb_id"
 internal class MovieInfoActivity : AppCompatActivity() {
     companion object {
-        /**
-         * Launches LogInActivity
-         * @param activity [Activity] that is launching the [LogInActivity]
-         */
-        fun launch(activity: Activity, movieIds: List<String>, selectedMovieId: String) {
             val intent = Intent(activity, MovieInfoActivity::class.java)
                 .apply {
                     putExtra(MOVIE_IDS, arrayListOf<String>().apply { addAll(movieIds) })

@@ -29,7 +29,9 @@ import kotlinx.android.synthetic.main.back_view_movie_info.writers
 import kotlinx.android.synthetic.main.fragment_movie_info.imdbRate
 import kotlinx.android.synthetic.main.fragment_movie_info.imdbVotes
 import kotlinx.android.synthetic.main.fragment_movie_info.info
+import kotlinx.android.synthetic.main.fragment_movie_info.loading
 import kotlinx.android.synthetic.main.fragment_movie_info.metaScore
+import kotlinx.android.synthetic.main.fragment_movie_info.placeholderMetascore
 import kotlinx.android.synthetic.main.fragment_movie_info.poster
 import kotlinx.android.synthetic.main.fragment_movie_info.runtime
 import kotlinx.android.synthetic.main.fragment_movie_info.title
@@ -126,6 +128,12 @@ internal class MovieInfoFragment : Fragment() {
     private fun render(viewState: MovieInfoViewState) {
         when (viewState) {
             is MovieInfoViewState.LoadMovieInfoSuccess -> {
+                loading.isVisible = false
+                setOf(
+                    title, type, imdbRate, imdbVotes, metaScore, runtime, info, placeholderMetascore
+                ).forEach {
+                    it.isVisible = true
+                }
                 poster.loadUri(
                     viewState.poster,
                     errorImage = AppCompatResources.getDrawable(
@@ -180,6 +188,12 @@ internal class MovieInfoFragment : Fragment() {
             }
             MovieInfoViewState.Loading -> {
 
+                loading.isVisible = true
+                setOf(
+                    title, type, imdbRate, imdbVotes, metaScore, runtime, info, placeholderMetascore
+                ).forEach {
+                    it.isVisible = false
+                }
             }
         }
     }

@@ -51,13 +51,15 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 
 private const val IMDB_ID = "imdb_id"
+private const val POSTER_URL = "poster_url"
 
 internal class MovieInfoFragment : Fragment() {
     private lateinit var imdbId: String
+    private var posterUrl: String? = null
 
     private val _viewModel: BaseViewModel<MovieInfoViewState>
         by viewModel(name = TAG_MOVIE_INFO_VIEWMODEL) {
-            parametersOf(imdbId)
+            parametersOf(imdbId, posterUrl)
         }
 
     private val viewModel by lazy {
@@ -81,6 +83,7 @@ internal class MovieInfoFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         imdbId = arguments?.getString(IMDB_ID) ?: throw IllegalStateException("imdb_id is required")
+        posterUrl = arguments?.getString(POSTER_URL)
     }
 
     override fun onCreateView(
@@ -186,9 +189,15 @@ internal class MovieInfoFragment : Fragment() {
             is MovieInfoViewState.LoadMovieInfoFailure -> {
 
             }
-            MovieInfoViewState.Loading -> {
-
+            is MovieInfoViewState.Loading -> {
                 loading.isVisible = true
+                poster.loadUri(
+                    viewState.poster,
+                    errorImage = AppCompatResources.getDrawable(
+                        requireContext(),
+                        R.drawable.movie_theater
+                    )
+                )
                 setOf(
                     title, type, imdbRate, imdbVotes, metaScore, runtime, info, placeholderMetascore
                 ).forEach {
@@ -200,10 +209,13 @@ internal class MovieInfoFragment : Fragment() {
 
     companion object {
         @JvmStatic
-        fun newInstance(imdbId: String) =
+        fun newInstance(imdbId: String, posterUrl: String?) =
             MovieInfoFragment().apply {
                 arguments = Bundle().apply {
                     putString(IMDB_ID, imdbId)
+                    posterUrl?.run {
+                        putString(POSTER_URL, this)
+                    }
                 }
             }
     }

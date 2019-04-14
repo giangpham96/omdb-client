@@ -4,7 +4,7 @@ import leo.me.la.common.model.MovieRate
 import leo.me.la.common.model.MovieType
 
 sealed class MovieInfoViewState : BaseViewState {
-    object Loading: MovieInfoViewState()
+    data class Loading(val poster: String?): MovieInfoViewState()
     data class LoadMovieInfoSuccess(
         val title: String,
         val type: MovieType,

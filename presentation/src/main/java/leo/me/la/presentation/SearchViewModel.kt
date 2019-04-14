@@ -6,6 +6,7 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import leo.me.la.common.model.Movie
 import leo.me.la.domain.SearchMoviesUseCase
 import leo.me.la.exception.OmdbErrorException
 import kotlin.coroutines.CoroutineContext
@@ -116,13 +117,13 @@ class SearchViewModel(
             when (this) {
                 is SearchViewState.MoviesFetched -> {
                     _navigationRequest.value = MovieInfoEvent(
-                        this.movies.map { it.imdbId },
+                        this.movies,
                         selectedMovie
                     )
                 }
                 is SearchViewState.LoadPageFailed -> {
                     _navigationRequest.value = MovieInfoEvent(
-                        this.movies.map { it.imdbId },
+                        this.movies,
                         selectedMovie
                     )
                 }
@@ -133,6 +134,6 @@ class SearchViewModel(
 }
 
 data class MovieInfoEvent(
-    val movies: List<String>,
+    val movies: List<Movie>,
     val selectedMovie: String
 )

@@ -9,10 +9,11 @@ import kotlin.coroutines.CoroutineContext
 class MovieInfoViewModel(
     private val loadMovieInfoUseCase: LoadMovieInfoUseCase,
     context: CoroutineContext = Dispatchers.Main,
-    imdbId: String
+    imdbId: String,
+    poster: String?
 ) : BaseViewModel<MovieInfoViewState>(context) {
     init {
-        _viewStates.value = MovieInfoViewState.Loading
+        _viewStates.value = MovieInfoViewState.Loading(poster)
         loadMovieInfo(imdbId)
     }
 

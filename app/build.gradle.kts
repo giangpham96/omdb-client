@@ -120,6 +120,7 @@ dependencies {
     implementation(Dependencies.kotlinStdLib)
     debugImplementation(Dependencies.leakCanary)
     releaseImplementation(Dependencies.leakCanaryNoOp)
+    implementation(Dependencies.lifecycleRuntimeKtx)
     implementation(Dependencies.materialDesign)
     implementation(Dependencies.recyclerView)
 

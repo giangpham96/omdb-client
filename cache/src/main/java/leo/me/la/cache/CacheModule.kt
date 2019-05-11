@@ -1,10 +1,9 @@
 package leo.me.la.cache
 
 import androidx.room.Room
-import leo.me.la.cache.room.MovieDao
 import leo.me.la.cache.room.OmdbDatabase
 import leo.me.la.data.source.MovieCacheDataSource
-import org.koin.dsl.module.module
+import org.koin.dsl.module
 
 val cacheModule = module {
     single {

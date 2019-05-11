@@ -30,11 +30,12 @@ import leo.me.la.common.TAG_SEARCH_VIEWMODEL
 import leo.me.la.movies.item.RetryLoadNextPageFooter
 import leo.me.la.movies.util.DebouncingQueryTextListener
 import leo.me.la.presentation.BaseViewModel
+import org.koin.core.qualifier.named
 
 
 internal class SearchMoviesActivity : AppCompatActivity() {
 
-    private val _viewModel: BaseViewModel<SearchViewState> by viewModel(name = TAG_SEARCH_VIEWMODEL)
+    private val _viewModel: BaseViewModel<SearchViewState> by viewModel(named(TAG_SEARCH_VIEWMODEL))
     private val viewModel by lazy {
         _viewModel as SearchViewModel
     }
@@ -212,7 +213,7 @@ internal class SearchMoviesActivity : AppCompatActivity() {
                 setIconifiedByDefault(false)
                 setOnQueryTextListener(
                     DebouncingQueryTextListener(
-                        this@SearchMoviesActivity.lifecycle
+                        this@SearchMoviesActivity
                     ) { newText ->
                         newText?.let {
                             if (it.isEmpty()) {

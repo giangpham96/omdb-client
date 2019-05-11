@@ -49,6 +49,7 @@ import leo.me.la.presentation.MovieInfoViewState
 import loadUri
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
+import org.koin.core.qualifier.named
 
 private const val IMDB_ID = "imdb_id"
 private const val POSTER_URL = "poster_url"
@@ -58,7 +59,7 @@ internal class MovieInfoFragment : Fragment() {
     private var posterUrl: String? = null
 
     private val _viewModel: BaseViewModel<MovieInfoViewState>
-        by viewModel(name = TAG_MOVIE_INFO_VIEWMODEL) {
+        by viewModel(named(TAG_MOVIE_INFO_VIEWMODEL)) {
             parametersOf(imdbId, posterUrl)
         }
 

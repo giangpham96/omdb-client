@@ -7,7 +7,8 @@ import leo.me.la.data.dataModule
 import leo.me.la.domain.domainModule
 import leo.me.la.presentation.presentationModule
 import leo.me.la.remote.remoteModule
-import org.koin.android.ext.android.startKoin
+import org.koin.android.ext.koin.androidContext
+import org.koin.core.context.startKoin
 
 internal class OmdbApplication: Application() {
     override fun onCreate() {
@@ -17,13 +18,16 @@ internal class OmdbApplication: Application() {
         }
         LeakCanary.install(this)
         // Start Koin
-        startKoin(this, listOf(
-            appModule,
-            cacheModule,
-            domainModule,
-            dataModule,
-            presentationModule,
-            remoteModule
-        ))
+        startKoin {
+            androidContext(this@OmdbApplication)
+            modules(
+                appModule,
+                cacheModule,
+                domainModule,
+                dataModule,
+                presentationModule,
+                remoteModule
+            )
+        }
     }
 }

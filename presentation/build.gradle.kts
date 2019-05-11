@@ -25,6 +25,7 @@ dependencies {
     implementation(Dependencies.koinViewModel)
     implementation(Dependencies.kotlinStdLib)
     implementation(Dependencies.livecycleExtensions)
+    implementation(Dependencies.lifecycleViewModelKtx)
     kapt(Dependencies.lifecycleCompiler)
 
     testImplementation(TestDependencies.archCoreTesting)

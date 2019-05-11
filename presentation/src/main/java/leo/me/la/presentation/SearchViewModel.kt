@@ -2,27 +2,27 @@ package leo.me.la.presentation
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import leo.me.la.common.model.Movie
 import leo.me.la.domain.SearchMoviesUseCase
 import leo.me.la.exception.OmdbErrorException
-import kotlin.coroutines.CoroutineContext
 import kotlin.math.ceil
 
 class SearchViewModel(
-    private val searchMoviesUseCase: SearchMoviesUseCase,
-    context: CoroutineContext = Dispatchers.Main
-) : BaseViewModel<SearchViewState>(context) {
+    private val searchMoviesUseCase: SearchMoviesUseCase
+) : BaseViewModel<SearchViewState>() {
+
+    private var searchJob: Job? = null
 
     init {
         _viewStates.value = SearchViewState.Idling
     }
 
     fun resetSearch() {
-        parentJob.cancel()
+        searchJob?.cancel()
         _viewStates.value = SearchViewState.Idling
     }
 
@@ -31,9 +31,8 @@ class SearchViewModel(
         get() = _navigationRequest
 
     fun searchMovies(keyword: String) {
-        parentJob.cancel()
-        parentJob = Job()
-        launch {
+        searchJob?.cancel()
+        searchJob = viewModelScope.launch {
             _viewStates.value = SearchViewState.Searching
             try {
                 val movieResult = searchMoviesUseCase.execute(keyword)
@@ -85,9 +84,7 @@ class SearchViewModel(
                     else -> throw IllegalStateException("The state ${this.javaClass.simpleName} is unexpected")
                 }
                 _viewStates.value = SearchViewState.LoadingNextPage(fetchedMovies)
-                if (parentJob.isCancelled)
-                    parentJob = Job()
-                launch {
+                searchJob = viewModelScope.launch {
                     try {
                         val nextPageMovieResult = searchMoviesUseCase.execute(keyword, nextPage)
                         _viewStates.value = SearchViewState.MoviesFetched(
@@ -130,6 +127,11 @@ class SearchViewModel(
                 else -> Unit
             }
         }
+    }
+
+    override fun onCleared() {
+        searchJob?.cancel()
+        super.onCleared()
     }
 }
 

@@ -10,15 +10,16 @@ import leo.me.la.remote.adapter.MovieAdapter
 import leo.me.la.remote.adapter.MovieSearchAdapter
 import okhttp3.Interceptor
 import okhttp3.logging.HttpLoggingInterceptor
-import org.koin.dsl.module.module
+import org.koin.core.qualifier.named
+import org.koin.dsl.module
 import retrofit2.converter.moshi.MoshiConverterFactory
 
 val remoteModule = module {
 
     single {
         RemoteFactory.buildOkHttpClient(
-            listOf(get(name = TAG_INTERCEPTOR_API_KEY)),
-            listOf(get(name = TAG_INTERCEPTOR_LOGGING))
+            listOf(get(named(TAG_INTERCEPTOR_API_KEY))),
+            listOf(get(named(TAG_INTERCEPTOR_LOGGING)))
         )
     }
 
@@ -47,14 +48,14 @@ val remoteModule = module {
         MoshiConverterFactory.create(get())
     }
 
-    factory<Interceptor>(name = TAG_INTERCEPTOR_LOGGING) {
-        val isDebug: Boolean = get(name = TAG_BOOLEAN_DEBUG)
+    factory<Interceptor>(named(TAG_INTERCEPTOR_LOGGING)) {
+        val isDebug: Boolean = get(named(TAG_BOOLEAN_DEBUG))
         HttpLoggingInterceptor().apply {
             level = if (isDebug) HttpLoggingInterceptor.Level.BODY else HttpLoggingInterceptor.Level.NONE
         }
     }
 
-    factory<Interceptor>(name = TAG_INTERCEPTOR_API_KEY) {
-        ApiKeyInterceptor(get(name = TAG_OMDB_API_KEY))
+    factory<Interceptor>(named(TAG_INTERCEPTOR_API_KEY)) {
+        ApiKeyInterceptor(get(named(TAG_OMDB_API_KEY)))
     }
 }

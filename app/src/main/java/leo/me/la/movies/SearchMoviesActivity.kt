@@ -213,7 +213,7 @@ internal class SearchMoviesActivity : AppCompatActivity() {
                 setIconifiedByDefault(false)
                 setOnQueryTextListener(
                     DebouncingQueryTextListener(
-                        this@SearchMoviesActivity.lifecycle
+                        this@SearchMoviesActivity
                     ) { newText ->
                         newText?.let {
                             if (it.isEmpty()) {

@@ -11,7 +11,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.ObsoleteCoroutinesApi
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.test.TestCoroutineContext
+import kotlinx.coroutines.test.TestCoroutineDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.setMain
 import leo.me.la.common.model.Movie
@@ -25,9 +25,9 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TestRule
 
+@ExperimentalCoroutinesApi
 class MovieInfoViewModelTest {
-    @ObsoleteCoroutinesApi
-    private val testCoroutineContext = TestCoroutineContext()
+    private val testDispatcher = TestCoroutineDispatcher()
 
     @get:Rule
     var rule: TestRule = InstantTaskExecutorRule()
@@ -51,6 +51,7 @@ class MovieInfoViewModelTest {
     @ExperimentalCoroutinesApi
     @After
     fun tearDown() {
+        viewModel.viewStates.removeObserver(observer)
         Dispatchers.resetMain() // reset main dispatcher to the original Main dispatcher
     }
 
@@ -61,9 +62,9 @@ class MovieInfoViewModelTest {
             delay(500)
             throw Throwable()
         }
-        viewModel = MovieInfoViewModel(useCase, testCoroutineContext, "imdbId", null)
+        viewModel = MovieInfoViewModel(useCase, "imdbId", null)
         viewModel.viewStates.observeForever(observer)
-        testCoroutineContext.advanceTimeBy(400)
+        testDispatcher.advanceTimeBy(400)
         assertThat(viewModel.viewStates.value).isEqualTo(MovieInfoViewState.Loading(null))
     }
 
@@ -96,7 +97,7 @@ class MovieInfoViewModelTest {
             "Sony Pictures",
             "http://www.intothespiderverse.movie/"
         )
-        viewModel = MovieInfoViewModel(useCase, imdbId = "imdbId", poster = null)
+        viewModel = MovieInfoViewModel(useCase, "imdbId", null)
         viewModel.viewStates.observeForever(observer)
         assertThat(viewModel.viewStates.value).isEqualTo(
             MovieInfoViewState.LoadMovieInfoSuccess(
@@ -130,7 +131,7 @@ class MovieInfoViewModelTest {
     @Test
     fun `should move to LoadMovieInfoFailure state`() {
         coEvery { useCase.execute("imdbId") } throws Throwable()
-        viewModel = MovieInfoViewModel(useCase, imdbId = "imdbId", poster = null)
+        viewModel = MovieInfoViewModel(useCase, "imdbId", null)
         viewModel.viewStates.observeForever(observer)
         assertThat(viewModel.viewStates.value).isInstanceOf(MovieInfoViewState.LoadMovieInfoFailure::class.java)
     }

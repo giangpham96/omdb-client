@@ -1,24 +1,22 @@
 package leo.me.la.presentation
 
-import kotlinx.coroutines.Dispatchers
+import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 import leo.me.la.common.toFlagEmoji
 import leo.me.la.domain.LoadMovieInfoUseCase
-import kotlin.coroutines.CoroutineContext
 
 class MovieInfoViewModel(
     private val loadMovieInfoUseCase: LoadMovieInfoUseCase,
-    context: CoroutineContext = Dispatchers.Main,
     imdbId: String,
     poster: String?
-) : BaseViewModel<MovieInfoViewState>(context) {
+) : BaseViewModel<MovieInfoViewState>() {
     init {
         _viewStates.value = MovieInfoViewState.Loading(poster)
         loadMovieInfo(imdbId)
     }
 
     private fun loadMovieInfo(imdb: String) {
-        launch {
+        viewModelScope.launch {
             try {
                 val movie = loadMovieInfoUseCase.execute(imdb)
                 _viewStates.value = MovieInfoViewState.LoadMovieInfoSuccess(

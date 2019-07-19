@@ -12,7 +12,7 @@ internal class MovieRemoteDataSourceImpl(
     override suspend fun searchMoviesByImdbId(imdbId: String): MovieDataModel {
         return try {
             omdbRestApi
-                .searchByImdbId(imdbId)
+                .searchByImdbIdAsync(imdbId)
                 .await()
                 .let {
                     mapMovieRemoteModelToMovieDataModel(it)
@@ -25,7 +25,7 @@ internal class MovieRemoteDataSourceImpl(
     override suspend fun searchMoviesByKeyword(keyword: String, page: Int): MovieSearchResultDataModel {
         return try {
             omdbRestApi
-                .searchByKeyword(keyword, page)
+                .searchByKeywordAsync(keyword, page)
                 .await()
                 .let {
                     MovieSearchResultDataModel(

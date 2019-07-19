@@ -8,7 +8,7 @@ import retrofit2.http.Query
 
 internal interface OmdbRestApi {
     @GET("/")
-    fun searchByKeyword(
+    fun searchByKeywordAsync(
         @Query("s")
         keyword: String,
         @Query("page")
@@ -16,7 +16,7 @@ internal interface OmdbRestApi {
     ) : Deferred<MovieSearchResultRemoteModel>
 
     @GET("/")
-    fun searchByImdbId(
+    fun searchByImdbIdAsync(
         @Query("i")
         imdbId: String,
         @Query("plot")

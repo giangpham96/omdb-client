@@ -29,8 +29,8 @@ internal class MovieRemoteDataSourceImpl(
                 .await()
                 .let {
                     MovieSearchResultDataModel(
-                        it.movies.map {
-                            mapMovieRemoteModelToMovieDataModel(it)
+                        it.movies.map { movie ->
+                            mapMovieRemoteModelToMovieDataModel(movie)
                         },
                         it.totalResults
                     )

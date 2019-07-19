@@ -22,7 +22,10 @@ internal class MovieRemoteDataSourceImpl(
         }
     }
 
-    override suspend fun searchMoviesByKeyword(keyword: String, page: Int): MovieSearchResultDataModel {
+    override suspend fun searchMoviesByKeyword(
+        keyword: String,
+        page: Int
+    ): MovieSearchResultDataModel {
         return try {
             omdbRestApi
                 .searchByKeywordAsync(keyword, page)
@@ -42,7 +45,7 @@ internal class MovieRemoteDataSourceImpl(
 
     private fun mapMovieRemoteModelToMovieDataModel(
         movieRemoteModel: MovieRemoteModel
-    ) : MovieDataModel {
+    ): MovieDataModel {
         return MovieDataModel(
             movieRemoteModel.title,
             movieRemoteModel.year,
@@ -60,9 +63,21 @@ internal class MovieRemoteDataSourceImpl(
             movieRemoteModel.languages?.simplifyRemoteField(),
             movieRemoteModel.countries?.simplifyRemoteField(),
             movieRemoteModel.awards?.simplifyRemoteField(),
-            try { movieRemoteModel.metaScore?.toInt() } catch (t: Throwable) { null },
-            try { movieRemoteModel.imdbRating?.toDouble() } catch (t: Throwable) { null },
-            try { movieRemoteModel.imdbVotes?.replace(",", "")?.toInt() } catch (t: Throwable) { null },
+            try {
+                movieRemoteModel.metaScore?.toInt()
+            } catch (t: Throwable) {
+                null
+            },
+            try {
+                movieRemoteModel.imdbRating?.toDouble()
+            } catch (t: Throwable) {
+                null
+            },
+            try {
+                movieRemoteModel.imdbVotes?.replace(",", "")?.toInt()
+            } catch (t: Throwable) {
+                null
+            },
             movieRemoteModel.boxOffice?.simplifyRemoteField(),
             movieRemoteModel.dvdRelease?.simplifyRemoteField(),
             movieRemoteModel.production?.simplifyRemoteField(),
@@ -70,7 +85,7 @@ internal class MovieRemoteDataSourceImpl(
         )
     }
 
-    private fun String.simplifyRemoteField() : String? {
+    private fun String.simplifyRemoteField(): String? {
         return if (this == "N/A") null else this
     }
 }

@@ -73,7 +73,7 @@ internal class MovieAdapter {
             }
             endObject()
         }
-        if (!title.isEmpty() && !year.isEmpty() && !imdbId.isEmpty() && !type.isEmpty()) {
+        if (title.isNotEmpty() && year.isNotEmpty() && imdbId.isNotEmpty() && type.isNotEmpty()) {
             return MovieRemoteModel(
                 title, year, imdbId, type, poster,
                 rated, released, runtime, genres, directors,

@@ -66,7 +66,9 @@ internal class SearchMoviesActivity : AppCompatActivity() {
             event?.let {
                 MovieInfoActivity.launch(
                     this@SearchMoviesActivity,
-                    it.movies.map { ParcelableMovie(it.imdbId, it.poster)},
+                    it.movies.map { movie ->
+                        ParcelableMovie(movie.imdbId, movie.poster)
+                    },
                     it.selectedMovie
                 )
             }
@@ -146,8 +148,8 @@ internal class SearchMoviesActivity : AppCompatActivity() {
                 movieSection.apply {
                     removeFooter()
                     update(viewState.movies.map {
-                        MovieItem(it) {
-                            viewModel.onItemClick(it)
+                        MovieItem(it) { id ->
+                            viewModel.onItemClick(id)
                         }
                     })
                 }
@@ -161,8 +163,8 @@ internal class SearchMoviesActivity : AppCompatActivity() {
                     movieSection.apply {
                         removeFooter()
                         update(viewState.movies.map {
-                            MovieItem(it) {
-                                viewModel.onItemClick(it)
+                            MovieItem(it) { id ->
+                                viewModel.onItemClick(id)
                             }
                         })
                         setFooter(LoadingFooter)
@@ -175,8 +177,8 @@ internal class SearchMoviesActivity : AppCompatActivity() {
                         removeFooter()
                         setFooter(retryLoadNextPageFooter)
                         update(viewState.movies.map {
-                            MovieItem(it) {
-                                viewModel.onItemClick(it)
+                            MovieItem(it) { id ->
+                                viewModel.onItemClick(id)
                             }
                         })
                     }

@@ -1,4 +1,4 @@
-package leo.me.la.remote;
+package leo.me.la.remote
 
 import kotlinx.coroutines.runBlocking
 import okhttp3.mockwebserver.MockResponse
@@ -24,7 +24,7 @@ internal class ApiKeyInterceptorTest : BaseApiTest() {
                     .setResponseCode(200)
             )
             // execute
-            restApi.searchByKeyword("Batman", 2).await()
+            restApi.searchByKeywordAsync("Batman", 2).await()
             // verify
             assertThat(
                 mockServer.takeRequest()

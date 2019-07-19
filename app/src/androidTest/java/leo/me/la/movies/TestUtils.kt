@@ -96,7 +96,6 @@ fun <VH : RecyclerView.ViewHolder> Int.checkItemAtPosition(
     @NonNull vararg itemMatchers: Matcher<View>
 ) {
     fun atPosition(position: Int, @NonNull itemMatcher: Matcher<View>): BoundedMatcher<View, RecyclerView> {
-        checkNotNull(itemMatcher)
         return object : BoundedMatcher<View, RecyclerView>(RecyclerView::class.java) {
             override fun describeTo(description: Description) {
                 description.appendText("has item at position $position: ")
@@ -112,9 +111,9 @@ fun <VH : RecyclerView.ViewHolder> Int.checkItemAtPosition(
     }
 
     itemMatchers.forEach { itemMatcher ->
-        onView(ViewMatchers.withId(this))
+        onView(withId(this))
             .perform(RecyclerViewActions.scrollToPosition<VH>(position))
-            .check(ViewAssertions.matches(atPosition(position, itemMatcher)))
+            .check(matches(atPosition(position, itemMatcher)))
     }
 }
 

@@ -22,8 +22,8 @@ import org.hamcrest.Matchers.not
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import org.koin.dsl.module.module
-import org.koin.standalone.StandAloneContext.loadKoinModules
+import org.koin.core.context.loadKoinModules
+import org.koin.dsl.module
 import org.koin.test.KoinTest
 
 @LargeTest
@@ -141,36 +141,36 @@ internal class SearchMoviesActivityTest : KoinTest {
     @Test
     fun shouldRenderLoadingNextPageState() {
         viewModel.moveToState(SearchViewState.LoadingNextPage(
-                listOf(
-                    Movie(
-                        "Batman Begins",
-                        "2005",
-                        "tt0372784",
-                        MovieType.Movie,
-                        "https://m.media-amazon.com/images/M/MV5BZmUwNGU2ZmItMmRiNC00MjhlLTg5YWUtODMyNzkxODYzMmZlXkEyXkFqcGdeQXVyNTIzOTk5ODM@._V1_SX300.jpg"
-                    ),
-                    Movie(
-                        "Batman: The Animated Series",
-                        "1992–1995",
-                        "tt0103359",
-                        MovieType.Series,
-                        "https://m.media-amazon.com/images/M/MV5BOTM3MTRkZjQtYjBkMy00YWE1LTkxOTQtNDQyNGY0YjYzNzAzXkEyXkFqcGdeQXVyOTgwMzk1MTA@._V1_SX300.jpg"
-                    ),
-                    Movie(
-                        "Batman: The Dark Knight Returns, Part 1",
-                        "2012",
-                        "tt2313197",
-                        MovieType.Series,
-                        null
-                    ),
-                    Movie(
-                        "Batman: The Dark Knight Returns, Part 2",
-                        "2013",
-                        "tt2313198",
-                        MovieType.Other,
-                        "https://m.media-amazon.com/images/M/MV5BOTM3MTRkZjQtYjBkMy00YWE1LTkxOTQtNDQyNGY0YjYzNzAzXkEyXkFqcGdeQXVyOTgwMzk1MTA@._V1_SX300.jpg"
-                    )
+            listOf(
+                Movie(
+                    "Batman Begins",
+                    "2005",
+                    "tt0372784",
+                    MovieType.Movie,
+                    "https://m.media-amazon.com/images/M/MV5BZmUwNGU2ZmItMmRiNC00MjhlLTg5YWUtODMyNzkxODYzMmZlXkEyXkFqcGdeQXVyNTIzOTk5ODM@._V1_SX300.jpg"
+                ),
+                Movie(
+                    "Batman: The Animated Series",
+                    "1992–1995",
+                    "tt0103359",
+                    MovieType.Series,
+                    "https://m.media-amazon.com/images/M/MV5BOTM3MTRkZjQtYjBkMy00YWE1LTkxOTQtNDQyNGY0YjYzNzAzXkEyXkFqcGdeQXVyOTgwMzk1MTA@._V1_SX300.jpg"
+                ),
+                Movie(
+                    "Batman: The Dark Knight Returns, Part 1",
+                    "2012",
+                    "tt2313197",
+                    MovieType.Series,
+                    null
+                ),
+                Movie(
+                    "Batman: The Dark Knight Returns, Part 2",
+                    "2013",
+                    "tt2313198",
+                    MovieType.Other,
+                    "https://m.media-amazon.com/images/M/MV5BOTM3MTRkZjQtYjBkMy00YWE1LTkxOTQtNDQyNGY0YjYzNzAzXkEyXkFqcGdeQXVyOTgwMzk1MTA@._V1_SX300.jpg"
                 )
+            )
         ))
         R.id.moviesList.checkItemAtPosition<ViewHolder>(
             4,

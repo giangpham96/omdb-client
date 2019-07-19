@@ -42,11 +42,4 @@ internal abstract class BaseApiTest {
     fun tearDown() {
         mockServer.shutdown()
     }
-
-    /**
-     * Adds to the response queue given [List] of [MockResponse]s
-     */
-    protected fun MockWebServer.enqueue(vararg responses: MockResponse) {
-        responses.forEach { this.enqueue(it) }
-    }
 }

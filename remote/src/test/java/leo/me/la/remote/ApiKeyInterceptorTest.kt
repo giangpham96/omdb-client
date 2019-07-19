@@ -1,4 +1,4 @@
-package leo.me.la.remote;
+package leo.me.la.remote
 
 import kotlinx.coroutines.runBlocking
 import okhttp3.mockwebserver.MockResponse

@@ -8,7 +8,7 @@ object Versions {
     const val constraintlayout = "2.0.0-beta1"
     const val coreKtx = "1.2.0-alpha01"
     const val coreTesting = "1.1.1"
-    const val coroutinesCore = "1.2.1"
+    const val coroutinesCore = "1.3.2"
     const val espresso = "3.2.0-beta01"
     const val expandableTextview = "0.1.4"
     const val groupie = "2.4.0-alpha1"

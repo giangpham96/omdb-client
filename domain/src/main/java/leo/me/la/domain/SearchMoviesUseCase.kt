@@ -1,5 +1,6 @@
 package leo.me.la.domain
 
+import kotlinx.coroutines.delay
 import leo.me.la.common.model.MovieSearchResult
 import leo.me.la.domain.repository.MovieRepository
 

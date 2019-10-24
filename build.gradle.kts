@@ -21,6 +21,11 @@ allprojects {
         jcenter()
         maven("https://kotlin.bintray.com/kotlinx/")
     }
+    configurations.all {
+        resolutionStrategy {
+            force("org.objenesis:objenesis:2.6")
+        }
+    }
 }
 
 task<Delete>("clean") {

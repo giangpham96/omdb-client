@@ -5,6 +5,11 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.channels.ConflatedBroadcastChannel
+import kotlinx.coroutines.flow.asFlow
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.transformLatest
 import kotlinx.coroutines.launch
 import leo.me.la.common.model.Movie
 import leo.me.la.domain.SearchMoviesUseCase
@@ -17,8 +22,44 @@ class SearchViewModel(
 
     private var searchJob: Job? = null
 
+    private val channel: ConflatedBroadcastChannel<String> = ConflatedBroadcastChannel()
+
     init {
         _viewStates.value = SearchViewState.Idling
+        viewModelScope.launch {
+            channel.asFlow()
+                .onEach {
+                    searchJob?.cancel()
+                    _viewStates.value = SearchViewState.Searching
+                }
+                .transformLatest {
+                    try {
+                        val result = searchMoviesUseCase.execute(it)
+                        emit(
+                            SearchViewState.MoviesFetched(
+                                it,
+                                result.movies,
+                                1,
+                                ceil(result.totalResults.toFloat() / 10).toInt()
+                            )
+                        )
+                    } catch (e: Throwable) {
+                        when (e) {
+                            is OmdbErrorException -> emit(
+                                if (e.message == "Movie not found!")
+                                    SearchViewState.MovieNotFound
+                                else
+                                    SearchViewState.SearchFailed(channel.value)
+                            )
+                            is CancellationException -> {}
+                            else -> emit(SearchViewState.SearchFailed(channel.value))
+                        }
+                    }
+                }
+                .collect {
+                    _viewStates.value = it
+                }
+        }
     }
 
     fun resetSearch() {
@@ -31,27 +72,8 @@ class SearchViewModel(
         get() = _navigationRequest
 
     fun searchMovies(keyword: String) {
-        searchJob?.cancel()
-        searchJob = viewModelScope.launch {
-            _viewStates.value = SearchViewState.Searching
-            try {
-                val movieResult = searchMoviesUseCase.execute(keyword)
-                _viewStates.value = SearchViewState.MoviesFetched(
-                    keyword,
-                    movieResult.movies,
-                    1,
-                    ceil(movieResult.totalResults.toFloat() / 10).toInt()
-                )
-            } catch (e: OmdbErrorException) {
-                if (e.message == "Movie not found!")
-                    _viewStates.value = SearchViewState.MovieNotFound
-                else
-                    _viewStates.value = SearchViewState.SearchFailed(keyword)
-            } catch (ignored: CancellationException) {
-
-            } catch (e: Throwable) {
-                _viewStates.value = SearchViewState.SearchFailed(keyword)
-            }
+        viewModelScope.launch {
+            channel.send(keyword)
         }
     }
 
@@ -130,6 +152,7 @@ class SearchViewModel(
     }
 
     override fun onCleared() {
+        channel.close()
         searchJob?.cancel()
         super.onCleared()
     }

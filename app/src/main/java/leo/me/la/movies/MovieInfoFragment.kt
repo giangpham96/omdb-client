@@ -10,12 +10,11 @@ import android.view.ViewGroup
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.view.ViewCompat
 import androidx.core.view.isVisible
-import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.GridLayoutManager
 import com.google.android.material.chip.Chip
 import com.xwray.groupie.GroupAdapter
+import com.xwray.groupie.kotlinandroidextensions.GroupieViewHolder
 import com.xwray.groupie.Section
-import com.xwray.groupie.kotlinandroidextensions.ViewHolder
 import kotlinx.android.synthetic.main.back_view_movie_info.actorsRecyclerview
 import kotlinx.android.synthetic.main.back_view_movie_info.awards
 import kotlinx.android.synthetic.main.back_view_movie_info.boxOffice
@@ -68,14 +67,14 @@ internal class MovieInfoFragment : Fragment() {
     }
 
     private val directors = Section()
-    private val directorsAdapter = GroupAdapter<ViewHolder>()
+    private val directorsAdapter = GroupAdapter<GroupieViewHolder>()
         .apply {
             spanCount = 3
             add(directors)
         }
 
     private val actors = Section()
-    private val actorsAdapter = GroupAdapter<ViewHolder>()
+    private val actorsAdapter = GroupAdapter<GroupieViewHolder>()
         .apply {
             spanCount = 3
             add(actors)
@@ -116,11 +115,11 @@ internal class MovieInfoFragment : Fragment() {
             adapter = this@MovieInfoFragment.directorsAdapter
             ViewCompat.setNestedScrollingEnabled(this, false)
         }
-        viewModel.viewStates.observe(this, Observer {
+        viewModel.viewStates.observe(this.viewLifecycleOwner) {
             it?.let { viewState ->
                 render(viewState)
             }
-        })
+        }
         info.post {
             val scrollViewHeight = info.measuredHeight
             plotContainer.post {

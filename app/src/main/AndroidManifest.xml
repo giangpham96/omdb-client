@@ -20,7 +20,8 @@
         >
         <activity android:name=".MovieInfoActivity"
             android:theme="@style/TranslucentStatus"/>
-        <activity android:name=".SearchMoviesActivity">
+        <activity android:name=".SearchMoviesActivity"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

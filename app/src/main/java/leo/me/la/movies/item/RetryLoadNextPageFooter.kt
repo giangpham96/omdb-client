@@ -3,12 +3,12 @@ package leo.me.la.movies.item
 import android.view.View
 import androidx.appcompat.content.res.AppCompatResources
 import com.xwray.groupie.kotlinandroidextensions.Item
-import com.xwray.groupie.kotlinandroidextensions.ViewHolder
+import com.xwray.groupie.kotlinandroidextensions.GroupieViewHolder
 import kotlinx.android.synthetic.main.item_retry_load_next_page.retry
 import leo.me.la.movies.R
 
 internal class RetryLoadNextPageFooter(private val onRetryClickListener: () -> Unit) : Item() {
-    override fun createViewHolder(itemView: View): ViewHolder {
+    override fun createViewHolder(itemView: View): GroupieViewHolder {
         return super.createViewHolder(itemView)
             .apply {
                 retry.setOnClickListener {
@@ -23,7 +23,7 @@ internal class RetryLoadNextPageFooter(private val onRetryClickListener: () -> U
             }
     }
 
-    override fun bind(viewHolder: ViewHolder, position: Int) {
+    override fun bind(viewHolder: GroupieViewHolder, position: Int) {
         viewHolder.retry.setOnClickListener {
             onRetryClickListener()
         }

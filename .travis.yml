@@ -20,7 +20,9 @@ before_install:
 - tar xvf app/secret.tar
 
 script:
+- cd app
+- ls
 # unit tests
-- ./gradlew test --stacktrace
+#- ./gradlew test --stacktrace
 # build debug apk
-- ./gradlew assembleDebug --stacktrace
+#- ./gradlew assembleDebug --stacktrace

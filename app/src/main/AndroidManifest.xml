@@ -19,7 +19,7 @@
         tools:targetApi="m"
         >
         <activity android:name=".MovieInfoActivity"
-            android:theme="@style/TranslucentStatus"/>
+            android:theme="@style/TranslucentStatus" />
         <activity android:name=".SearchMoviesActivity"
             android:exported="true">
             <intent-filter>

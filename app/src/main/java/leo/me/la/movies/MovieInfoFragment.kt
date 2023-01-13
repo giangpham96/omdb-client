@@ -45,7 +45,7 @@ import leo.me.la.movies.item.NameItem
 import leo.me.la.presentation.BaseViewModel
 import leo.me.la.presentation.MovieInfoViewModel
 import leo.me.la.presentation.MovieInfoViewState
-import loadUri
+import leo.me.la.movies.util.loadUri
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 import org.koin.core.qualifier.named

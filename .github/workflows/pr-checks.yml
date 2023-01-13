@@ -20,7 +20,7 @@ jobs:
       - name: Setup Android env
         uses: ./.github/actions/setup-android-env
       - name: Run lint
-        run: ./gradlew clean main:lintDebug
+        run: ./gradlew clean lintDebug
   tests:
     name: Unit tests
     runs-on: [ ubuntu-latest ]
@@ -41,3 +41,20 @@ jobs:
           echo "omdb_api_key=${{ secrets.OMDB_API_KEY }}" >> local.properties
       - name: Run unit tests
         run: ./gradlew clean testDebugUnitTest
+  instrumentation-tests:
+    name: Instrumentation tests
+    runs-on: [ macos-latest ]
+    steps:
+      - name: Cancel Previous Runs
+        uses: styfle/cancel-workflow-action@89f242ee29e10c53a841bfe71cc0ce7b2f065abc
+        with:
+          access_token: ${{ github.token }}
+      - name: Cleanup workspace
+        uses: AutoModality/action-clean@d004b47eb728f2a83316fc70ba9a62ef97278013
+      - name: Checkout
+        uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579
+      - name: Run tests
+        uses: reactivecircus/android-emulator-runner@50986b1464923454c95e261820bc626f38490ec0
+        with:
+          api-level: 33
+          script: ./gradlew clean connectedDebugAndroidTest

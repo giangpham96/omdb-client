@@ -11,7 +11,7 @@ import kotlinx.android.synthetic.main.item_movie.type
 import kotlinx.android.synthetic.main.item_movie.year
 import leo.me.la.common.model.Movie
 import leo.me.la.common.model.MovieType
-import loadUri
+import leo.me.la.movies.util.loadUri
 
 internal class MovieItem(
     private val movie: Movie,

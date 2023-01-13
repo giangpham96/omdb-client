@@ -25,7 +25,7 @@ object Versions {
     const val retrofit = "2.5.0"
     const val retrofitCoroutinesAdapter = "0.9.2"
     const val room = "2.4.3"
-    const val testExt = "1.1.1-beta01"
+    const val testExt = "1.1.5"
 }
 
 object Dependencies {

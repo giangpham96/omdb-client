@@ -5,9 +5,9 @@ plugins {
 }
 
 repositories {
-    jcenter()
+    mavenCentral()
 }
 
 dependencies {
-    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.3.21")
+    implementation("org.jetbrains.kotlin:kotlin-stdlib:1.7.20")
 }

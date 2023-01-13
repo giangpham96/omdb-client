@@ -8,7 +8,7 @@ internal class ApiKeyInterceptor(private val apiKey: String): Interceptor {
         return chain.proceed(
             with(chain.request()) {
                 newBuilder().url(
-                    url().newBuilder()
+                    url.newBuilder()
                         .addQueryParameter("apikey", apiKey)
                         .build()
                 ).build()

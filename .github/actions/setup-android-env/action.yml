@@ -1,0 +1,16 @@
+name: "setup-android-env"
+description: "Setup Android environment"
+
+runs:
+  using: "composite"
+  steps:
+    - name: Setup JDK
+      uses: actions/setup-java@2c7a4878f5d120bd643426d54ae1209b29cc01a3
+      with:
+        distribution: "zulu"
+        java-version: "11"
+    - name: Setup Gradle
+      uses: gradle/gradle-build-action@cd579d970f8aec1cf0cae5f62a8e418768970015
+    - name: Setup Android SDK
+      uses: android-actions/setup-android@2741e25473fe3d928c8838d2016773811bf34e4e
+

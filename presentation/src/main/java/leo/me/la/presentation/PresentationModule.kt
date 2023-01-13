@@ -19,8 +19,7 @@ val presentationModule = module {
 
 inline fun <reified T : BaseViewState> Module.baseViewModel(
     name: String = "",
-    override: Boolean = false,
     noinline definition: Definition<BaseViewModel<T>>
 ) {
-    viewModel(named(name), override, definition)
+    viewModel(named(name), definition)
 }

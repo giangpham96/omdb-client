@@ -3,7 +3,7 @@ package leo.me.la.movies.item
 import android.view.View
 import androidx.appcompat.content.res.AppCompatResources
 import com.xwray.groupie.kotlinandroidextensions.Item
-import com.xwray.groupie.kotlinandroidextensions.ViewHolder
+import com.xwray.groupie.kotlinandroidextensions.GroupieViewHolder
 import kotlinx.android.synthetic.main.item_movie.poster
 import leo.me.la.movies.R
 import kotlinx.android.synthetic.main.item_movie.title
@@ -11,13 +11,13 @@ import kotlinx.android.synthetic.main.item_movie.type
 import kotlinx.android.synthetic.main.item_movie.year
 import leo.me.la.common.model.Movie
 import leo.me.la.common.model.MovieType
-import loadUri
+import leo.me.la.movies.util.loadUri
 
 internal class MovieItem(
     private val movie: Movie,
     private val onClickListener: (String) -> Unit
 ) : Item() {
-    override fun createViewHolder(itemView: View): ViewHolder {
+    override fun createViewHolder(itemView: View): GroupieViewHolder {
         return super.createViewHolder(itemView)
             .apply {
                 type.background = AppCompatResources.getDrawable(
@@ -27,7 +27,7 @@ internal class MovieItem(
             }
     }
 
-    override fun bind(viewHolder: ViewHolder, position: Int) {
+    override fun bind(viewHolder: GroupieViewHolder, position: Int) {
         viewHolder.title.text = movie.title
         viewHolder.year.text = movie.year
         viewHolder.type.apply {
@@ -64,7 +64,7 @@ internal class MovieItem(
 
     override fun getLayout() = R.layout.item_movie
 
-    override fun isSameAs(other: com.xwray.groupie.Item<*>?): Boolean {
+    override fun isSameAs(other: com.xwray.groupie.Item<*>): Boolean {
         if (other is MovieItem) {
             return movie.imdbId == other.movie.imdbId
         }

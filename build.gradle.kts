@@ -1,29 +1,36 @@
-// Top-level build file where you can add configuration options common to all sub-projects/modules.
-apply(plugin = "com.github.ben-manes.versions")
+import org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
+import org.gradle.api.tasks.testing.logging.TestLogEvent.FAILED
+import org.gradle.api.tasks.testing.logging.TestLogEvent.PASSED
+import org.gradle.api.tasks.testing.logging.TestLogEvent.SKIPPED
+import org.gradle.api.tasks.testing.logging.TestLogEvent.STANDARD_ERROR
+import org.gradle.api.tasks.testing.logging.TestLogEvent.STANDARD_OUT
 
 buildscript {
-    val updatePluginVersion = "0.21.0"
     repositories {
         google()
-        jcenter()
-        maven("https://kotlin.bintray.com/kotlinx/")
+        mavenCentral()
+        maven { url = uri("https://jitpack.io") }
     }
     dependencies {
         classpath("com.android.tools.build:gradle:${Versions.androidGradlePlugin}")
-        classpath(kotlin("gradle-plugin", version = Versions.kotlin))
-        classpath("com.github.ben-manes:gradle-versions-plugin:$updatePluginVersion")
+        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${Versions.kotlin}")
     }
 }
 
 allprojects {
     repositories {
         google()
-        jcenter()
-        maven("https://kotlin.bintray.com/kotlinx/")
+        mavenCentral()
+        maven { url = uri("https://jitpack.io") }
     }
-    configurations.all {
-        resolutionStrategy {
-            force("org.objenesis:objenesis:2.6")
+
+    tasks.withType(Test::class.java) {
+        testLogging {
+            events = setOf(FAILED, PASSED, SKIPPED, STANDARD_ERROR, STANDARD_OUT)
+            exceptionFormat = FULL
+            showExceptions = true
+            showCauses = true
+            showStackTraces = true
         }
     }
 }

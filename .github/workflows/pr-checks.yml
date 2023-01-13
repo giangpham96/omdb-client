@@ -42,7 +42,7 @@ jobs:
       - name: Run unit tests
         run: ./gradlew clean testDebugUnitTest
   build:
-    name: Unit tests
+    name: Build apk
     runs-on: [ ubuntu-latest ]
     steps:
       - name: Cancel Previous Runs

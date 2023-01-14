@@ -1,6 +1,8 @@
 package leo.me.la.domain
 
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.withContext
 import leo.me.la.common.model.MovieSearchResult
 import leo.me.la.domain.repository.MovieRepository
 
@@ -11,7 +13,9 @@ internal class SearchMoviesUseCaseImpl(
         keyword: String,
         page: Int
     ): MovieSearchResult {
-        return movieRepository.searchMoviesByKeyword(keyword, page)
+        return withContext(Dispatchers.IO) {
+            movieRepository.searchMoviesByKeyword(keyword, page)
+        }
     }
 }
 

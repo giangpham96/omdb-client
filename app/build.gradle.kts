@@ -11,6 +11,7 @@ val app_name: String by project
 
 android {
     compileSdk = AndroidSettings.compileSdkVersion
+    namespace = "leo.me.la.movies"
 
     defaultConfig {
         val omdbApiKey: String = gradleLocalProperties(rootDir).getProperty("omdb_api_key", "")

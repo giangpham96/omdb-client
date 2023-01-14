@@ -73,7 +73,7 @@ internal class MovieRepositoryImpl(
             poster,
             rated?.let {
                 try {
-                    MovieRate.valueOf(it.toUpperCase().replace("-", "_"))
+                    MovieRate.valueOf(it.uppercase().replace("-", "_"))
                 } catch (ignored: Throwable) {
                     MovieRate.UNRATED
                 }

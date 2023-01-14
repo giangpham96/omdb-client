@@ -5,60 +5,55 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.channels.ConflatedBroadcastChannel
-import kotlinx.coroutines.flow.asFlow
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.transformLatest
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import leo.me.la.common.model.Movie
 import leo.me.la.domain.SearchMoviesUseCase
 import leo.me.la.exception.OmdbErrorException
+import leo.me.la.presentation.SearchViewState.LoadPageFailed
+import leo.me.la.presentation.SearchViewState.MovieNotFound
+import leo.me.la.presentation.SearchViewState.MoviesFetched
+import leo.me.la.presentation.SearchViewState.SearchFailed
 import kotlin.math.ceil
 
 class SearchViewModel(
-    private val searchMoviesUseCase: SearchMoviesUseCase
+    private val searchMoviesUseCase: SearchMoviesUseCase,
 ) : BaseViewModel<SearchViewState>() {
 
     private var searchJob: Job? = null
 
-    private val channel: ConflatedBroadcastChannel<String> = ConflatedBroadcastChannel()
+    private val channel = MutableSharedFlow<String>()
 
     init {
         _viewStates.value = SearchViewState.Idling
         viewModelScope.launch {
-            channel.asFlow()
-                .onEach {
-                    searchJob?.cancel()
-                    _viewStates.value = SearchViewState.Searching
-                }
-                .transformLatest {
-                    try {
-                        val result = searchMoviesUseCase.execute(it)
-                        emit(
-                            SearchViewState.MoviesFetched(
-                                it,
-                                result.movies,
-                                1,
-                                ceil(result.totalResults.toFloat() / 10).toInt()
-                            )
-                        )
-                    } catch (e: Throwable) {
-                        when (e) {
-                            is OmdbErrorException -> emit(
-                                if (e.message == "Movie not found!")
-                                    SearchViewState.MovieNotFound
-                                else
-                                    SearchViewState.SearchFailed(channel.value)
-                            )
-                            is CancellationException -> {}
-                            else -> emit(SearchViewState.SearchFailed(channel.value))
+            channel.collectLatest {
+                searchJob?.cancel()
+                _viewStates.value = SearchViewState.Searching
+                try {
+                    val result = searchMoviesUseCase.execute(it)
+                    _viewStates.value = MoviesFetched(
+                        keyword = it,
+                        movies = result.movies,
+                        page = 1,
+                        totalPages = ceil(result.totalResults.toFloat() / 10).toInt()
+                    )
+                } catch (ignored: CancellationException) {
+                    throw ignored
+                } catch (e: Throwable) {
+                    _viewStates.value = when (e) {
+                        is OmdbErrorException -> {
+                            if (e.message == "Movie not found!")
+                                MovieNotFound
+                            else
+                                SearchFailed(it)
                         }
+
+                        else -> SearchFailed(it)
                     }
                 }
-                .collect {
-                    _viewStates.value = it
-                }
+            }
         }
     }
 
@@ -73,52 +68,50 @@ class SearchViewModel(
 
     fun searchMovies(keyword: String) {
         viewModelScope.launch {
-            channel.send(keyword)
+            channel.emit(keyword)
         }
     }
 
     fun loadNextPage() {
         with(viewStates.value) {
-            if (this is SearchViewState.MoviesFetched
-                || this is SearchViewState.LoadPageFailed
-            ) {
+            if (this is MoviesFetched || this is LoadPageFailed) {
                 val totalPages = when (this) {
-                    is SearchViewState.MoviesFetched -> this.totalPages
-                    is SearchViewState.LoadPageFailed -> this.totalPages
+                    is MoviesFetched -> this.totalPages
+                    is LoadPageFailed -> this.totalPages
                     else -> throw IllegalStateException("The state ${this.javaClass.simpleName} is unexpected")
                 }
                 val nextPage = when (this) {
-                    is SearchViewState.MoviesFetched -> this.page + 1
-                    is SearchViewState.LoadPageFailed -> this.pageFailedToLoad
+                    is MoviesFetched -> this.page + 1
+                    is LoadPageFailed -> this.pageFailedToLoad
                     else -> throw IllegalStateException("The state ${this.javaClass.simpleName} is unexpected")
                 }
                 val fetchedMovies = when (this) {
-                    is SearchViewState.MoviesFetched -> this.movies
-                    is SearchViewState.LoadPageFailed -> this.movies
+                    is MoviesFetched -> this.movies
+                    is LoadPageFailed -> this.movies
                     else -> throw IllegalStateException("The state ${this.javaClass.simpleName} is unexpected")
                 }
                 if (totalPages < nextPage || totalPages >= 100) {
                     return@with
                 }
                 val keyword = when (this) {
-                    is SearchViewState.MoviesFetched -> this.keyword
-                    is SearchViewState.LoadPageFailed -> this.keyword
+                    is MoviesFetched -> this.keyword
+                    is LoadPageFailed -> this.keyword
                     else -> throw IllegalStateException("The state ${this.javaClass.simpleName} is unexpected")
                 }
                 _viewStates.value = SearchViewState.LoadingNextPage(fetchedMovies)
                 searchJob = viewModelScope.launch {
                     try {
                         val nextPageMovieResult = searchMoviesUseCase.execute(keyword, nextPage)
-                        _viewStates.value = SearchViewState.MoviesFetched(
+                        _viewStates.value = MoviesFetched(
                             keyword,
                             fetchedMovies + nextPageMovieResult.movies,
                             nextPage,
                             ceil(nextPageMovieResult.totalResults.toFloat() / 10).toInt()
                         )
                     } catch (ignored: CancellationException) {
-
+                        throw ignored
                     } catch (e: Throwable) {
-                        _viewStates.value = SearchViewState.LoadPageFailed(
+                        _viewStates.value = LoadPageFailed(
                             keyword,
                             fetchedMovies,
                             nextPage,
@@ -134,25 +127,26 @@ class SearchViewModel(
     fun onItemClick(selectedMovie: String) {
         with(viewStates.value) {
             when (this) {
-                is SearchViewState.MoviesFetched -> {
+                is MoviesFetched -> {
                     _navigationRequest.value = MovieInfoEvent(
                         this.movies,
                         selectedMovie
                     )
                 }
-                is SearchViewState.LoadPageFailed -> {
+
+                is LoadPageFailed -> {
                     _navigationRequest.value = MovieInfoEvent(
                         this.movies,
                         selectedMovie
                     )
                 }
+
                 else -> Unit
             }
         }
     }
 
     override fun onCleared() {
-        channel.close()
         searchJob?.cancel()
         super.onCleared()
     }
@@ -160,5 +154,5 @@ class SearchViewModel(
 
 data class MovieInfoEvent(
     val movies: List<Movie>,
-    val selectedMovie: String
+    val selectedMovie: String,
 )

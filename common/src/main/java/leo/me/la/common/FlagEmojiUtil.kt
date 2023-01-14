@@ -9,7 +9,7 @@ fun String.toFlagEmoji(): String? {
     else
         countries.firstOrNull {
             it.first.equals(this, true) || it.second.equals(this, true) || it.third.equals(this, true)
-        }?.second?.toUpperCase()) ?: return null
+        }?.second?.uppercase()) ?: return null
 
     if (!countryCodeCaps[0].isLetter() || !countryCodeCaps[1].isLetter()) {
         return null

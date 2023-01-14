@@ -14,8 +14,14 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.ObsoleteCoroutinesApi
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.test.TestCoroutineDispatcher
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.TestCoroutineScheduler
+import kotlinx.coroutines.test.TestDispatcher
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.advanceTimeBy
+import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import leo.me.la.common.model.Movie
 import leo.me.la.common.model.MovieSearchResult
@@ -31,12 +37,12 @@ import org.junit.rules.TestRule
 
 @ExperimentalCoroutinesApi
 class SearchViewModelTest {
-    private val testDispatcher = TestCoroutineDispatcher()
+    private val testDispatcher = UnconfinedTestDispatcher()
 
     @get:Rule
     var rule: TestRule = InstantTaskExecutorRule()
 
-    private val observer: Observer<SearchViewState> = mockk{
+    private val observer: Observer<SearchViewState> = mockk {
         every { onChanged(any()) } just Runs
     }
 
@@ -65,7 +71,7 @@ class SearchViewModelTest {
 
     @ObsoleteCoroutinesApi
     @Test
-    fun `should search successfully and move to MoviesFetched state`() {
+    fun `should search successfully and move to MoviesFetched state`() = runTest {
         val desiredMovieList = List(3) {
             Movie(
                 "Batman Begins",
@@ -83,6 +89,7 @@ class SearchViewModelTest {
             3
         )
         viewModel.searchMovies("Batman")
+        advanceUntilIdle()
         verifySequence {
             observer.onChanged(SearchViewState.Idling)
             observer.onChanged(SearchViewState.Searching)
@@ -99,7 +106,7 @@ class SearchViewModelTest {
 
     @ObsoleteCoroutinesApi
     @Test
-    fun `should cancel previous search if new search is dispatched`() {
+    fun `should cancel previous search if new search is dispatched`() = runTest {
         val cancelledMovieList = listOf(
             Movie(
                 "Abc",
@@ -128,9 +135,9 @@ class SearchViewModelTest {
             useCase.execute("Batman")
         } returns MovieSearchResult(desiredMovieList, 1)
         viewModel.searchMovies("Abc")
-        testDispatcher.advanceTimeBy(500)
+        advanceTimeBy(500)
         viewModel.searchMovies("Batman")
-        testDispatcher.advanceTimeBy(1000)
+        advanceTimeBy(1000)
 
         verifySequence {
             observer.onChanged(SearchViewState.Idling)
@@ -169,7 +176,7 @@ class SearchViewModelTest {
 
     @ObsoleteCoroutinesApi
     @Test
-    fun `should cancel next page loading if new search is dispatched`() {
+    fun `should cancel next page loading if new search is dispatched`() = runTest {
         val firstMovieList = List(10) {
             Movie(
                 "Abc",
@@ -197,11 +204,11 @@ class SearchViewModelTest {
             coEvery { execute("Batman") } returns MovieSearchResult(secondMovieList, 1)
         }
         viewModel.searchMovies("Abc")
-        testDispatcher.advanceTimeBy(10)
+        advanceTimeBy(10)
         viewModel.loadNextPage()
-        testDispatcher.advanceTimeBy(50)
+        advanceTimeBy(50)
         viewModel.searchMovies("Batman")
-        testDispatcher.advanceTimeBy(100)
+        advanceTimeBy(100)
         verifySequence {
             observer.onChanged(SearchViewState.Idling)
             observer.onChanged(SearchViewState.Searching)
@@ -213,9 +220,11 @@ class SearchViewModelTest {
                     20
                 )
             )
-            observer.onChanged(SearchViewState.LoadingNextPage(
-                firstMovieList
-            ))
+            observer.onChanged(
+                SearchViewState.LoadingNextPage(
+                    firstMovieList
+                )
+            )
             observer.onChanged(SearchViewState.Searching)
             observer.onChanged(
                 SearchViewState.MoviesFetched(
@@ -281,9 +290,11 @@ class SearchViewModelTest {
                     20
                 )
             )
-            observer.onChanged(SearchViewState.LoadingNextPage(
-                firstMovieList
-            ))
+            observer.onChanged(
+                SearchViewState.LoadingNextPage(
+                    firstMovieList
+                )
+            )
             observer.onChanged(
                 SearchViewState.MoviesFetched(
                     "Abc",
@@ -373,21 +384,27 @@ class SearchViewModelTest {
         verifySequence {
             observer.onChanged(SearchViewState.Idling)
             observer.onChanged(SearchViewState.Searching)
-            observer.onChanged(SearchViewState.MoviesFetched(
-                "Abc",
-                firstMovieList,
-                1,
-                20
-            ))
-            observer.onChanged(SearchViewState.LoadingNextPage(
-                firstMovieList
-            ))
-            observer.onChanged(SearchViewState.MoviesFetched(
-                "Abc",
-                firstMovieList + secondMovieList,
-                2,
-                20
-            ))
+            observer.onChanged(
+                SearchViewState.MoviesFetched(
+                    "Abc",
+                    firstMovieList,
+                    1,
+                    20
+                )
+            )
+            observer.onChanged(
+                SearchViewState.LoadingNextPage(
+                    firstMovieList
+                )
+            )
+            observer.onChanged(
+                SearchViewState.MoviesFetched(
+                    "Abc",
+                    firstMovieList + secondMovieList,
+                    2,
+                    20
+                )
+            )
         }
     }
 
@@ -456,7 +473,7 @@ class SearchViewModelTest {
 
     @ObsoleteCoroutinesApi
     @Test
-    fun `should not allow to load next page if the search is reset`() {
+    fun `should not allow to load next page if the search is reset`() = runTest {
         val firstMovieList = List(10) {
             Movie(
                 "Abc",
@@ -483,10 +500,10 @@ class SearchViewModelTest {
             }
         }
         viewModel.searchMovies("Abc")
-        testDispatcher.advanceTimeBy(100)
+        advanceTimeBy(100)
         viewModel.loadNextPage()
         viewModel.resetSearch()
-        testDispatcher.advanceTimeBy(1000)
+        advanceTimeBy(1000)
         verifySequence {
             observer.onChanged(SearchViewState.Idling)
             observer.onChanged(SearchViewState.Searching)

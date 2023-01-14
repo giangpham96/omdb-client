@@ -65,6 +65,18 @@ fun GlideRequest<Drawable>.configure(
     onError: (() -> Unit)? = null
 ) = this.diskCacheStrategy(if (cache) DiskCacheStrategy.AUTOMATIC else DiskCacheStrategy.NONE)
     .skipMemoryCache(!cache)
+    .let { req ->
+        errorImage?.let { req.error(it) } ?: req
+    }
+    .let {
+        if (centerCrop) it.centerCrop() else it
+    }
+    .let {
+        if (!noPlaceholder) it.placeholder(android.R.color.darker_gray) else it
+    }
+    .let {
+        if (!noFade) it.transition(DrawableTransitionOptions().crossFade()) else it
+    }
     .listener(object : RequestListener<Drawable> {
         override fun onLoadFailed(
             e: GlideException?,
@@ -87,9 +99,3 @@ fun GlideRequest<Drawable>.configure(
             return false
         }
     })
-    .apply {
-        errorImage?.let { error(it) }
-        if (centerCrop) centerCrop()
-        if (!noPlaceholder) placeholder(android.R.color.darker_gray)
-        if (!noFade) transition(DrawableTransitionOptions().crossFade())
-    }

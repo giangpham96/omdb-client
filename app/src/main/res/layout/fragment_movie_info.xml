@@ -1,11 +1,9 @@
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="leo.me.la.movies.MovieInfoFragment"
-    >
+    tools:context="leo.me.la.movies.MovieInfoFragment">
 
     <ImageView
         android:id="@+id/poster"
@@ -17,8 +15,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:ignore="ContentDescription"
-        tools:srcCompat="@tools:sample/backgrounds/scenic"
-        />
+        tools:srcCompat="@tools:sample/backgrounds/scenic" />
 
     <View
         android:id="@+id/view"
@@ -29,26 +26,22 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:ignore="ContentDescription"
-        />
+        tools:ignore="ContentDescription" />
 
     <ProgressBar
         android:id="@+id/loading"
-        android:indeterminate="true"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toTopOf="parent"
+        android:indeterminate="true"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/title"
         android:layout_width="wrap_content"
-        app:layout_constrainedWidth="true"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="@dimen/padding_margin_normal"
         android:layout_marginStart="@dimen/padding_margin_normal"
         android:ellipsize="marquee"
         android:focusable="true"
@@ -59,15 +52,15 @@
         android:textColor="@android:color/white"
         android:textSize="28sp"
         android:textStyle="bold"
+        app:layout_constrainedWidth="true"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/type"
+        app:layout_constraintHorizontal_bias="0"
+        app:layout_constraintHorizontal_chainStyle="packed"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.43"
-        tools:text="Thor: The Dark World"
-        app:layout_constraintHorizontal_chainStyle="packed"
-        app:layout_constraintHorizontal_bias="0"
-        />
+        tools:text="Thor: The Dark World" />
 
     <TextView
         android:id="@+id/imdbRate"
@@ -82,25 +75,22 @@
         app:layout_constraintEnd_toEndOf="@+id/imdbVotes"
         app:layout_constraintStart_toStartOf="@+id/imdbVotes"
         app:layout_constraintTop_toBottomOf="@+id/title"
-        tools:text="8.7/10 IMDb"
-        />
+        tools:text="8.7/10 IMDb" />
 
     <TextView
         android:id="@+id/imdbVotes"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="@dimen/padding_margin_normal"
         android:layout_marginStart="@dimen/padding_margin_normal"
         android:maxLines="1"
         android:minWidth="80dp"
         android:textColor="@android:color/white"
         android:textSize="12sp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imdbRate"
         app:layout_constraintEnd_toStartOf="@+id/placeholderMetascore"
         app:layout_constraintHorizontal_chainStyle="spread_inside"
-        tools:text="\??? votes"
-        />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imdbRate"
+        tools:text="\??? votes" />
 
     <TextView
         android:id="@+id/metaScore"
@@ -115,33 +105,29 @@
         app:layout_constraintEnd_toEndOf="@+id/placeholderMetascore"
         app:layout_constraintStart_toStartOf="@+id/placeholderMetascore"
         app:layout_constraintTop_toBottomOf="@+id/title"
-        tools:text="Unknown"
-        />
+        tools:text="Unknown" />
 
     <TextView
         android:id="@+id/runtime"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="@dimen/padding_margin_normal"
         android:layout_marginStart="@dimen/padding_margin_normal"
-        android:drawableLeft="@drawable/icon_duration"
+        android:layout_marginEnd="@dimen/padding_margin_normal"
         android:drawablePadding="@dimen/padding_margin_extra_small"
-        android:drawableStart="@drawable/icon_duration"
         android:gravity="center"
         android:textColor="@android:color/white"
         android:textStyle="italic"
+        app:drawableStartCompat="@drawable/icon_duration"
         app:layout_constraintBottom_toBottomOf="@+id/placeholderMetascore"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/placeholderMetascore"
         app:layout_constraintTop_toTopOf="@+id/metaScore"
-        tools:text="127 min"
-        />
+        tools:text="127 min" />
 
     <TextView
         android:id="@+id/placeholderMetascore"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="@dimen/padding_margin_small"
         android:layout_marginStart="@dimen/padding_margin_small"
         android:gravity="center"
         android:maxLines="1"
@@ -151,8 +137,7 @@
         app:layout_constraintEnd_toStartOf="@+id/runtime"
         app:layout_constraintStart_toEndOf="@+id/imdbVotes"
         app:layout_constraintTop_toBottomOf="@+id/metaScore"
-        tools:ignore="HardcodedText"
-        />
+        tools:ignore="HardcodedText" />
 
     <ScrollView
         android:id="@+id/info"
@@ -160,15 +145,14 @@
         android:layout_height="0dp"
         android:layout_marginTop="@dimen/padding_margin_small"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imdbVotes"
-        >
+        app:layout_constraintTop_toBottomOf="@+id/imdbVotes">
 
         <leo.me.la.movies.ui.EasyFlipView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            >
+            android:layout_height="wrap_content">
 
             <include layout="@layout/back_view_movie_info" />
+
             <include layout="@layout/front_view_movie_info" />
         </leo.me.la.movies.ui.EasyFlipView>
     </ScrollView>
@@ -177,13 +161,12 @@
         android:id="@+id/type"
         android:layout_width="@dimen/padding_margin_large"
         android:layout_height="@dimen/padding_margin_large"
-        android:layout_marginRight="@dimen/padding_margin_normal"
         android:layout_marginLeft="@dimen/padding_margin_normal"
+        android:layout_marginRight="@dimen/padding_margin_normal"
         app:layout_constraintBottom_toBottomOf="@+id/title"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/title"
         app:layout_constraintStart_toEndOf="@+id/title"
+        app:layout_constraintTop_toTopOf="@+id/title"
         tools:ignore="ContentDescription"
-        tools:srcCompat="@drawable/icon_movie"
-        />
+        tools:srcCompat="@drawable/icon_movie" />
 </androidx.constraintlayout.widget.ConstraintLayout>

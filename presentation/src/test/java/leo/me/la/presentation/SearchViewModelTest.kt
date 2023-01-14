@@ -14,9 +14,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.ObsoleteCoroutinesApi
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.test.StandardTestDispatcher
-import kotlinx.coroutines.test.TestCoroutineScheduler
-import kotlinx.coroutines.test.TestDispatcher
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.advanceUntilIdle
@@ -28,6 +25,11 @@ import leo.me.la.common.model.MovieSearchResult
 import leo.me.la.common.model.MovieType
 import leo.me.la.domain.SearchMoviesUseCase
 import leo.me.la.exception.OmdbErrorException
+import leo.me.la.presentation.DataState.Companion.failed
+import leo.me.la.presentation.DataState.Idle
+import leo.me.la.presentation.DataState.Loading
+import leo.me.la.presentation.DataState.Success
+import leo.me.la.presentation.SearchViewState.SearchUi
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.After
 import org.junit.Before
@@ -66,7 +68,7 @@ class SearchViewModelTest {
 
     @Test
     fun `should start in Idling state`() {
-        assertThat(viewModel.viewStates.value).isEqualTo(SearchViewState.Idling)
+        assertThat(viewModel.viewStates.value).isEqualTo(SearchViewState(Idle))
     }
 
     @ObsoleteCoroutinesApi
@@ -91,14 +93,20 @@ class SearchViewModelTest {
         viewModel.searchMovies("Batman")
         advanceUntilIdle()
         verifySequence {
-            observer.onChanged(SearchViewState.Idling)
-            observer.onChanged(SearchViewState.Searching)
+            observer.onChanged(SearchViewState(Idle))
+            observer.onChanged(SearchViewState(Loading, "Batman"))
             observer.onChanged(
-                SearchViewState.MoviesFetched(
-                    "Batman",
-                    desiredMovieList,
-                    1,
-                    1
+                SearchViewState(
+                    Success(
+                        SearchUi(
+                            keyword = "Batman",
+                            movies = desiredMovieList,
+                            page = 1,
+                            totalPages = 1,
+                            nextPageLoading = false,
+                            showReloadNextPage = false
+                        )
+                    ), "Batman"
                 )
             )
         }
@@ -140,36 +148,22 @@ class SearchViewModelTest {
         advanceTimeBy(1000)
 
         verifySequence {
-            observer.onChanged(SearchViewState.Idling)
-            observer.onChanged(SearchViewState.Searching)
-            observer.onChanged(SearchViewState.Searching)
+            observer.onChanged(SearchViewState(Idle))
+            observer.onChanged(SearchViewState(Loading, "Abc"))
+            observer.onChanged(SearchViewState(Loading, "Batman"))
             observer.onChanged(
-                SearchViewState.MoviesFetched(
-                    "Batman",
-                    desiredMovieList,
-                    1,
-                    1
+                SearchViewState(
+                    Success(
+                        SearchUi(
+                            keyword = "Batman",
+                            movies = desiredMovieList,
+                            page = 1,
+                            totalPages = 1,
+                            nextPageLoading = false,
+                            showReloadNextPage = false
+                        )
+                    ), "Batman"
                 )
-            )
-        }
-
-        verify(exactly = 0) {
-            observer.onChanged(
-                SearchViewState.MoviesFetched(
-                    "Abc",
-                    cancelledMovieList,
-                    1,
-                    1
-                )
-            )
-            observer.onChanged(
-                ofType(SearchViewState.LoadingNextPage::class)
-            )
-            observer.onChanged(
-                SearchViewState.SearchFailed("Abc")
-            )
-            observer.onChanged(
-                ofType(SearchViewState.LoadPageFailed::class)
             )
         }
     }
@@ -210,34 +204,51 @@ class SearchViewModelTest {
         viewModel.searchMovies("Batman")
         advanceTimeBy(100)
         verifySequence {
-            observer.onChanged(SearchViewState.Idling)
-            observer.onChanged(SearchViewState.Searching)
+            observer.onChanged(SearchViewState(Idle))
+            observer.onChanged(SearchViewState(Loading, "Abc"))
             observer.onChanged(
-                SearchViewState.MoviesFetched(
-                    "Abc",
-                    firstMovieList,
-                    1,
-                    20
+                SearchViewState(
+                    Success(
+                        SearchUi(
+                            keyword = "Abc",
+                            movies = firstMovieList,
+                            page = 1,
+                            totalPages = 20,
+                            nextPageLoading = false,
+                            showReloadNextPage = false,
+                        )
+                    ), "Abc"
                 )
             )
             observer.onChanged(
-                SearchViewState.LoadingNextPage(
-                    firstMovieList
+                SearchViewState(
+                    Success(
+                        SearchUi(
+                            keyword = "Abc",
+                            movies = firstMovieList,
+                            page = 1,
+                            totalPages = 20,
+                            nextPageLoading = true,
+                            showReloadNextPage = false,
+                        )
+                    ), "Abc"
                 )
             )
-            observer.onChanged(SearchViewState.Searching)
+            observer.onChanged(SearchViewState(Loading, "Batman"))
             observer.onChanged(
-                SearchViewState.MoviesFetched(
-                    "Batman",
-                    secondMovieList,
-                    1,
-                    1
+                SearchViewState(
+                    Success(
+                        SearchUi(
+                            keyword = "Batman",
+                            movies = secondMovieList,
+                            page = 1,
+                            totalPages = 1,
+                            nextPageLoading = false,
+                            showReloadNextPage = false,
+                        )
+                    ), "Batman"
                 )
             )
-        }
-        verify(exactly = 0) {
-            observer.onChanged(ofType(SearchViewState.SearchFailed::class))
-            observer.onChanged(ofType(SearchViewState.LoadPageFailed::class))
         }
     }
 
@@ -280,59 +291,82 @@ class SearchViewModelTest {
         viewModel.loadNextPage()
         viewModel.searchMovies("Batman")
         verifySequence {
-            observer.onChanged(SearchViewState.Idling)
-            observer.onChanged(SearchViewState.Searching)
+            observer.onChanged(SearchViewState(Idle))
+            observer.onChanged(SearchViewState(Loading, "Abc"))
             observer.onChanged(
-                SearchViewState.MoviesFetched(
-                    "Abc",
-                    firstMovieList,
-                    1,
-                    20
+                SearchViewState(
+                    Success(
+                        SearchUi(
+                            keyword = "Abc",
+                            movies = firstMovieList,
+                            page = 1,
+                            totalPages = 20,
+                            nextPageLoading = false,
+                            showReloadNextPage = false,
+                        )
+                    ), "Abc"
                 )
             )
             observer.onChanged(
-                SearchViewState.LoadingNextPage(
-                    firstMovieList
+                SearchViewState(
+                    Success(
+                        SearchUi(
+                            keyword = "Abc",
+                            movies = firstMovieList,
+                            page = 1,
+                            totalPages = 20,
+                            nextPageLoading = true,
+                            showReloadNextPage = false,
+                        )
+                    ), "Abc"
                 )
             )
             observer.onChanged(
-                SearchViewState.MoviesFetched(
-                    "Abc",
-                    firstMovieList + secondMovieList,
-                    2,
-                    20
+                SearchViewState(
+                    Success(
+                        SearchUi(
+                            keyword = "Abc",
+                            movies = firstMovieList + secondMovieList,
+                            page = 2,
+                            totalPages = 20,
+                            nextPageLoading = false,
+                            showReloadNextPage = false,
+                        )
+                    ), "Abc"
                 )
             )
-            observer.onChanged(SearchViewState.Searching)
+            observer.onChanged(SearchViewState(Loading, "Batman"))
             observer.onChanged(
-                SearchViewState.MoviesFetched(
-                    "Batman",
-                    newSearchMovieList,
-                    1,
-                    1
+                SearchViewState(
+                    Success(
+                        SearchUi(
+                            keyword = "Batman",
+                            movies = newSearchMovieList,
+                            page = 1,
+                            totalPages = 1,
+                            nextPageLoading = false,
+                            showReloadNextPage = false,
+                        )
+                    ), "Batman"
                 )
             )
-        }
-        verify(exactly = 0) {
-            observer.onChanged(ofType(SearchViewState.SearchFailed::class))
-            observer.onChanged(ofType(SearchViewState.LoadPageFailed::class))
         }
     }
 
     @ObsoleteCoroutinesApi
     @Test
-    fun `should move to MovieNotFound state`() {
+    fun `should move to MovieNotFound state`() = runTest {
         coEvery { useCase.execute(any(), any()) } throws OmdbErrorException("Movie not found!")
         viewModel.searchMovies("Abc")
+        advanceUntilIdle()
         verifySequence {
-            observer.onChanged(SearchViewState.Idling)
-            observer.onChanged(SearchViewState.Searching)
-            observer.onChanged(SearchViewState.MovieNotFound)
-        }
-        verify(exactly = 0) {
-            observer.onChanged(ofType(SearchViewState.SearchFailed::class))
-            observer.onChanged(ofType(SearchViewState.LoadPageFailed::class))
-            observer.onChanged(ofType(SearchViewState.MoviesFetched::class))
+            observer.onChanged(SearchViewState(Idle))
+            observer.onChanged(SearchViewState(Loading, "Abc"))
+            observer.onChanged(
+                match {
+                    it.data is DataState.Failure && it.data.requireError().message != null
+                }
+            )
         }
     }
 
@@ -346,11 +380,19 @@ class SearchViewModelTest {
         viewModel.searchMovies("Abc")
         viewModel.searchMovies("Def")
         verifySequence {
-            observer.onChanged(SearchViewState.Idling)
-            observer.onChanged(SearchViewState.Searching)
-            observer.onChanged(SearchViewState.SearchFailed("Abc"))
-            observer.onChanged(SearchViewState.Searching)
-            observer.onChanged(SearchViewState.SearchFailed("Def"))
+            observer.onChanged(SearchViewState(Idle))
+            observer.onChanged(SearchViewState(Loading, "Abc"))
+            observer.onChanged(
+                match {
+                    it.data.failed && it.data.requireError().message == null && it.keyword == "Abc"
+                }
+            )
+            observer.onChanged(SearchViewState(Loading, "Def"))
+            observer.onChanged(
+                match {
+                    it.data.failed && it.data.requireError().message == null && it.keyword == "Def"
+                }
+            )
         }
     }
 
@@ -382,27 +424,48 @@ class SearchViewModelTest {
         viewModel.searchMovies("Abc")
         viewModel.loadNextPage()
         verifySequence {
-            observer.onChanged(SearchViewState.Idling)
-            observer.onChanged(SearchViewState.Searching)
+            observer.onChanged(SearchViewState(Idle))
+            observer.onChanged(SearchViewState(Loading, "Abc"))
             observer.onChanged(
-                SearchViewState.MoviesFetched(
-                    "Abc",
-                    firstMovieList,
-                    1,
-                    20
+                SearchViewState(
+                    Success(
+                        SearchUi(
+                            keyword = "Abc",
+                            movies = firstMovieList,
+                            page = 1,
+                            totalPages = 20,
+                            nextPageLoading = false,
+                            showReloadNextPage = false,
+                        )
+                    ), "Abc"
                 )
             )
             observer.onChanged(
-                SearchViewState.LoadingNextPage(
-                    firstMovieList
+                SearchViewState(
+                    Success(
+                        SearchUi(
+                            keyword = "Abc",
+                            movies = firstMovieList,
+                            page = 1,
+                            totalPages = 20,
+                            nextPageLoading = true,
+                            showReloadNextPage = false,
+                        )
+                    ), "Abc"
                 )
             )
             observer.onChanged(
-                SearchViewState.MoviesFetched(
-                    "Abc",
-                    firstMovieList + secondMovieList,
-                    2,
-                    20
+                SearchViewState(
+                    Success(
+                        SearchUi(
+                            keyword = "Abc",
+                            movies = firstMovieList + secondMovieList,
+                            page = 2,
+                            totalPages = 20,
+                            nextPageLoading = false,
+                            showReloadNextPage = false,
+                        )
+                    ), "Abc"
                 )
             )
         }
@@ -410,7 +473,7 @@ class SearchViewModelTest {
 
     @ObsoleteCoroutinesApi
     @Test
-    fun `shouldn't load next page at all if total result is less than 10`() {
+    fun `shouldn't load next page at all if total result is less than 10`() = runTest {
         val firstMovieList = List(3) {
             Movie(
                 "Abc",
@@ -426,12 +489,9 @@ class SearchViewModelTest {
         viewModel.searchMovies("Abc")
         viewModel.loadNextPage()
         verifySequence {
-            observer.onChanged(SearchViewState.Idling)
-            observer.onChanged(SearchViewState.Searching)
-            observer.onChanged(ofType(SearchViewState.MoviesFetched::class))
-        }
-        verify(exactly = 0) {
-            observer.onChanged(ofType(SearchViewState.LoadingNextPage::class))
+            observer.onChanged(SearchViewState(Idle))
+            observer.onChanged(SearchViewState(Loading, "Abc"))
+            observer.onChanged(ofType())
         }
         coVerify { useCase.execute(any(), any()) }
     }
@@ -458,13 +518,78 @@ class SearchViewModelTest {
         viewModel.loadNextPage()
         viewModel.loadNextPage()
         verifySequence {
-            observer.onChanged(SearchViewState.Idling)
-            observer.onChanged(SearchViewState.Searching)
-            observer.onChanged(ofType(SearchViewState.MoviesFetched::class))
-            observer.onChanged(SearchViewState.LoadingNextPage(firstMovieList))
-            observer.onChanged(ofType(SearchViewState.LoadPageFailed::class))
-            observer.onChanged(SearchViewState.LoadingNextPage(firstMovieList))
-            observer.onChanged(ofType(SearchViewState.LoadPageFailed::class))
+            observer.onChanged(SearchViewState(Idle))
+            observer.onChanged(SearchViewState(Loading, "Abc"))
+            observer.onChanged(
+                SearchViewState(
+                    Success(
+                        SearchUi(
+                            keyword = "Abc",
+                            movies = firstMovieList,
+                            page = 1,
+                            totalPages = 20,
+                            nextPageLoading = false,
+                            showReloadNextPage = false,
+                        )
+                    ), "Abc"
+                )
+            )
+            observer.onChanged(
+                SearchViewState(
+                    Success(
+                        SearchUi(
+                            keyword = "Abc",
+                            movies = firstMovieList,
+                            page = 1,
+                            totalPages = 20,
+                            nextPageLoading = true,
+                            showReloadNextPage = false,
+                        )
+                    ), "Abc"
+                )
+            )
+            observer.onChanged(
+                SearchViewState(
+                    Success(
+                        SearchUi(
+                            keyword = "Abc",
+                            movies = firstMovieList,
+                            page = 1,
+                            totalPages = 20,
+                            nextPageLoading = false,
+                            showReloadNextPage = true,
+                        )
+                    ), "Abc"
+                )
+            )
+            observer.onChanged(
+                SearchViewState(
+                    Success(
+                        SearchUi(
+                            keyword = "Abc",
+                            movies = firstMovieList,
+                            page = 1,
+                            totalPages = 20,
+                            nextPageLoading = true,
+                            showReloadNextPage = false,
+                        )
+                    ), "Abc"
+                )
+            )
+            observer.onChanged(
+                SearchViewState(
+                    Success(
+                        SearchUi(
+                            keyword = "Abc",
+                            movies = firstMovieList,
+                            page = 1,
+                            totalPages = 20,
+                            nextPageLoading = false,
+                            showReloadNextPage = true,
+                        )
+                    ), "Abc"
+                )
+            )
         }
         coVerify(exactly = 2) {
             useCase.execute("Abc", 2)
@@ -505,21 +630,37 @@ class SearchViewModelTest {
         viewModel.resetSearch()
         advanceTimeBy(1000)
         verifySequence {
-            observer.onChanged(SearchViewState.Idling)
-            observer.onChanged(SearchViewState.Searching)
-            observer.onChanged(ofType(SearchViewState.MoviesFetched::class))
-            observer.onChanged(ofType(SearchViewState.LoadingNextPage::class))
-            observer.onChanged(SearchViewState.Idling)
-        }
-        verify(exactly = 0) {
+            observer.onChanged(SearchViewState(Idle))
+            observer.onChanged(SearchViewState(Loading, "Abc"))
             observer.onChanged(
-                SearchViewState.MoviesFetched(
-                    "Abc",
-                    secondMovieList,
-                    2,
-                    20
+                SearchViewState(
+                    Success(
+                        SearchUi(
+                            keyword = "Abc",
+                            movies = firstMovieList,
+                            page = 1,
+                            totalPages = 20,
+                            nextPageLoading = false,
+                            showReloadNextPage = false,
+                        )
+                    ), "Abc"
                 )
             )
+            observer.onChanged(
+                SearchViewState(
+                    Success(
+                        SearchUi(
+                            keyword = "Abc",
+                            movies = firstMovieList,
+                            page = 1,
+                            totalPages = 20,
+                            nextPageLoading = true,
+                            showReloadNextPage = false,
+                        )
+                    ), "Abc"
+                )
+            )
+            observer.onChanged(SearchViewState(Idle))
         }
     }
 
@@ -530,7 +671,11 @@ class SearchViewModelTest {
         }
         viewModel.searchMovies("Abc")
         verify {
-            observer.onChanged(SearchViewState.MovieNotFound)
+            observer.onChanged(
+                match {
+                    it.data.failed && it.data.requireError().message == "Movie not found!" && it.keyword == "Abc"
+                }
+            )
         }
     }
 }

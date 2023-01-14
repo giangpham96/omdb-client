@@ -3,18 +3,18 @@ package leo.me.la.movies
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.view.ViewCompat
 import androidx.core.view.isVisible
+import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import com.google.android.material.chip.Chip
 import com.xwray.groupie.GroupAdapter
-import com.xwray.groupie.kotlinandroidextensions.GroupieViewHolder
 import com.xwray.groupie.Section
+import com.xwray.groupie.kotlinandroidextensions.GroupieViewHolder
 import kotlinx.android.synthetic.main.back_view_movie_info.actorsRecyclerview
 import kotlinx.android.synthetic.main.back_view_movie_info.awards
 import kotlinx.android.synthetic.main.back_view_movie_info.boxOffice
@@ -42,10 +42,11 @@ import kotlinx.android.synthetic.main.front_view_movie_info.rate
 import leo.me.la.common.TAG_MOVIE_INFO_VIEWMODEL
 import leo.me.la.common.model.MovieType
 import leo.me.la.movies.item.NameItem
+import leo.me.la.movies.util.loadUri
 import leo.me.la.presentation.BaseViewModel
+import leo.me.la.presentation.DataState
 import leo.me.la.presentation.MovieInfoViewModel
 import leo.me.la.presentation.MovieInfoViewState
-import leo.me.la.movies.util.loadUri
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 import org.koin.core.qualifier.named
@@ -55,12 +56,11 @@ private const val POSTER_URL = "poster_url"
 
 internal class MovieInfoFragment : Fragment() {
     private lateinit var imdbId: String
-    private var posterUrl: String? = null
 
     private val _viewModel: BaseViewModel<MovieInfoViewState>
-        by viewModel(named(TAG_MOVIE_INFO_VIEWMODEL)) {
-            parametersOf(imdbId, posterUrl)
-        }
+            by viewModel(named(TAG_MOVIE_INFO_VIEWMODEL)) {
+                parametersOf(imdbId)
+            }
 
     private val viewModel by lazy {
         _viewModel as MovieInfoViewModel
@@ -83,18 +83,24 @@ internal class MovieInfoFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         imdbId = arguments?.getString(IMDB_ID) ?: throw IllegalStateException("imdb_id is required")
-        posterUrl = arguments?.getString(POSTER_URL)
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View? {
         return inflater.inflate(R.layout.fragment_movie_info, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        poster.loadUri(
+            uri = arguments?.getString(POSTER_URL),
+            errorImage = AppCompatResources.getDrawable(
+                requireContext(),
+                R.drawable.movie_theater
+            )
+        )
         actorsRecyclerview.apply {
             layoutManager = GridLayoutManager(
                 this@MovieInfoFragment.requireContext(),
@@ -129,54 +135,47 @@ internal class MovieInfoFragment : Fragment() {
     }
 
     private fun render(viewState: MovieInfoViewState) {
-        when (viewState) {
-            is MovieInfoViewState.LoadMovieInfoSuccess -> {
+        when (val state = viewState.state) {
+            is DataState.Success -> {
                 loading.isVisible = false
                 setOf(
                     title, type, imdbRate, imdbVotes, metaScore, runtime, info, placeholderMetascore
                 ).forEach {
                     it.isVisible = true
                 }
-                poster.loadUri(
-                    viewState.poster,
-                    errorImage = AppCompatResources.getDrawable(
-                        requireContext(),
-                        R.drawable.movie_theater
-                    )
-                )
-                title.text = viewState.title
+                title.text = state.data.title
                 type.apply {
-                    when (viewState.type) {
+                    when (state.data.type) {
                         MovieType.Movie -> setImageResource(R.drawable.icon_movie)
                         MovieType.Series -> setImageResource(R.drawable.icon_series)
                         else -> isVisible = false
                     }
                 }
-                imdbRate.text = viewState.imdbRating
-                imdbVotes.text = viewState.imdbVotes
-                metaScore.text = viewState.metaScore
-                runtime.text = viewState.runtime
-                rate.text = viewState.rated.name.replace("_", "-")
-                plot.text = viewState.plot
-                production.text = viewState.production
-                released.text = viewState.released
-                dvdReleased.text = viewState.dvdRelease
-                boxOffice.text = viewState.boxOffice
-                writers.text = viewState.writers
-                awards.text = viewState.awards
-                languages.text = viewState.languages
-                countries.text = viewState.countries
+                imdbRate.text = state.data.imdbRating
+                imdbVotes.text = state.data.imdbVotes
+                metaScore.text = state.data.metaScore
+                runtime.text = state.data.runtime
+                rate.text = state.data.rated.name.replace("_", "-")
+                plot.text = state.data.plot
+                production.text = state.data.production
+                released.text = state.data.released
+                dvdReleased.text = state.data.dvdRelease
+                boxOffice.text = state.data.boxOffice
+                writers.text = state.data.writers
+                awards.text = state.data.awards
+                languages.text = state.data.languages
+                countries.text = state.data.countries
                 directors.apply {
-                    update(viewState.directors.map {
+                    update(state.data.directors.map {
                         NameItem(it)
                     })
                 }
                 actors.apply {
-                    update(viewState.actors.map {
+                    update(state.data.actors.map {
                         NameItem(it)
                     })
                 }
-                viewState.genres.forEach { genre ->
+                state.data.genres.forEach { genre ->
                     genres.addView(
                         Chip(genres.context).also {
                             it.text = genre
@@ -186,24 +185,17 @@ internal class MovieInfoFragment : Fragment() {
                     )
                 }
             }
-            is MovieInfoViewState.LoadMovieInfoFailure -> {
 
-            }
-            is MovieInfoViewState.Loading -> {
+            is DataState.Loading -> {
                 loading.isVisible = true
-                poster.loadUri(
-                    viewState.poster,
-                    errorImage = AppCompatResources.getDrawable(
-                        requireContext(),
-                        R.drawable.movie_theater
-                    )
-                )
                 setOf(
                     title, type, imdbRate, imdbVotes, metaScore, runtime, info, placeholderMetascore
                 ).forEach {
                     it.isVisible = false
                 }
             }
+
+            else -> {}
         }
     }
 

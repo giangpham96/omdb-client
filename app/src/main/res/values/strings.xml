@@ -1,4 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="search">Search</string>
+    <string name="search_movie">Search movie</string>
+    <string name="not_found">Not found</string>
+    <string name="something_wrong_happens">Something wrong happens</string>
 </resources>

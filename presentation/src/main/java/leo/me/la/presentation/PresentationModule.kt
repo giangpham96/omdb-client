@@ -12,12 +12,12 @@ val presentationModule = module {
     baseViewModel(TAG_SEARCH_VIEWMODEL) {
         SearchViewModel(get())
     }
-    baseViewModel(TAG_MOVIE_INFO_VIEWMODEL) { (imdbId : String, poster: String?) ->
-        MovieInfoViewModel(get(), imdbId = imdbId, poster = poster)
+    baseViewModel(TAG_MOVIE_INFO_VIEWMODEL) { (imdbId : String) ->
+        MovieInfoViewModel(get(), imdbId = imdbId)
     }
 }
 
-inline fun <reified T : BaseViewState> Module.baseViewModel(
+inline fun <reified T : Any> Module.baseViewModel(
     name: String = "",
     noinline definition: Definition<BaseViewModel<T>>
 ) {

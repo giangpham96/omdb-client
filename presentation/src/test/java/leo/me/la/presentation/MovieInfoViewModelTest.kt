@@ -21,9 +21,7 @@ import leo.me.la.common.model.Movie
 import leo.me.la.common.model.MovieRate
 import leo.me.la.common.model.MovieType
 import leo.me.la.domain.LoadMovieInfoUseCase
-import leo.me.la.presentation.MovieInfoViewState.LoadMovieInfoFailure
-import leo.me.la.presentation.MovieInfoViewState.LoadMovieInfoSuccess
-import leo.me.la.presentation.MovieInfoViewState.Loading
+import leo.me.la.presentation.MovieInfoViewState.MovieInfo
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.After
 import org.junit.Before
@@ -65,10 +63,10 @@ class MovieInfoViewModelTest {
             delay(500)
             throw Throwable()
         }
-        viewModel = MovieInfoViewModel(useCase, "imdbId", null)
+        viewModel = MovieInfoViewModel(useCase, "imdbId")
         viewModel.viewStates.observeForever(observer)
         advanceTimeBy(400)
-        assertThat(viewModel.viewStates.value).isEqualTo(Loading(null))
+        assertThat(viewModel.viewStates.value?.state).isEqualTo(DataState.Loading)
     }
 
     @ObsoleteCoroutinesApi
@@ -105,11 +103,11 @@ class MovieInfoViewModelTest {
             production = "Sony Pictures",
             website = "http://www.intothespiderverse.movie/"
         )
-        viewModel = MovieInfoViewModel(useCase, "imdbId", null)
+        viewModel = MovieInfoViewModel(useCase, "imdbId")
         viewModel.viewStates.observeForever(observer)
         advanceUntilIdle()
-        assertThat(viewModel.viewStates.value).isEqualTo(
-            LoadMovieInfoSuccess(
+        assertThat(viewModel.viewStates.value?.state?.optData()).isEqualTo(
+            MovieInfo(
                 title = "Spider-Man: Into the Spider-Verse",
                 type = MovieType.Movie,
                 poster = "https://m.media-amazon.com/images/M/MV5BMjMwNDkxMTgzOF5BMl5BanBnXkFtZTgwNT" +
@@ -141,9 +139,9 @@ class MovieInfoViewModelTest {
     @Test
     fun `should move to LoadMovieInfoFailure state`() = runTest {
         coEvery { useCase.execute("imdbId") } throws Throwable()
-        viewModel = MovieInfoViewModel(useCase, "imdbId", null)
+        viewModel = MovieInfoViewModel(useCase, "imdbId")
         viewModel.viewStates.observeForever(observer)
         advanceUntilIdle()
-        assertThat(viewModel.viewStates.value).isInstanceOf(LoadMovieInfoFailure::class.java)
+        assertThat(viewModel.viewStates.value?.state).isInstanceOf(DataState.Failure::class.java)
     }
 }

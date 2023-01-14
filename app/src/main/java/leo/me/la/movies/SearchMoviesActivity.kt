@@ -1,35 +1,37 @@
 package leo.me.la.movies
 
 import android.annotation.SuppressLint
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Menu
 import android.view.View
 import androidx.annotation.ColorInt
 import androidx.annotation.DrawableRes
+import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.appcompat.widget.SearchView
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.GridLayoutManager
+import com.google.android.material.snackbar.Snackbar
 import com.xwray.groupie.Section
 import kotlinx.android.synthetic.main.activity_search_movies.info
 import kotlinx.android.synthetic.main.activity_search_movies.loadMovie
 import kotlinx.android.synthetic.main.activity_search_movies.moviesList
+import kotlinx.android.synthetic.main.activity_search_movies.root
 import kotlinx.android.synthetic.main.activity_search_movies.toolbar
+import leo.me.la.common.TAG_SEARCH_VIEWMODEL
 import leo.me.la.movies.adapter.PagedLoadingHandler
 import leo.me.la.movies.adapter.PaginatedGroupAdapter
 import leo.me.la.movies.item.LoadingFooter
 import leo.me.la.movies.item.MovieItem
-import leo.me.la.presentation.SearchViewModel
-import leo.me.la.presentation.SearchViewState
-import org.koin.androidx.viewmodel.ext.android.viewModel
-import com.google.android.material.snackbar.Snackbar
-import kotlinx.android.synthetic.main.activity_search_movies.root
-import leo.me.la.common.TAG_SEARCH_VIEWMODEL
 import leo.me.la.movies.item.RetryLoadNextPageFooter
 import leo.me.la.movies.util.DebouncingQueryTextListener
 import leo.me.la.presentation.BaseViewModel
+import leo.me.la.presentation.DataState
+import leo.me.la.presentation.DataState.Failure
+import leo.me.la.presentation.DataState.Idle
+import leo.me.la.presentation.SearchViewModel
+import leo.me.la.presentation.SearchViewState
+import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.qualifier.named
 
 
@@ -57,12 +59,12 @@ internal class SearchMoviesActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_search_movies)
-        viewModel.viewStates.observe(this, Observer {
+        viewModel.viewStates.observe(this) {
             it?.let { viewState ->
                 render(viewState)
             }
-        })
-        viewModel.navigationRequest.observe(this, Observer { event ->
+        }
+        viewModel.navigationRequest.observe(this) { event ->
             event?.let {
                 MovieInfoActivity.launch(
                     this@SearchMoviesActivity,
@@ -72,7 +74,7 @@ internal class SearchMoviesActivity : AppCompatActivity() {
                     it.selectedMovie
                 )
             }
-        })
+        }
         setSupportActionBar(toolbar)
         supportActionBar?.setDisplayShowTitleEnabled(false)
 
@@ -95,10 +97,10 @@ internal class SearchMoviesActivity : AppCompatActivity() {
     @SuppressLint("SetTextI18n")
     private fun render(viewState: SearchViewState) {
         snackBar?.dismiss()
-        when (viewState) {
-            SearchViewState.Idling -> {
+        when (val data = viewState.data) {
+            Idle -> {
                 showInfo(
-                    "Search movie",
+                    getString(R.string.search_movie),
                     ContextCompat.getColor(
                         this@SearchMoviesActivity,
                         R.color.colorPrimary
@@ -106,17 +108,41 @@ internal class SearchMoviesActivity : AppCompatActivity() {
                     R.drawable.cinema
                 )
             }
-            SearchViewState.MovieNotFound -> {
-                showInfo(
-                    "Not found",
-                    ContextCompat.getColor(
-                        this@SearchMoviesActivity,
-                        android.R.color.holo_red_dark
-                    ),
-                    R.drawable.not_found
-                )
+
+            is Failure -> {
+                if (data.error.message != null) {
+                    showInfo(
+                        getString(R.string.not_found),
+                        ContextCompat.getColor(
+                            this@SearchMoviesActivity,
+                            android.R.color.holo_red_dark
+                        ),
+                        R.drawable.not_found
+                    )
+                } else {
+                    showInfo(
+                        "",
+                        ContextCompat.getColor(
+                            this@SearchMoviesActivity,
+                            android.R.color.holo_red_dark
+                        ),
+                        R.drawable.unknown
+                    )
+                    snackBar = Snackbar.make(
+                        root,
+                        getString(R.string.something_wrong_happens),
+                        Snackbar.LENGTH_INDEFINITE
+                    ).apply {
+                        setAction("Retry") {
+                            viewModel.searchMovies(viewState.keyword!!)
+                            dismiss()
+                        }
+                        show()
+                    }
+                }
             }
-            SearchViewState.Searching -> {
+
+            DataState.Loading -> {
                 movieSection.apply {
                     update(emptyList())
                     removeFooter()
@@ -124,65 +150,29 @@ internal class SearchMoviesActivity : AppCompatActivity() {
                 loadMovie.visibility = View.VISIBLE
                 info.visibility = View.GONE
             }
-            is SearchViewState.SearchFailed -> {
-                showInfo(
-                    "",
-                    ContextCompat.getColor(
-                        this@SearchMoviesActivity,
-                        android.R.color.holo_red_dark
-                    ),
-                    R.drawable.unknown
-                )
-                snackBar = Snackbar.make(root, "Something wrong happens", Snackbar.LENGTH_INDEFINITE)
-                    .apply {
-                        setAction("Retry") {
-                            viewModel.searchMovies(viewState.keyword)
-                            dismiss()
-                        }
-                        show()
-                    }
-            }
-            is SearchViewState.MoviesFetched -> {
+
+            is DataState.Success -> {
                 info.visibility = View.GONE
                 loadMovie.visibility = View.GONE
-                movieSection.apply {
-                    removeFooter()
-                    update(viewState.movies.map {
-                        MovieItem(it) { id ->
-                            viewModel.onItemClick(id)
+                moviesList.post {
+                    movieSection.apply {
+                        removeFooter()
+                        if (data.data.nextPageLoading) {
+                            setFooter(LoadingFooter)
+                        } else if (data.data.showReloadNextPage) {
+                            setFooter(retryLoadNextPageFooter)
                         }
-                    })
+                        update(data.data.movies.map {
+                            MovieItem(it) { id ->
+                                viewModel.onItemClick(id)
+                            }
+                        })
+                    }
                 }
-                pagedLoadingHandler.nextPage = if (viewState.page < viewState.totalPages)
-                    viewState.page + 1
+                pagedLoadingHandler.nextPage = if (data.data.page < data.data.totalPages)
+                    data.data.page + 1
                 else
                     null
-            }
-            is SearchViewState.LoadingNextPage -> {
-                moviesList.post {
-                    movieSection.apply {
-                        removeFooter()
-                        update(viewState.movies.map {
-                            MovieItem(it) { id ->
-                                viewModel.onItemClick(id)
-                            }
-                        })
-                        setFooter(LoadingFooter)
-                    }
-                }
-            }
-            is SearchViewState.LoadPageFailed -> {
-                moviesList.post {
-                    movieSection.apply {
-                        removeFooter()
-                        setFooter(retryLoadNextPageFooter)
-                        update(viewState.movies.map {
-                            MovieItem(it) { id ->
-                                viewModel.onItemClick(id)
-                            }
-                        })
-                    }
-                }
             }
         }
     }

@@ -3,9 +3,10 @@ package leo.me.la.presentation
 import leo.me.la.common.model.MovieRate
 import leo.me.la.common.model.MovieType
 
-sealed class MovieInfoViewState : BaseViewState {
-    data class Loading(val poster: String?): MovieInfoViewState()
-    data class LoadMovieInfoSuccess(
+data class MovieInfoViewState(
+    val state: DataState<MovieInfo>
+) {
+    data class MovieInfo(
         val title: String,
         val type: MovieType,
         val poster: String?,
@@ -27,6 +28,5 @@ sealed class MovieInfoViewState : BaseViewState {
         val dvdRelease: String,
         val production: String,
         val website: Pair<String, Boolean> // the boolean value indicates if the website text view is clickable
-    ): MovieInfoViewState()
-    data class LoadMovieInfoFailure(val reason: Throwable): MovieInfoViewState()
+    )
 }

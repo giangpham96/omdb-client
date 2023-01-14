@@ -13,6 +13,7 @@ import androidx.core.view.isGone
 import androidx.core.view.isVisible
 import leo.me.la.movies.R
 import leo.me.la.movies.util.toPx
+import kotlin.math.abs
 
 /**
  * A quick and easy flip view through which you can create views with two sides like credit cards,
@@ -403,8 +404,15 @@ class EasyFlipView : FrameLayout {
         }
     }
 
-    override fun onTouchEvent(event: MotionEvent): Boolean {
+    override fun performClick(): Boolean {
+        if (isEnabled && isFlipOnTouch) {
+            flipTheView()
+            return true
+        }
+        return super.performClick()
+    }
 
+    override fun onTouchEvent(event: MotionEvent): Boolean {
         if (isEnabled && isFlipOnTouch) {
             when (event.action) {
                 MotionEvent.ACTION_DOWN -> {
@@ -415,10 +423,10 @@ class EasyFlipView : FrameLayout {
                 MotionEvent.ACTION_UP -> {
                     val x2 = event.x
                     val y2 = event.y
-                    val dx = Math.abs(x2 - x1)
-                    val dy = Math.abs(y2 - y1)
+                    val dx = abs(x2 - x1)
+                    val dy = abs(y2 - y1)
                     if (dx < maxClickDistance && dy < maxClickDistance) {
-                        flipTheView()
+                        return performClick()
                     }
                     return true
                 }

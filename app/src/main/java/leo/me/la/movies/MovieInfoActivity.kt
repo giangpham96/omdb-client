@@ -4,10 +4,10 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Build
 import android.os.Build.VERSION_CODES.TIRAMISU
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
-import androidx.fragment.app.FragmentManager
+import androidx.fragment.app.FragmentActivity
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import kotlinx.android.synthetic.main.activity_movie_info.viewPager
 
@@ -57,7 +57,7 @@ internal class MovieInfoActivity : AppCompatActivity() {
             val movieList = movieIds.toList()
             adapter = ScreenSlidePagerAdapter(
                 movieList,
-                supportFragmentManager
+                this@MovieInfoActivity
             )
             currentItem = intent?.extras?.getString(SELECTED_IMDB_ID)?.let { id ->
                 movieList.map { it.imdbId }
@@ -74,11 +74,11 @@ internal class MovieInfoActivity : AppCompatActivity() {
 
     private inner class ScreenSlidePagerAdapter(
         private val movieImageIds: List<ParcelableMovie>,
-        fm: FragmentManager,
-    ) : FragmentStateAdapter(fm) {
+        activity: FragmentActivity,
+    ) : FragmentStateAdapter(activity) {
         override fun getItemCount() = movieImageIds.size
 
-        override fun getItem(position: Int) = MovieInfoFragment
+        override fun createFragment(position: Int) = MovieInfoFragment
             .newInstance(movieImageIds[position].imdbId, movieImageIds[position].posterUrl)
     }
 }

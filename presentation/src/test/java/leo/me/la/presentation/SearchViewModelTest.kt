@@ -334,9 +334,13 @@ class SearchViewModelTest {
         viewModel.viewState.test {
             assertThat(awaitItem()).isEqualTo(SearchViewState(Idle))
             viewModel.searchMovies("Abc")
-            assertThat(awaitItem()).matches {
-                it.searchState is DataState.Failure && it.searchState.requireError().message != null
-            }
+            assertThat(awaitItem()).isEqualTo(
+                SearchViewState(
+                    searchState = DataState.Failure(
+                        MovieNotFoundException
+                    ), keyword = "Abc"
+                )
+            )
         }
     }
 
@@ -607,17 +611,4 @@ class SearchViewModelTest {
         }
     }
 
-    @Test
-    fun `should move to MovieNotFound`() = runTest {
-        coEvery { useCase.execute("Abc") } coAnswers {
-            throw OmdbErrorException("Movie not found!")
-        }
-        viewModel.viewState.test {
-            assertThat(awaitItem()).isEqualTo(SearchViewState(Idle))
-            viewModel.searchMovies("Abc")
-            assertThat(awaitItem()).matches {
-                it.searchState.failed && it.searchState.requireError().message == "Movie not found!" && it.keyword == "Abc"
-            }
-        }
-    }
 }

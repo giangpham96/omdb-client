@@ -76,4 +76,5 @@ object TestDependencies {
     const val testExt = "androidx.test.ext:junit:${Versions.testExt}"
     const val testRule = "androidx.test:rules:1.5.0"
     const val testRunner = "androidx.test:runner:1.5.2"
+    const val turbine = "app.cash.turbine:turbine:0.12.1"
 }

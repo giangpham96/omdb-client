@@ -10,6 +10,7 @@ import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.view.ViewCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import com.google.android.material.chip.Chip
 import com.xwray.groupie.GroupAdapter
@@ -121,9 +122,9 @@ internal class MovieInfoFragment : Fragment() {
             adapter = this@MovieInfoFragment.directorsAdapter
             ViewCompat.setNestedScrollingEnabled(this, false)
         }
-        viewModel.viewStates.observe(this.viewLifecycleOwner) {
-            it?.let { viewState ->
-                render(viewState)
+        lifecycleScope.launchWhenStarted {
+            viewModel.viewState.collect {
+                render(it)
             }
         }
         info.post {

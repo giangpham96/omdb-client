@@ -10,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.appcompat.widget.SearchView
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import com.google.android.material.snackbar.Snackbar
 import com.xwray.groupie.Section
@@ -59,9 +60,9 @@ internal class SearchMoviesActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_search_movies)
-        viewModel.viewStates.observe(this) {
-            it?.let { viewState ->
-                render(viewState)
+        lifecycleScope.launchWhenStarted {
+            viewModel.viewState.collect {
+                render(it)
             }
         }
         viewModel.navigationRequest.observe(this) { event ->

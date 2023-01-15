@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import leo.me.la.common.model.Movie
@@ -26,15 +27,16 @@ class SearchViewModel(
 
     private val channel = MutableSharedFlow<String>()
 
+    override val _viewState = MutableStateFlow(SearchViewState(Idle))
+
     init {
-        _viewStates.value = SearchViewState(Idle)
         viewModelScope.launch {
             channel.collectLatest {
                 searchJob?.cancel()
-                _viewStates.value = SearchViewState(Loading, keyword = it)
+                _viewState.value = SearchViewState(Loading, keyword = it)
                 try {
                     val result = searchMoviesUseCase.execute(it)
-                    _viewStates.value = SearchViewState(
+                    _viewState.value = SearchViewState(
                         Success(
                             SearchUi(
                                 keyword = it,
@@ -50,7 +52,7 @@ class SearchViewModel(
                 } catch (ignored: CancellationException) {
                     throw ignored
                 } catch (e: Throwable) {
-                    _viewStates.value = when (e) {
+                    _viewState.value = when (e) {
                         is OmdbErrorException -> {
                             val err = if (e.message == "Movie not found!")
                                 RuntimeException(e.message)
@@ -68,7 +70,7 @@ class SearchViewModel(
 
     fun resetSearch() {
         searchJob?.cancel()
-        _viewStates.value = SearchViewState(Idle)
+        _viewState.value = SearchViewState(Idle)
     }
 
     private val _navigationRequest = MutableLiveData<MovieInfoEvent>()
@@ -82,8 +84,7 @@ class SearchViewModel(
     }
 
     fun loadNextPage() {
-        with(viewStates.value) {
-            val data = this?.data
+        with(viewState.value) {
             if (data is Success && (data.data.showReloadNextPage || !data.data.nextPageLoading)) {
                 val totalPages = data.data.totalPages
                 val nextPage = data.data.page + 1
@@ -92,14 +93,14 @@ class SearchViewModel(
                     return@with
                 }
                 val keyword = data.data.keyword
-                _viewStates.value = SearchViewState(
+                _viewState.value = SearchViewState(
                     data = Success(data.data.copy(showReloadNextPage = false, nextPageLoading = true)),
-                    keyword = viewStates.value?.keyword,
+                    keyword = viewState.value.keyword,
                 )
                 searchJob = viewModelScope.launch {
                     try {
                         val nextPageMovieResult = searchMoviesUseCase.execute(keyword, nextPage)
-                        _viewStates.value = SearchViewState(
+                        _viewState.value = SearchViewState(
                             data = Success(
                                 data.data.copy(
                                     movies = fetchedMovies + nextPageMovieResult.movies,
@@ -108,19 +109,19 @@ class SearchViewModel(
                                     nextPageLoading = false,
                                 )
                             ),
-                            keyword = viewStates.value?.keyword,
+                            keyword = viewState.value.keyword,
                         )
                     } catch (ignored: CancellationException) {
                         throw ignored
                     } catch (e: Throwable) {
-                        _viewStates.value = SearchViewState(
+                        _viewState.value = SearchViewState(
                             data = Success(
                                 data.data.copy(
                                     showReloadNextPage = true,
                                     nextPageLoading = false,
                                 )
                             ),
-                            keyword = viewStates.value?.keyword,
+                            keyword = viewState.value.keyword,
                         )
                     }
                 }
@@ -129,7 +130,7 @@ class SearchViewModel(
     }
 
     fun onItemClick(selectedMovie: String) {
-        with(viewStates.value?.data) {
+        with(viewState.value.data) {
             when (this) {
                 is Success -> {
                     _navigationRequest.value = MovieInfoEvent(

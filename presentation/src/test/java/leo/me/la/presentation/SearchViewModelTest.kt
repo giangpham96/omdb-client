@@ -1,22 +1,14 @@
 package leo.me.la.presentation
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import androidx.lifecycle.Observer
-import io.mockk.Runs
+import app.cash.turbine.test
 import io.mockk.coEvery
 import io.mockk.coVerify
-import io.mockk.every
-import io.mockk.just
 import io.mockk.mockk
-import io.mockk.verify
-import io.mockk.verifySequence
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.ObsoleteCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
-import kotlinx.coroutines.test.advanceTimeBy
-import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
@@ -44,10 +36,6 @@ class SearchViewModelTest {
     @get:Rule
     var rule: TestRule = InstantTaskExecutorRule()
 
-    private val observer: Observer<SearchViewState> = mockk {
-        every { onChanged(any()) } just Runs
-    }
-
     private val useCase: SearchMoviesUseCase = mockk()
     private lateinit var viewModel: SearchViewModel
 
@@ -56,22 +44,21 @@ class SearchViewModelTest {
     fun setUp() {
         Dispatchers.setMain(testDispatcher)
         viewModel = SearchViewModel(useCase)
-        viewModel.viewStates.observeForever(observer)
     }
 
     @ExperimentalCoroutinesApi
     @After
     fun tearDown() {
-        viewModel.viewStates.removeObserver(observer)
         Dispatchers.resetMain() // reset main dispatcher to the original Main dispatcher
     }
 
     @Test
-    fun `should start in Idling state`() {
-        assertThat(viewModel.viewStates.value).isEqualTo(SearchViewState(Idle))
+    fun `should start in Idling state`() = runTest {
+        viewModel.viewState.test {
+            assertThat(awaitItem()).isEqualTo(SearchViewState(Idle))
+        }
     }
 
-    @ObsoleteCoroutinesApi
     @Test
     fun `should search successfully and move to MoviesFetched state`() = runTest {
         val desiredMovieList = List(3) {
@@ -91,11 +78,9 @@ class SearchViewModelTest {
             3
         )
         viewModel.searchMovies("Batman")
-        advanceUntilIdle()
-        verifySequence {
-            observer.onChanged(SearchViewState(Idle))
-            observer.onChanged(SearchViewState(Loading, "Batman"))
-            observer.onChanged(
+
+        viewModel.viewState.test {
+            assertThat(awaitItem()).isEqualTo(
                 SearchViewState(
                     Success(
                         SearchUi(
@@ -112,7 +97,6 @@ class SearchViewModelTest {
         }
     }
 
-    @ObsoleteCoroutinesApi
     @Test
     fun `should cancel previous search if new search is dispatched`() = runTest {
         val cancelledMovieList = listOf(
@@ -142,16 +126,14 @@ class SearchViewModelTest {
         coEvery {
             useCase.execute("Batman")
         } returns MovieSearchResult(desiredMovieList, 1)
-        viewModel.searchMovies("Abc")
-        advanceTimeBy(500)
-        viewModel.searchMovies("Batman")
-        advanceTimeBy(1000)
-
-        verifySequence {
-            observer.onChanged(SearchViewState(Idle))
-            observer.onChanged(SearchViewState(Loading, "Abc"))
-            observer.onChanged(SearchViewState(Loading, "Batman"))
-            observer.onChanged(
+        viewModel.viewState.test {
+            assertThat(awaitItem()).isEqualTo(SearchViewState(Idle))
+            viewModel.searchMovies("Abc")
+            assertThat(awaitItem()).isEqualTo(SearchViewState(Loading, "Abc"))
+            delay(500)
+            viewModel.searchMovies("Batman")
+            delay(1000)
+            assertThat(awaitItem()).isEqualTo(
                 SearchViewState(
                     Success(
                         SearchUi(
@@ -168,7 +150,6 @@ class SearchViewModelTest {
         }
     }
 
-    @ObsoleteCoroutinesApi
     @Test
     fun `should cancel next page loading if new search is dispatched`() = runTest {
         val firstMovieList = List(10) {
@@ -197,16 +178,10 @@ class SearchViewModelTest {
             }
             coEvery { execute("Batman") } returns MovieSearchResult(secondMovieList, 1)
         }
-        viewModel.searchMovies("Abc")
-        advanceTimeBy(10)
-        viewModel.loadNextPage()
-        advanceTimeBy(50)
-        viewModel.searchMovies("Batman")
-        advanceTimeBy(100)
-        verifySequence {
-            observer.onChanged(SearchViewState(Idle))
-            observer.onChanged(SearchViewState(Loading, "Abc"))
-            observer.onChanged(
+        viewModel.viewState.test {
+            assertThat(awaitItem()).isEqualTo(SearchViewState(Idle))
+            viewModel.searchMovies("Abc")
+            assertThat(awaitItem()).isEqualTo(
                 SearchViewState(
                     Success(
                         SearchUi(
@@ -220,7 +195,9 @@ class SearchViewModelTest {
                     ), "Abc"
                 )
             )
-            observer.onChanged(
+            viewModel.loadNextPage()
+            delay(50)
+            assertThat(awaitItem()).isEqualTo(
                 SearchViewState(
                     Success(
                         SearchUi(
@@ -234,8 +211,9 @@ class SearchViewModelTest {
                     ), "Abc"
                 )
             )
-            observer.onChanged(SearchViewState(Loading, "Batman"))
-            observer.onChanged(
+            viewModel.searchMovies("Batman")
+            delay(100)
+            assertThat(awaitItem()).isEqualTo(
                 SearchViewState(
                     Success(
                         SearchUi(
@@ -252,9 +230,8 @@ class SearchViewModelTest {
         }
     }
 
-    @ObsoleteCoroutinesApi
     @Test
-    fun `should reset to page 1 if new search is dispatched`() {
+    fun `should reset to page 1 if new search is dispatched`() = runTest {
         val firstMovieList = List(10) {
             Movie(
                 "Abc",
@@ -287,13 +264,10 @@ class SearchViewModelTest {
             coEvery { execute("Abc", 2) } returns MovieSearchResult(secondMovieList, 200)
             coEvery { execute("Batman") } returns MovieSearchResult(newSearchMovieList, 1)
         }
-        viewModel.searchMovies("Abc")
-        viewModel.loadNextPage()
-        viewModel.searchMovies("Batman")
-        verifySequence {
-            observer.onChanged(SearchViewState(Idle))
-            observer.onChanged(SearchViewState(Loading, "Abc"))
-            observer.onChanged(
+        viewModel.viewState.test {
+            assertThat(awaitItem()).isEqualTo(SearchViewState(Idle))
+            viewModel.searchMovies("Abc")
+            assertThat(awaitItem()).isEqualTo(
                 SearchViewState(
                     Success(
                         SearchUi(
@@ -307,7 +281,8 @@ class SearchViewModelTest {
                     ), "Abc"
                 )
             )
-            observer.onChanged(
+            viewModel.loadNextPage()
+            assertThat(awaitItem()).isEqualTo(
                 SearchViewState(
                     Success(
                         SearchUi(
@@ -321,7 +296,7 @@ class SearchViewModelTest {
                     ), "Abc"
                 )
             )
-            observer.onChanged(
+            assertThat(awaitItem()).isEqualTo(
                 SearchViewState(
                     Success(
                         SearchUi(
@@ -335,8 +310,8 @@ class SearchViewModelTest {
                     ), "Abc"
                 )
             )
-            observer.onChanged(SearchViewState(Loading, "Batman"))
-            observer.onChanged(
+            viewModel.searchMovies("Batman")
+            assertThat(awaitItem()).isEqualTo(
                 SearchViewState(
                     Success(
                         SearchUi(
@@ -353,52 +328,39 @@ class SearchViewModelTest {
         }
     }
 
-    @ObsoleteCoroutinesApi
     @Test
     fun `should move to MovieNotFound state`() = runTest {
         coEvery { useCase.execute(any(), any()) } throws OmdbErrorException("Movie not found!")
-        viewModel.searchMovies("Abc")
-        advanceUntilIdle()
-        verifySequence {
-            observer.onChanged(SearchViewState(Idle))
-            observer.onChanged(SearchViewState(Loading, "Abc"))
-            observer.onChanged(
-                match {
-                    it.data is DataState.Failure && it.data.requireError().message != null
-                }
-            )
+        viewModel.viewState.test {
+            assertThat(awaitItem()).isEqualTo(SearchViewState(Idle))
+            viewModel.searchMovies("Abc")
+            assertThat(awaitItem()).matches {
+                it.data is DataState.Failure && it.data.requireError().message != null
+            }
         }
     }
 
-    @ObsoleteCoroutinesApi
     @Test
-    fun `should move to SearchFailed state`() {
+    fun `should move to SearchFailed state`() = runTest {
         with(useCase) {
             coEvery { execute("Abc") } throws OmdbErrorException("empty")
             coEvery { execute("Def") } throws Exception()
         }
-        viewModel.searchMovies("Abc")
-        viewModel.searchMovies("Def")
-        verifySequence {
-            observer.onChanged(SearchViewState(Idle))
-            observer.onChanged(SearchViewState(Loading, "Abc"))
-            observer.onChanged(
-                match {
-                    it.data.failed && it.data.requireError().message == null && it.keyword == "Abc"
-                }
-            )
-            observer.onChanged(SearchViewState(Loading, "Def"))
-            observer.onChanged(
-                match {
-                    it.data.failed && it.data.requireError().message == null && it.keyword == "Def"
-                }
-            )
+        viewModel.viewState.test {
+            assertThat(awaitItem()).isEqualTo(SearchViewState(Idle))
+            viewModel.searchMovies("Abc")
+            assertThat(awaitItem()).matches {
+                it.data.failed && it.data.requireError().message == null && it.keyword == "Abc"
+            }
+            viewModel.searchMovies("Def")
+            assertThat(awaitItem()).matches {
+                it.data.failed && it.data.requireError().message == null && it.keyword == "Def"
+            }
         }
     }
 
-    @ObsoleteCoroutinesApi
     @Test
-    fun `should load next page successfully`() {
+    fun `should load next page successfully`() = runTest {
         val firstMovieList = List(10) {
             Movie(
                 "Abc",
@@ -421,12 +383,10 @@ class SearchViewModelTest {
             coEvery { execute("Abc") } returns MovieSearchResult(firstMovieList, 200)
             coEvery { execute("Abc", 2) } returns MovieSearchResult(secondMovieList, 200)
         }
-        viewModel.searchMovies("Abc")
-        viewModel.loadNextPage()
-        verifySequence {
-            observer.onChanged(SearchViewState(Idle))
-            observer.onChanged(SearchViewState(Loading, "Abc"))
-            observer.onChanged(
+        viewModel.viewState.test {
+            assertThat(awaitItem()).isEqualTo(SearchViewState(Idle))
+            viewModel.searchMovies("Abc")
+            assertThat(awaitItem()).isEqualTo(
                 SearchViewState(
                     Success(
                         SearchUi(
@@ -440,7 +400,8 @@ class SearchViewModelTest {
                     ), "Abc"
                 )
             )
-            observer.onChanged(
+            viewModel.loadNextPage()
+            assertThat(awaitItem()).isEqualTo(
                 SearchViewState(
                     Success(
                         SearchUi(
@@ -454,7 +415,7 @@ class SearchViewModelTest {
                     ), "Abc"
                 )
             )
-            observer.onChanged(
+            assertThat(awaitItem()).isEqualTo(
                 SearchViewState(
                     Success(
                         SearchUi(
@@ -471,7 +432,6 @@ class SearchViewModelTest {
         }
     }
 
-    @ObsoleteCoroutinesApi
     @Test
     fun `shouldn't load next page at all if total result is less than 10`() = runTest {
         val firstMovieList = List(3) {
@@ -486,19 +446,32 @@ class SearchViewModelTest {
         coEvery {
             useCase.execute("Abc")
         } returns MovieSearchResult(firstMovieList, 3)
-        viewModel.searchMovies("Abc")
-        viewModel.loadNextPage()
-        verifySequence {
-            observer.onChanged(SearchViewState(Idle))
-            observer.onChanged(SearchViewState(Loading, "Abc"))
-            observer.onChanged(ofType())
+        viewModel.viewState.test {
+            assertThat(awaitItem()).isEqualTo(SearchViewState(Idle))
+            viewModel.searchMovies("Abc")
+            assertThat(awaitItem()).isEqualTo(
+                SearchViewState(
+                    Success(
+                        SearchUi(
+                            keyword = "Abc",
+                            movies = firstMovieList,
+                            page = 1,
+                            totalPages = 1,
+                            nextPageLoading = false,
+                            showReloadNextPage = false,
+                        )
+                    ), "Abc"
+                )
+            )
+            viewModel.loadNextPage()
+            delay(1000)
+            ensureAllEventsConsumed()
         }
-        coVerify { useCase.execute(any(), any()) }
+        coVerify(exactly = 1) { useCase.execute(any(), any()) }
     }
 
-    @ObsoleteCoroutinesApi
     @Test
-    fun `should move to LoadPageFailed state`() {
+    fun `should move to LoadPageFailed state`() = runTest {
         val firstMovieList = List(10) {
             Movie(
                 "Abc",
@@ -514,13 +487,11 @@ class SearchViewModelTest {
         coEvery {
             useCase.execute("Abc", 2)
         } throws Exception()
-        viewModel.searchMovies("Abc")
-        viewModel.loadNextPage()
-        viewModel.loadNextPage()
-        verifySequence {
-            observer.onChanged(SearchViewState(Idle))
-            observer.onChanged(SearchViewState(Loading, "Abc"))
-            observer.onChanged(
+
+        viewModel.viewState.test {
+            assertThat(awaitItem()).isEqualTo(SearchViewState(Idle))
+            viewModel.searchMovies("Abc")
+            assertThat(awaitItem()).isEqualTo(
                 SearchViewState(
                     Success(
                         SearchUi(
@@ -534,21 +505,9 @@ class SearchViewModelTest {
                     ), "Abc"
                 )
             )
-            observer.onChanged(
-                SearchViewState(
-                    Success(
-                        SearchUi(
-                            keyword = "Abc",
-                            movies = firstMovieList,
-                            page = 1,
-                            totalPages = 20,
-                            nextPageLoading = true,
-                            showReloadNextPage = false,
-                        )
-                    ), "Abc"
-                )
-            )
-            observer.onChanged(
+            viewModel.loadNextPage()
+            awaitItem()
+            assertThat(awaitItem()).isEqualTo(
                 SearchViewState(
                     Success(
                         SearchUi(
@@ -562,21 +521,9 @@ class SearchViewModelTest {
                     ), "Abc"
                 )
             )
-            observer.onChanged(
-                SearchViewState(
-                    Success(
-                        SearchUi(
-                            keyword = "Abc",
-                            movies = firstMovieList,
-                            page = 1,
-                            totalPages = 20,
-                            nextPageLoading = true,
-                            showReloadNextPage = false,
-                        )
-                    ), "Abc"
-                )
-            )
-            observer.onChanged(
+            viewModel.loadNextPage()
+            awaitItem()
+            assertThat(awaitItem()).isEqualTo(
                 SearchViewState(
                     Success(
                         SearchUi(
@@ -596,7 +543,6 @@ class SearchViewModelTest {
         }
     }
 
-    @ObsoleteCoroutinesApi
     @Test
     fun `should not allow to load next page if the search is reset`() = runTest {
         val firstMovieList = List(10) {
@@ -624,15 +570,10 @@ class SearchViewModelTest {
                 MovieSearchResult(secondMovieList, 200)
             }
         }
-        viewModel.searchMovies("Abc")
-        advanceTimeBy(100)
-        viewModel.loadNextPage()
-        viewModel.resetSearch()
-        advanceTimeBy(1000)
-        verifySequence {
-            observer.onChanged(SearchViewState(Idle))
-            observer.onChanged(SearchViewState(Loading, "Abc"))
-            observer.onChanged(
+        viewModel.viewState.test {
+            assertThat(awaitItem()).isEqualTo(SearchViewState(Idle))
+            viewModel.searchMovies("Abc")
+            assertThat(awaitItem()).isEqualTo(
                 SearchViewState(
                     Success(
                         SearchUi(
@@ -646,7 +587,8 @@ class SearchViewModelTest {
                     ), "Abc"
                 )
             )
-            observer.onChanged(
+            viewModel.loadNextPage()
+            assertThat(awaitItem()).isEqualTo(
                 SearchViewState(
                     Success(
                         SearchUi(
@@ -660,22 +602,22 @@ class SearchViewModelTest {
                     ), "Abc"
                 )
             )
-            observer.onChanged(SearchViewState(Idle))
+            viewModel.resetSearch()
+            assertThat(awaitItem()).isEqualTo(SearchViewState(Idle))
         }
     }
 
     @Test
-    fun `should move to MovieNotFound`() {
+    fun `should move to MovieNotFound`() = runTest {
         coEvery { useCase.execute("Abc") } coAnswers {
             throw OmdbErrorException("Movie not found!")
         }
-        viewModel.searchMovies("Abc")
-        verify {
-            observer.onChanged(
-                match {
-                    it.data.failed && it.data.requireError().message == "Movie not found!" && it.keyword == "Abc"
-                }
-            )
+        viewModel.viewState.test {
+            assertThat(awaitItem()).isEqualTo(SearchViewState(Idle))
+            viewModel.searchMovies("Abc")
+            assertThat(awaitItem()).matches {
+                it.data.failed && it.data.requireError().message == "Movie not found!" && it.keyword == "Abc"
+            }
         }
     }
 }

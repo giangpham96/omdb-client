@@ -22,11 +22,7 @@ sealed class DataState<out T> {
 
     object Loading : DataState<Nothing>()
 
-    class Failure(t: Throwable? = null) : DataState<Nothing>() {
-
-        val error = t ?: RuntimeException()
-
-    }
+    data class Failure(val error: Throwable = RuntimeException()) : DataState<Nothing>()
 
     data class Success<T>(val data: T) : DataState<T>()
 

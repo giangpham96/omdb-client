@@ -27,7 +27,6 @@ class MovieInfoViewModel(
                         MovieInfo(
                             title = movie.title,
                             type = movie.type,
-                            poster = movie.poster,
                             rated = movie.rated,
                             released = movie.released ?: "Unknown",
                             runtime = movie.runtime ?: "Unknown runtime",
@@ -51,8 +50,6 @@ class MovieInfoViewModel(
                             boxOffice = movie.boxOffice ?: "Unknown",
                             dvdRelease = movie.dvdRelease ?: "Unknown",
                             production = movie.production ?: "Unknown",
-                            website = movie.website?.let { Pair(it, true) }
-                                ?: Pair("Unknown", false)
                         ))
                 )
             } catch (t: Throwable) {

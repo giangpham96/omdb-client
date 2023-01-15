@@ -136,7 +136,7 @@ internal class MovieInfoFragment : Fragment() {
     }
 
     private fun render(viewState: MovieInfoViewState) {
-        when (val state = viewState.state) {
+        when (val state = viewState.movieState) {
             is DataState.Success -> {
                 loading.isVisible = false
                 setOf(

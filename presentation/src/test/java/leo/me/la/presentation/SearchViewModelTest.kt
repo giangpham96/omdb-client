@@ -335,7 +335,7 @@ class SearchViewModelTest {
             assertThat(awaitItem()).isEqualTo(SearchViewState(Idle))
             viewModel.searchMovies("Abc")
             assertThat(awaitItem()).matches {
-                it.data is DataState.Failure && it.data.requireError().message != null
+                it.searchState is DataState.Failure && it.searchState.requireError().message != null
             }
         }
     }
@@ -350,11 +350,11 @@ class SearchViewModelTest {
             assertThat(awaitItem()).isEqualTo(SearchViewState(Idle))
             viewModel.searchMovies("Abc")
             assertThat(awaitItem()).matches {
-                it.data.failed && it.data.requireError().message == null && it.keyword == "Abc"
+                it.searchState.failed && it.searchState.requireError().message == null && it.keyword == "Abc"
             }
             viewModel.searchMovies("Def")
             assertThat(awaitItem()).matches {
-                it.data.failed && it.data.requireError().message == null && it.keyword == "Def"
+                it.searchState.failed && it.searchState.requireError().message == null && it.keyword == "Def"
             }
         }
     }
@@ -616,7 +616,7 @@ class SearchViewModelTest {
             assertThat(awaitItem()).isEqualTo(SearchViewState(Idle))
             viewModel.searchMovies("Abc")
             assertThat(awaitItem()).matches {
-                it.data.failed && it.data.requireError().message == "Movie not found!" && it.keyword == "Abc"
+                it.searchState.failed && it.searchState.requireError().message == "Movie not found!" && it.keyword == "Abc"
             }
         }
     }

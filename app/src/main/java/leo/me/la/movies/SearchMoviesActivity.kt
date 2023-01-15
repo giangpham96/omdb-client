@@ -65,14 +65,14 @@ internal class SearchMoviesActivity : AppCompatActivity() {
                 render(it)
             }
         }
-        viewModel.navigationRequest.observe(this) { event ->
-            event?.let {
+        lifecycleScope.launchWhenStarted {
+            viewModel.navigationRequest.collect { event ->
                 MovieInfoActivity.launch(
                     this@SearchMoviesActivity,
-                    it.movies.map { movie ->
+                    event.movies.map { movie ->
                         ParcelableMovie(movie.imdbId, movie.poster)
                     },
-                    it.selectedMovie
+                    event.selectedMovie
                 )
             }
         }
@@ -98,7 +98,7 @@ internal class SearchMoviesActivity : AppCompatActivity() {
     @SuppressLint("SetTextI18n")
     private fun render(viewState: SearchViewState) {
         snackBar?.dismiss()
-        when (val data = viewState.data) {
+        when (val data = viewState.searchState) {
             Idle -> {
                 showInfo(
                     getString(R.string.search_movie),

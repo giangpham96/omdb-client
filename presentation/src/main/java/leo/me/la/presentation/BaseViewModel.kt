@@ -1,13 +1,12 @@
 package leo.me.la.presentation
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 
 abstract class BaseViewModel<VS : Any> : ViewModel() {
 
-    protected val _viewStates: MutableLiveData<VS> = MutableLiveData()
+    protected abstract val _viewState: MutableStateFlow<VS>
+    val viewState: StateFlow<VS> get () = _viewState
 
-    val viewStates: LiveData<VS>
-        get() = _viewStates
 }

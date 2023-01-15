@@ -1,6 +1,7 @@
 package leo.me.la.presentation
 
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import leo.me.la.common.toFlagEmoji
 import leo.me.la.domain.LoadMovieInfoUseCase
@@ -11,8 +12,9 @@ class MovieInfoViewModel(
     private val loadMovieInfoUseCase: LoadMovieInfoUseCase,
     imdbId: String,
 ) : BaseViewModel<MovieInfoViewState>() {
+
+    override val _viewState = MutableStateFlow(MovieInfoViewState(Loading))
     init {
-        _viewStates.value = MovieInfoViewState(Loading)
         loadMovieInfo(imdbId)
     }
 
@@ -20,7 +22,7 @@ class MovieInfoViewModel(
         viewModelScope.launch {
             try {
                 val movie = loadMovieInfoUseCase.execute(imdb)
-                _viewStates.value = MovieInfoViewState(
+                _viewState.value = MovieInfoViewState(
                     DataState.Success(
                         MovieInfo(
                             title = movie.title,
@@ -54,7 +56,7 @@ class MovieInfoViewModel(
                         ))
                 )
             } catch (t: Throwable) {
-                _viewStates.value = MovieInfoViewState(DataState.Failure(t))
+                _viewState.value = MovieInfoViewState(DataState.Failure(t))
             }
         }
     }

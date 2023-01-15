@@ -1,19 +1,14 @@
 package leo.me.la.presentation
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import androidx.lifecycle.Observer
-import io.mockk.Runs
+import app.cash.turbine.test
 import io.mockk.coEvery
-import io.mockk.every
-import io.mockk.just
 import io.mockk.mockk
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.ObsoleteCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
-import kotlinx.coroutines.test.advanceTimeBy
-import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
@@ -36,10 +31,6 @@ class MovieInfoViewModelTest {
     @get:Rule
     var rule: TestRule = InstantTaskExecutorRule()
 
-    private val observer: Observer<MovieInfoViewState> = mockk {
-        every { onChanged(any()) } just Runs
-    }
-
     private val useCase: LoadMovieInfoUseCase = mockk()
     private lateinit var viewModel: MovieInfoViewModel
 
@@ -52,7 +43,6 @@ class MovieInfoViewModelTest {
     @ExperimentalCoroutinesApi
     @After
     fun tearDown() {
-        viewModel.viewStates.removeObserver(observer)
         Dispatchers.resetMain() // reset main dispatcher to the original Main dispatcher
     }
 
@@ -64,9 +54,9 @@ class MovieInfoViewModelTest {
             throw Throwable()
         }
         viewModel = MovieInfoViewModel(useCase, "imdbId")
-        viewModel.viewStates.observeForever(observer)
-        advanceTimeBy(400)
-        assertThat(viewModel.viewStates.value?.state).isEqualTo(DataState.Loading)
+        viewModel.viewState.test {
+            assertThat(awaitItem().state).isEqualTo(DataState.Loading)
+        }
     }
 
     @ObsoleteCoroutinesApi
@@ -104,35 +94,35 @@ class MovieInfoViewModelTest {
             website = "http://www.intothespiderverse.movie/"
         )
         viewModel = MovieInfoViewModel(useCase, "imdbId")
-        viewModel.viewStates.observeForever(observer)
-        advanceUntilIdle()
-        assertThat(viewModel.viewStates.value?.state?.optData()).isEqualTo(
-            MovieInfo(
-                title = "Spider-Man: Into the Spider-Verse",
-                type = MovieType.Movie,
-                poster = "https://m.media-amazon.com/images/M/MV5BMjMwNDkxMTgzOF5BMl5BanBnXkFtZTgwNT" +
-                        "kwNTQ3NjM@._V1_SX300.jpg",
-                rated = MovieRate.PG,
-                released = "14 Dec 2018",
-                runtime = "117 min",
-                genres = listOf("Animation", "Action", "Adventure", "Family", "Sci-Fi"),
-                directors = listOf("Bob Persichetti", "Peter Ramsey", "Rodney Rothman"),
-                writers = "Phil Lord (screenplay by), Rodney Rothman (screenplay by) and Phil Lord (story by)",
-                actors = listOf("Shameik Moore", "Jake Johnson", "Hailee Steinfeld", "Mahershala Ali"),
-                plot = "Teen Miles Morales becomes Spider-Man of his reality, crossing his path with " +
-                        "five counterparts from other dimensions to stop a threat for all realities.",
-                languages = "English and Spanish",
-                countries = "\uD83C\uDDFA\uD83C\uDDF8 \uD83C\uDDEC\uD83C\uDDE7",
-                awards = "None",
-                metaScore = "87/100",
-                imdbRating = "8.6/10 IMDb",
-                imdbVotes = "122126 votes",
-                boxOffice = "Unknown",
-                dvdRelease = "26 Feb 2019",
-                production = "Sony Pictures",
-                website = Pair("http://www.intothespiderverse.movie/", true)
+        viewModel.viewState.test {
+            assertThat(awaitItem().state.optData()).isEqualTo(
+                MovieInfo(
+                    title = "Spider-Man: Into the Spider-Verse",
+                    type = MovieType.Movie,
+                    poster = "https://m.media-amazon.com/images/M/MV5BMjMwNDkxMTgzOF5BMl5BanBnXkFtZTgwNT" +
+                            "kwNTQ3NjM@._V1_SX300.jpg",
+                    rated = MovieRate.PG,
+                    released = "14 Dec 2018",
+                    runtime = "117 min",
+                    genres = listOf("Animation", "Action", "Adventure", "Family", "Sci-Fi"),
+                    directors = listOf("Bob Persichetti", "Peter Ramsey", "Rodney Rothman"),
+                    writers = "Phil Lord (screenplay by), Rodney Rothman (screenplay by) and Phil Lord (story by)",
+                    actors = listOf("Shameik Moore", "Jake Johnson", "Hailee Steinfeld", "Mahershala Ali"),
+                    plot = "Teen Miles Morales becomes Spider-Man of his reality, crossing his path with " +
+                            "five counterparts from other dimensions to stop a threat for all realities.",
+                    languages = "English and Spanish",
+                    countries = "\uD83C\uDDFA\uD83C\uDDF8 \uD83C\uDDEC\uD83C\uDDE7",
+                    awards = "None",
+                    metaScore = "87/100",
+                    imdbRating = "8.6/10 IMDb",
+                    imdbVotes = "122126 votes",
+                    boxOffice = "Unknown",
+                    dvdRelease = "26 Feb 2019",
+                    production = "Sony Pictures",
+                    website = Pair("http://www.intothespiderverse.movie/", true)
+                )
             )
-        )
+        }
     }
 
     @ObsoleteCoroutinesApi
@@ -140,8 +130,8 @@ class MovieInfoViewModelTest {
     fun `should move to LoadMovieInfoFailure state`() = runTest {
         coEvery { useCase.execute("imdbId") } throws Throwable()
         viewModel = MovieInfoViewModel(useCase, "imdbId")
-        viewModel.viewStates.observeForever(observer)
-        advanceUntilIdle()
-        assertThat(viewModel.viewStates.value?.state).isInstanceOf(DataState.Failure::class.java)
+        viewModel.viewState.test {
+            assertThat(awaitItem().state).isInstanceOf(DataState.Failure::class.java)
+        }
     }
 }

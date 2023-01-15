@@ -33,4 +33,5 @@ dependencies {
     testImplementation(TestDependencies.mockk)
     testImplementation(TestDependencies.coroutinesTest)
     testImplementation(TestDependencies.junit)
+    testImplementation(TestDependencies.turbine)
 }

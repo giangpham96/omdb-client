@@ -23,7 +23,6 @@ data class Movie(
     val boxOffice: String? = null,
     val dvdRelease: String? = null,
     val production: String? = null,
-    val website: String? = null
 )
 
 data class MovieSearchResult(

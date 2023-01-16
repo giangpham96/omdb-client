@@ -4,12 +4,11 @@ import leo.me.la.common.model.MovieRate
 import leo.me.la.common.model.MovieType
 
 data class MovieInfoViewState(
-    val state: DataState<MovieInfo>
+    val movieState: DataState<MovieInfo>
 ) {
     data class MovieInfo(
         val title: String,
         val type: MovieType,
-        val poster: String?,
         val rated: MovieRate,
         val released: String,
         val runtime: String,
@@ -27,6 +26,5 @@ data class MovieInfoViewState(
         val boxOffice: String,
         val dvdRelease: String,
         val production: String,
-        val website: Pair<String, Boolean> // the boolean value indicates if the website text view is clickable
     )
 }

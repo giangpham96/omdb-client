@@ -334,9 +334,13 @@ class SearchViewModelTest {
         viewModel.viewState.test {
             assertThat(awaitItem()).isEqualTo(SearchViewState(Idle))
             viewModel.searchMovies("Abc")
-            assertThat(awaitItem()).matches {
-                it.data is DataState.Failure && it.data.requireError().message != null
-            }
+            assertThat(awaitItem()).isEqualTo(
+                SearchViewState(
+                    searchState = DataState.Failure(
+                        MovieNotFoundException
+                    ), keyword = "Abc"
+                )
+            )
         }
     }
 
@@ -350,11 +354,11 @@ class SearchViewModelTest {
             assertThat(awaitItem()).isEqualTo(SearchViewState(Idle))
             viewModel.searchMovies("Abc")
             assertThat(awaitItem()).matches {
-                it.data.failed && it.data.requireError().message == null && it.keyword == "Abc"
+                it.searchState.failed && it.searchState.requireError().message == null && it.keyword == "Abc"
             }
             viewModel.searchMovies("Def")
             assertThat(awaitItem()).matches {
-                it.data.failed && it.data.requireError().message == null && it.keyword == "Def"
+                it.searchState.failed && it.searchState.requireError().message == null && it.keyword == "Def"
             }
         }
     }
@@ -607,17 +611,4 @@ class SearchViewModelTest {
         }
     }
 
-    @Test
-    fun `should move to MovieNotFound`() = runTest {
-        coEvery { useCase.execute("Abc") } coAnswers {
-            throw OmdbErrorException("Movie not found!")
-        }
-        viewModel.viewState.test {
-            assertThat(awaitItem()).isEqualTo(SearchViewState(Idle))
-            viewModel.searchMovies("Abc")
-            assertThat(awaitItem()).matches {
-                it.data.failed && it.data.requireError().message == "Movie not found!" && it.keyword == "Abc"
-            }
-        }
-    }
 }

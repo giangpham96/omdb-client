@@ -55,7 +55,7 @@ class MovieInfoViewModelTest {
         }
         viewModel = MovieInfoViewModel(useCase, "imdbId")
         viewModel.viewState.test {
-            assertThat(awaitItem().state).isEqualTo(DataState.Loading)
+            assertThat(awaitItem().movieState).isEqualTo(DataState.Loading)
         }
     }
 
@@ -91,16 +91,13 @@ class MovieInfoViewModelTest {
             boxOffice = null,
             dvdRelease = "26 Feb 2019",
             production = "Sony Pictures",
-            website = "http://www.intothespiderverse.movie/"
         )
         viewModel = MovieInfoViewModel(useCase, "imdbId")
         viewModel.viewState.test {
-            assertThat(awaitItem().state.optData()).isEqualTo(
+            assertThat(awaitItem().movieState.optData()).isEqualTo(
                 MovieInfo(
                     title = "Spider-Man: Into the Spider-Verse",
                     type = MovieType.Movie,
-                    poster = "https://m.media-amazon.com/images/M/MV5BMjMwNDkxMTgzOF5BMl5BanBnXkFtZTgwNT" +
-                            "kwNTQ3NjM@._V1_SX300.jpg",
                     rated = MovieRate.PG,
                     released = "14 Dec 2018",
                     runtime = "117 min",
@@ -119,7 +116,6 @@ class MovieInfoViewModelTest {
                     boxOffice = "Unknown",
                     dvdRelease = "26 Feb 2019",
                     production = "Sony Pictures",
-                    website = Pair("http://www.intothespiderverse.movie/", true)
                 )
             )
         }
@@ -131,7 +127,7 @@ class MovieInfoViewModelTest {
         coEvery { useCase.execute("imdbId") } throws Throwable()
         viewModel = MovieInfoViewModel(useCase, "imdbId")
         viewModel.viewState.test {
-            assertThat(awaitItem().state).isInstanceOf(DataState.Failure::class.java)
+            assertThat(awaitItem().movieState).isInstanceOf(DataState.Failure::class.java)
         }
     }
 }

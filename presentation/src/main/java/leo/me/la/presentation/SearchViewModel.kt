@@ -1,12 +1,11 @@
 package leo.me.la.presentation
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import leo.me.la.common.model.Movie
@@ -25,13 +24,13 @@ class SearchViewModel(
 
     private var searchJob: Job? = null
 
-    private val channel = MutableSharedFlow<String>()
+    private val keywordFlow = MutableSharedFlow<String>()
 
     override val _viewState = MutableStateFlow(SearchViewState(Idle))
 
     init {
         viewModelScope.launch {
-            channel.collectLatest {
+            keywordFlow.collectLatest {
                 searchJob?.cancel()
                 _viewState.value = SearchViewState(Loading, keyword = it)
                 try {
@@ -55,10 +54,10 @@ class SearchViewModel(
                     _viewState.value = when (e) {
                         is OmdbErrorException -> {
                             val err = if (e.message == "Movie not found!")
-                                RuntimeException(e.message)
+                                MovieNotFoundException
                             else
                                 null
-                            SearchViewState(Failure(err), keyword = it)
+                            SearchViewState(Failure(err ?: RuntimeException()), keyword = it)
                         }
 
                         else -> SearchViewState(Failure(), keyword = it)
@@ -73,36 +72,36 @@ class SearchViewModel(
         _viewState.value = SearchViewState(Idle)
     }
 
-    private val _navigationRequest = MutableLiveData<MovieInfoEvent>()
-    val navigationRequest: LiveData<MovieInfoEvent>
+    private val _navigationRequest = MutableSharedFlow<MovieInfoEvent>()
+    val navigationRequest: SharedFlow<MovieInfoEvent>
         get() = _navigationRequest
 
     fun searchMovies(keyword: String) {
         viewModelScope.launch {
-            channel.emit(keyword)
+            keywordFlow.emit(keyword)
         }
     }
 
     fun loadNextPage() {
         with(viewState.value) {
-            if (data is Success && (data.data.showReloadNextPage || !data.data.nextPageLoading)) {
-                val totalPages = data.data.totalPages
-                val nextPage = data.data.page + 1
-                val fetchedMovies = data.data.movies
+            if (searchState is Success && (searchState.data.showReloadNextPage || !searchState.data.nextPageLoading)) {
+                val totalPages = searchState.data.totalPages
+                val nextPage = searchState.data.page + 1
+                val fetchedMovies = searchState.data.movies
                 if (totalPages < nextPage || totalPages >= 100) {
                     return@with
                 }
-                val keyword = data.data.keyword
+                val keyword = searchState.data.keyword
                 _viewState.value = SearchViewState(
-                    data = Success(data.data.copy(showReloadNextPage = false, nextPageLoading = true)),
+                    searchState = Success(searchState.data.copy(showReloadNextPage = false, nextPageLoading = true)),
                     keyword = viewState.value.keyword,
                 )
                 searchJob = viewModelScope.launch {
                     try {
                         val nextPageMovieResult = searchMoviesUseCase.execute(keyword, nextPage)
                         _viewState.value = SearchViewState(
-                            data = Success(
-                                data.data.copy(
+                            searchState = Success(
+                                searchState.data.copy(
                                     movies = fetchedMovies + nextPageMovieResult.movies,
                                     page = nextPage,
                                     showReloadNextPage = false,
@@ -115,8 +114,8 @@ class SearchViewModel(
                         throw ignored
                     } catch (e: Throwable) {
                         _viewState.value = SearchViewState(
-                            data = Success(
-                                data.data.copy(
+                            searchState = Success(
+                                searchState.data.copy(
                                     showReloadNextPage = true,
                                     nextPageLoading = false,
                                 )
@@ -130,13 +129,17 @@ class SearchViewModel(
     }
 
     fun onItemClick(selectedMovie: String) {
-        with(viewState.value.data) {
+        with(viewState.value.searchState) {
             when (this) {
                 is Success -> {
-                    _navigationRequest.value = MovieInfoEvent(
-                        data.movies,
-                        selectedMovie
-                    )
+                    viewModelScope.launch {
+                        _navigationRequest.emit(
+                            MovieInfoEvent(
+                                data.movies,
+                                selectedMovie
+                            )
+                        )
+                    }
                 }
 
                 else -> Unit
@@ -154,3 +157,5 @@ data class MovieInfoEvent(
     val movies: List<Movie>,
     val selectedMovie: String,
 )
+
+object MovieNotFoundException: RuntimeException()

@@ -9,7 +9,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.FragmentActivity
 import androidx.viewpager2.adapter.FragmentStateAdapter
-import kotlinx.android.synthetic.main.activity_movie_info.viewPager
+import leo.me.la.movies.databinding.ActivityMovieInfoBinding
 
 const val MOVIES = "movies"
 const val SELECTED_IMDB_ID = "selected_imdb_id"
@@ -41,9 +41,12 @@ internal class MovieInfoActivity : AppCompatActivity() {
         }
     }
 
+    private lateinit var binding: ActivityMovieInfoBinding
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_movie_info)
+        binding = ActivityMovieInfoBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         val movieIds = if (Build.VERSION.SDK_INT >= TIRAMISU) {
             intent?.extras?.getParcelableArrayList(MOVIES, ParcelableMovie::class.java)
@@ -53,7 +56,7 @@ internal class MovieInfoActivity : AppCompatActivity() {
 
         }
             ?: throw IllegalStateException("${javaClass.simpleName} needs a map of movie image and imdb ids")
-        viewPager.apply {
+        binding.viewPager.apply {
             val movieList = movieIds.toList()
             adapter = ScreenSlidePagerAdapter(
                 movieList,

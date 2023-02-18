@@ -3,8 +3,8 @@ import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
 plugins {
     id("com.android.application")
     id("kotlin-android")
-    id("kotlin-android-extensions")
     id("kotlin-kapt")
+    id("kotlin-parcelize")
 }
 
 val app_name: String by project
@@ -41,13 +41,8 @@ android {
             resValue("string", "app_name", "$app_name - Debug")
         }
     }
-    packagingOptions {
-        pickFirst("META-INF/services/javax.annotation.processing.Processor")
-        exclude("META-INF/main.kotlin_module")
-    }
-
-    androidExtensions {
-        isExperimental = true
+    buildFeatures {
+        viewBinding = true
     }
     testOptions {
         animationsDisabled = true
@@ -79,7 +74,7 @@ dependencies {
     implementation(Dependencies.glide)
     implementation(Dependencies.glideOkHttp)
     implementation(Dependencies.groupie)
-    implementation(Dependencies.groupieKotlinAndroidExtension)
+    implementation(Dependencies.groupieViewBinding)
     implementation(Dependencies.koinCore)
     implementation(Dependencies.koinViewModel)
     implementation(Dependencies.kotlinStdLib)

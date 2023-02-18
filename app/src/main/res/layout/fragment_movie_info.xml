@@ -151,9 +151,11 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <include layout="@layout/back_view_movie_info" />
+            <include layout="@layout/back_view_movie_info"
+                android:id="@+id/backView" />
 
-            <include layout="@layout/front_view_movie_info" />
+            <include layout="@layout/front_view_movie_info"
+                android:id="@+id/frontView" />
         </leo.me.la.movies.ui.EasyFlipView>
     </ScrollView>
 

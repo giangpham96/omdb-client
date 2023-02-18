@@ -40,7 +40,7 @@ object Dependencies {
     const val glideCompiler = "com.github.bumptech.glide:compiler:${Versions.glide}"
     const val glideOkHttp = "com.github.bumptech.glide:okhttp3-integration:${Versions.glide}"
     const val groupie = "com.github.lisawray.groupie:groupie:${Versions.groupie}"
-    const val groupieKotlinAndroidExtension = "com.github.lisawray.groupie:groupie-kotlin-android-extensions:${Versions.groupie}"
+    const val groupieViewBinding = "com.github.lisawray.groupie:groupie-viewbinding:${Versions.groupie}"
     const val koinCore = "io.insert-koin:koin-core:${Versions.koin}"
     const val koinViewModel = "io.insert-koin:koin-android:${Versions.koin}"
     const val kotlinStdLib = "org.jetbrains.kotlin:kotlin-stdlib:${Versions.kotlin}"

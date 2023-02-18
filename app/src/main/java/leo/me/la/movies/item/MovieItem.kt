@@ -2,35 +2,22 @@ package leo.me.la.movies.item
 
 import android.view.View
 import androidx.appcompat.content.res.AppCompatResources
-import com.xwray.groupie.kotlinandroidextensions.Item
-import com.xwray.groupie.kotlinandroidextensions.GroupieViewHolder
-import kotlinx.android.synthetic.main.item_movie.poster
-import leo.me.la.movies.R
-import kotlinx.android.synthetic.main.item_movie.title
-import kotlinx.android.synthetic.main.item_movie.type
-import kotlinx.android.synthetic.main.item_movie.year
+import com.xwray.groupie.viewbinding.BindableItem
 import leo.me.la.common.model.Movie
 import leo.me.la.common.model.MovieType
+import leo.me.la.movies.R
+import leo.me.la.movies.databinding.ItemMovieBinding
 import leo.me.la.movies.util.loadUri
 
 internal class MovieItem(
     private val movie: Movie,
     private val onClickListener: (String) -> Unit
-) : Item() {
-    override fun createViewHolder(itemView: View): GroupieViewHolder {
-        return super.createViewHolder(itemView)
-            .apply {
-                type.background = AppCompatResources.getDrawable(
-                    itemView.context,
-                    R.drawable.type_background
-                )
-            }
-    }
+) : BindableItem<ItemMovieBinding>() {
 
-    override fun bind(viewHolder: GroupieViewHolder, position: Int) {
-        viewHolder.title.text = movie.title
-        viewHolder.year.text = movie.year
-        viewHolder.type.apply {
+    override fun bind(binding: ItemMovieBinding, position: Int) = with (binding) {
+        title.text = movie.title
+        year.text = movie.year
+        type.apply {
             setImageResource(
                 when (movie.type) {
                     MovieType.Movie -> R.drawable.icon_movie
@@ -43,7 +30,7 @@ internal class MovieItem(
                 else -> View.GONE
             }
         }
-        viewHolder.poster.apply {
+        poster.apply {
             loadUri(
                 movie.poster,
                 errorImage = AppCompatResources.getDrawable(this.context,
@@ -53,16 +40,26 @@ internal class MovieItem(
                         else -> R.drawable.error_unknown_poster
                     }),
                 onError = {
-                    viewHolder.type.visibility = View.GONE
+                    type.visibility = View.GONE
                 }
             )
         }
-        viewHolder.itemView.setOnClickListener {
+        root.setOnClickListener {
             onClickListener(movie.imdbId)
         }
     }
 
     override fun getLayout() = R.layout.item_movie
+
+    override fun initializeViewBinding(view: View): ItemMovieBinding {
+        return ItemMovieBinding.bind(view)
+            .apply {
+                type.background = AppCompatResources.getDrawable(
+                    view.context,
+                    R.drawable.type_background
+                )
+            }
+    }
 
     override fun isSameAs(other: com.xwray.groupie.Item<*>): Boolean {
         if (other is MovieItem) {

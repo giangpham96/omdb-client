@@ -1,7 +1,7 @@
 package leo.me.la.movies
 
 import android.os.Parcelable
-import kotlinx.android.parcel.Parcelize
+import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class ParcelableMovie(

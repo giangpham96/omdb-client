@@ -14,14 +14,10 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import com.google.android.material.snackbar.Snackbar
 import com.xwray.groupie.Section
-import kotlinx.android.synthetic.main.activity_search_movies.info
-import kotlinx.android.synthetic.main.activity_search_movies.loadMovie
-import kotlinx.android.synthetic.main.activity_search_movies.moviesList
-import kotlinx.android.synthetic.main.activity_search_movies.root
-import kotlinx.android.synthetic.main.activity_search_movies.toolbar
 import leo.me.la.common.TAG_SEARCH_VIEWMODEL
 import leo.me.la.movies.adapter.PagedLoadingHandler
 import leo.me.la.movies.adapter.PaginatedGroupAdapter
+import leo.me.la.movies.databinding.ActivitySearchMoviesBinding
 import leo.me.la.movies.item.LoadingFooter
 import leo.me.la.movies.item.MovieItem
 import leo.me.la.movies.item.RetryLoadNextPageFooter
@@ -43,6 +39,8 @@ internal class SearchMoviesActivity : AppCompatActivity() {
         _viewModel as SearchViewModel
     }
 
+    private lateinit var binding: ActivitySearchMoviesBinding
+
     private val movieSection = Section()
     private val pagedLoadingHandler = object : PagedLoadingHandler() {
         override fun onLoadNextPage() {
@@ -59,7 +57,8 @@ internal class SearchMoviesActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_search_movies)
+        binding = ActivitySearchMoviesBinding.inflate(layoutInflater)
+        setContentView(binding.root)
         lifecycleScope.launchWhenStarted {
             viewModel.viewState.collect {
                 render(it)
@@ -76,10 +75,10 @@ internal class SearchMoviesActivity : AppCompatActivity() {
                 )
             }
         }
-        setSupportActionBar(toolbar)
+        setSupportActionBar(binding.toolbar)
         supportActionBar?.setDisplayShowTitleEnabled(false)
 
-        moviesList.apply {
+        binding.moviesList.apply {
             layoutManager = GridLayoutManager(
                 this@SearchMoviesActivity,
                 this@SearchMoviesActivity.adapter.spanCount
@@ -96,7 +95,7 @@ internal class SearchMoviesActivity : AppCompatActivity() {
     }
 
     @SuppressLint("SetTextI18n")
-    private fun render(viewState: SearchViewState) {
+    private fun render(viewState: SearchViewState) = with(binding) {
         snackBar?.dismiss()
         when (val data = viewState.searchState) {
             Idle -> {
@@ -178,7 +177,7 @@ internal class SearchMoviesActivity : AppCompatActivity() {
         }
     }
 
-    private fun showInfo(content: String, @ColorInt color: Int, @DrawableRes icon: Int) {
+    private fun showInfo(content: String, @ColorInt color: Int, @DrawableRes icon: Int) = with(binding) {
         movieSection.apply {
             update(emptyList())
             removeFooter()

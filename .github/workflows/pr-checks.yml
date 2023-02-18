@@ -3,7 +3,7 @@ on: pull_request
 jobs:
   lint:
     name: Lint check
-    runs-on: [ubuntu-latest]
+    runs-on: [ ubuntu-latest ]
     steps:
       - name: Cancel Previous Runs
         uses: styfle/cancel-workflow-action@89f242ee29e10c53a841bfe71cc0ce7b2f065abc

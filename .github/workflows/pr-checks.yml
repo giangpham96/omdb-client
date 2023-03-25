@@ -40,7 +40,7 @@ jobs:
           touch local.properties
           echo "omdb_api_key=${{ secrets.OMDB_API_KEY }}" >> local.properties
       - name: Run unit tests
-        run: ./gradlew clean testDebugUnitTest
+        run: ./gradlew clean test
   build:
     name: Build apk
     runs-on: [ ubuntu-latest ]

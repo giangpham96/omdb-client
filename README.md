@@ -1,7 +1,20 @@
 # OMDB Android client
-This is the repository for the Android client of OMDB.
-The purpose of this repository is to illustrate the use of Kotlin Coroutines to achieve 
-concurrency in Android programming, which is normally done by RxJava.
+The Omdb Android client illustrates how to write clean, testable and maintainable Android 
+application.
+
+## Building the project
+
+- First, you need to request the omdb api key [here](https://www.omdbapi.com/apikey.aspx)
+- Add the requested key to `./local.properties`
+```properties
+omdb_api_key=<YOUR_OMDB_API_KEY>
+```
+- Make sure to have java, gradle, Android SDK, etc, or simply install [Android Studio](https://developer.android.com/studio)
+- Build the apk using command line
+```
+./gradlew :app:assembleDebug
+```
+- The apk is available at `./app/build/outputs/apk/debug/app-debug.apk`
 
 ## Language, libraries and tools
 - [Kotlin](https://kotlinlang.org/docs/reference/) the project is 100% written in Kotlin
@@ -74,11 +87,3 @@ The Cache layer handles all communication with the local databasea.
 Run the following command in a terminal window at the root level of the project
 
 `./gradlew test`
-### UI tests
-1. Create and run an AVD Android Emulator (API 16 or above)
-2. Go to developer options and disable all animations
-3. Run the following command in a terminal window at the root level of the project
-   
-   `./gradlew connectedAndroidTest`
-   
-   Or simply right click the `app/src/androidTest/java` directory and click `Run 'All Tests'`

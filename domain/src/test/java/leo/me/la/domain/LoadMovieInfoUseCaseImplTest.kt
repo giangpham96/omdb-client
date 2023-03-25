@@ -42,7 +42,6 @@ class LoadMovieInfoUseCaseImplTest {
             null,
             "26 Feb 2019",
             "Sony Pictures",
-            "http://www.intothespiderverse.movie/"
         )
         runBlocking {
             coEvery {

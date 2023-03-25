@@ -24,9 +24,8 @@ android {
 
         vectorDrawables.useSupportLibrary = true
 
-        base.archivesBaseName = "$versionName-$app_name"
-
         buildConfigField("String", "OMDB_API_KEY", "\"$omdbApiKey\"")
+        resValue("string", "app_name", "$app_name")
     }
     compileOptions {
         sourceCompatibility = AndroidSettings.sourceCompatibility

@@ -24,7 +24,7 @@ dependencies {
     implementation(Dependencies.coroutinesAndroid)
     implementation(Dependencies.koinViewModel)
     implementation(Dependencies.kotlinStdLib)
-    implementation(Dependencies.livecycleExtensions)
+    implementation(Dependencies.lifecycleExtensions)
     implementation(Dependencies.lifecycleViewModelKtx)
     kapt(Dependencies.lifecycleCompiler)
 

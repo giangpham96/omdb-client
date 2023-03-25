@@ -28,7 +28,7 @@ internal class ApiKeyInterceptorTest : BaseApiTest() {
             // verify
             assertThat(
                 mockServer.takeRequest()
-                    .requestUrl
+                    .requestUrl!!
                     .queryParameter("apikey")
             ).isEqualTo("secret")
         }

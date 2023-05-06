@@ -42,6 +42,10 @@ android {
     }
     buildFeatures {
         viewBinding = true
+        compose = true
+    }
+    composeOptions {
+        kotlinCompilerExtensionVersion = "1.4.2"
     }
     testOptions {
         animationsDisabled = true
@@ -65,6 +69,13 @@ dependencies {
     implementation(project(":remote"))
     implementation(Dependencies.appCompat)
     implementation(Dependencies.cardView)
+    implementation(Dependencies.coil)
+    implementation(platform(Dependencies.composeBom))
+    implementation(Dependencies.composeActivity)
+    implementation(Dependencies.composeFoundation)
+    implementation(Dependencies.composeMeterial)
+    implementation(Dependencies.composeUi)
+    implementation(Dependencies.composeUiTooling)
     implementation(Dependencies.coreKtx)
     implementation(Dependencies.coroutinesAndroid)
     implementation(Dependencies.coroutinesCore)
@@ -76,10 +87,12 @@ dependencies {
     implementation(Dependencies.groupieViewBinding)
     implementation(Dependencies.koinCore)
     implementation(Dependencies.koinViewModel)
+    implementation(Dependencies.koinCompose)
     implementation(Dependencies.kotlinStdLib)
     debugImplementation(Dependencies.leakCanary)
     releaseImplementation(Dependencies.leakCanaryNoOp)
     implementation(Dependencies.lifecycleRuntimeKtx)
+    implementation(Dependencies.lifecycleRuntimeCompose)
     implementation(Dependencies.materialDesign)
     implementation(Dependencies.recyclerView)
 

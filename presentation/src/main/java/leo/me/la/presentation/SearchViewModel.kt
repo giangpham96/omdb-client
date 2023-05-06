@@ -1,12 +1,11 @@
 package leo.me.la.presentation
 
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import leo.me.la.common.model.Movie
 import leo.me.la.domain.SearchMoviesUseCase
@@ -16,6 +15,8 @@ import leo.me.la.presentation.DataState.Idle
 import leo.me.la.presentation.DataState.Loading
 import leo.me.la.presentation.DataState.Success
 import leo.me.la.presentation.SearchViewState.SearchUi
+import leo.me.la.presentation.SearchViewState.SearchUi.LoadingNextPage
+import leo.me.la.presentation.SearchViewState.SearchUi.ReloadNextPage
 import kotlin.math.ceil
 
 class SearchViewModel(
@@ -24,67 +25,60 @@ class SearchViewModel(
 
     private var searchJob: Job? = null
 
-    private val keywordFlow = MutableSharedFlow<String>()
-
     override val _viewState = MutableStateFlow(SearchViewState(Idle))
-
-    init {
-        viewModelScope.launch {
-            keywordFlow.collectLatest {
-                searchJob?.cancel()
-                _viewState.value = SearchViewState(Loading, keyword = it)
-                try {
-                    val result = searchMoviesUseCase.execute(it)
-                    _viewState.value = SearchViewState(
-                        Success(
-                            SearchUi(
-                                keyword = it,
-                                movies = result.movies,
-                                page = 1,
-                                totalPages = ceil(result.totalResults.toFloat() / 10).toInt(),
-                                nextPageLoading = false,
-                                showReloadNextPage = false,
-                            )
-                        ),
-                        keyword = it,
-                    )
-                } catch (ignored: CancellationException) {
-                    throw ignored
-                } catch (e: Throwable) {
-                    _viewState.value = when (e) {
-                        is OmdbErrorException -> {
-                            val err = if (e.message == "Movie not found!")
-                                MovieNotFoundException
-                            else
-                                null
-                            SearchViewState(Failure(err ?: RuntimeException()), keyword = it)
-                        }
-
-                        else -> SearchViewState(Failure(), keyword = it)
-                    }
-                }
-            }
-        }
-    }
-
-    fun resetSearch() {
-        searchJob?.cancel()
-        _viewState.value = SearchViewState(Idle)
-    }
 
     private val _navigationRequest = MutableSharedFlow<MovieInfoEvent>()
     val navigationRequest: SharedFlow<MovieInfoEvent>
         get() = _navigationRequest
 
     fun searchMovies(keyword: String) {
-        viewModelScope.launch {
-            keywordFlow.emit(keyword)
+        searchJob?.cancel()
+        if (keyword.isEmpty()) {
+            _viewState.value = viewState.value.copy(keyword = keyword, searchState = Idle)
+            return
         }
+        if (keyword.length < 3) {
+            _viewState.value = viewState.value.copy(keyword = keyword)
+            return
+        }
+        _viewState.value = viewState.value.copy(keyword = keyword, searchState = Loading)
+        searchJob = viewModelScope.launch {
+            delay(300)
+            searchMoviesUseCase.execute(keyword)
+                .onFailure { e ->
+                    _viewState.value = when (e) {
+                        is OmdbErrorException -> {
+                            val err = if (e.message == "Movie not found!")
+                                MovieNotFoundException
+                            else
+                                RuntimeException()
+                            SearchViewState(Failure(err), keyword = keyword)
+                        }
+
+                        else -> SearchViewState(Failure(), keyword = keyword)
+                    }
+                }
+                .onSuccess { result ->
+                    _viewState.value = SearchViewState(
+                        Success(
+                            SearchUi(
+                                keyword = keyword,
+                                movies = result.movies.map(::convertMovie),
+                                page = 1,
+                                footer = null,
+                                totalPages = ceil(result.totalResults.toFloat() / 10).toInt(),
+                            )
+                        ),
+                        keyword = keyword,
+                    )
+                }
+        }
+
     }
 
     fun loadNextPage() {
         with(viewState.value) {
-            if (searchState is Success && (searchState.data.showReloadNextPage || !searchState.data.nextPageLoading)) {
+            if (canLoadNextPage(searchState)) {
                 val totalPages = searchState.data.totalPages
                 val nextPage = searchState.data.page + 1
                 val fetchedMovies = searchState.data.movies
@@ -93,36 +87,33 @@ class SearchViewModel(
                 }
                 val keyword = searchState.data.keyword
                 _viewState.value = SearchViewState(
-                    searchState = Success(searchState.data.copy(showReloadNextPage = false, nextPageLoading = true)),
+                    searchState = Success(
+                        searchState.data.copy(footer = LoadingNextPage)
+                    ),
                     keyword = viewState.value.keyword,
                 )
                 searchJob = viewModelScope.launch {
-                    try {
-                        val nextPageMovieResult = searchMoviesUseCase.execute(keyword, nextPage)
-                        _viewState.value = SearchViewState(
-                            searchState = Success(
-                                searchState.data.copy(
-                                    movies = fetchedMovies + nextPageMovieResult.movies,
-                                    page = nextPage,
-                                    showReloadNextPage = false,
-                                    nextPageLoading = false,
-                                )
-                            ),
-                            keyword = viewState.value.keyword,
-                        )
-                    } catch (ignored: CancellationException) {
-                        throw ignored
-                    } catch (e: Throwable) {
-                        _viewState.value = SearchViewState(
-                            searchState = Success(
-                                searchState.data.copy(
-                                    showReloadNextPage = true,
-                                    nextPageLoading = false,
-                                )
-                            ),
-                            keyword = viewState.value.keyword,
-                        )
-                    }
+                    searchMoviesUseCase.execute(keyword, nextPage)
+                        .map { it.movies.map(::convertMovie) }
+                        .onFailure {
+                            _viewState.value = SearchViewState(
+                                searchState = Success(
+                                    searchState.data.copy(footer =  ReloadNextPage)
+                                ),
+                                keyword = viewState.value.keyword,
+                            )
+                        }
+                        .onSuccess {
+                            _viewState.value = SearchViewState(
+                                searchState = Success(
+                                    searchState.data.copy(
+                                        movies = fetchedMovies + it,
+                                        page = nextPage,
+                                    )
+                                ),
+                                keyword = viewState.value.keyword,
+                            )
+                        }
                 }
             }
         }
@@ -147,6 +138,10 @@ class SearchViewModel(
         }
     }
 
+    private fun convertMovie(movie: Movie): SearchUi.Movie {
+        return SearchUi.Movie(movie.title, movie.poster, movie.imdbId)
+    }
+
     override fun onCleared() {
         searchJob?.cancel()
         super.onCleared()
@@ -154,8 +149,8 @@ class SearchViewModel(
 }
 
 data class MovieInfoEvent(
-    val movies: List<Movie>,
+    val movies: List<SearchUi.Movie>,
     val selectedMovie: String,
 )
 
-object MovieNotFoundException: RuntimeException()
+object MovieNotFoundException : RuntimeException()

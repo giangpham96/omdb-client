@@ -18,10 +18,13 @@ import leo.me.la.common.model.MovieType
 import leo.me.la.domain.SearchMoviesUseCase
 import leo.me.la.exception.OmdbErrorException
 import leo.me.la.presentation.DataState.Companion.failed
+import leo.me.la.presentation.DataState.Companion.loading
 import leo.me.la.presentation.DataState.Idle
 import leo.me.la.presentation.DataState.Loading
 import leo.me.la.presentation.DataState.Success
 import leo.me.la.presentation.SearchViewState.SearchUi
+import leo.me.la.presentation.SearchViewState.SearchUi.LoadingNextPage
+import leo.me.la.presentation.SearchViewState.SearchUi.ReloadNextPage
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.After
 import org.junit.Before
@@ -73,23 +76,25 @@ class SearchViewModelTest {
 
         coEvery {
             useCase.execute("Batman")
-        } returns MovieSearchResult(
-            desiredMovieList,
-            3
+        } returns Result.success(
+            MovieSearchResult(
+                desiredMovieList,
+                3
+            )
         )
         viewModel.searchMovies("Batman")
 
         viewModel.viewState.test {
+            awaitItem()
             assertThat(awaitItem()).isEqualTo(
                 SearchViewState(
                     Success(
                         SearchUi(
                             keyword = "Batman",
-                            movies = desiredMovieList,
+                            movies = desiredMovieList.map(::toUiModel),
                             page = 1,
                             totalPages = 1,
-                            nextPageLoading = false,
-                            showReloadNextPage = false
+                            footer = null,
                         )
                     ), "Batman"
                 )
@@ -121,28 +126,33 @@ class SearchViewModelTest {
             useCase.execute("Abc")
         } coAnswers {
             delay(1000)
-            MovieSearchResult(cancelledMovieList, 1)
+            Result.success(MovieSearchResult(cancelledMovieList, 1))
         }
         coEvery {
             useCase.execute("Batman")
-        } returns MovieSearchResult(desiredMovieList, 1)
+        } returns Result.success(MovieSearchResult(desiredMovieList, 1))
         viewModel.viewState.test {
             assertThat(awaitItem()).isEqualTo(SearchViewState(Idle))
             viewModel.searchMovies("Abc")
-            assertThat(awaitItem()).isEqualTo(SearchViewState(Loading, "Abc"))
             delay(500)
+            assertThat(expectMostRecentItem()).isEqualTo(SearchViewState(Loading, "Abc"))
             viewModel.searchMovies("Batman")
             delay(1000)
-            assertThat(awaitItem()).isEqualTo(
+            assertThat(expectMostRecentItem()).isEqualTo(
                 SearchViewState(
                     Success(
                         SearchUi(
                             keyword = "Batman",
-                            movies = desiredMovieList,
+                            movies = listOf(
+                                SearchUi.Movie(
+                                    title = "Batman Begins",
+                                    poster = "https://m.media-amazon.com/images/M/MV5BZmUwNGU2ZmItMmRiNC00MjhlLTg5YWUtODMyNzkxODYzMmZlXkEyXkFqcGdeQXVyNTIzOTk5ODM@._V1_SX300.jpg",
+                                    imdbId = "tt0372784"
+                                )
+                            ),
                             page = 1,
                             totalPages = 1,
-                            nextPageLoading = false,
-                            showReloadNextPage = false
+                            footer = null,
                         )
                     ), "Batman"
                 )
@@ -171,26 +181,36 @@ class SearchViewModelTest {
             )
         )
         with(useCase) {
-            coEvery { execute("Abc") } returns MovieSearchResult(firstMovieList, 200)
+            coEvery { execute("Abc") } returns Result.success(
+                MovieSearchResult(
+                    firstMovieList,
+                    200
+                )
+            )
             coEvery { execute("Abc", 2) } coAnswers {
                 delay(100)
-                throw Exception()
+                Result.failure(Exception())
             }
-            coEvery { execute("Batman") } returns MovieSearchResult(secondMovieList, 1)
+            coEvery { execute("Batman") } returns Result.success(
+                MovieSearchResult(
+                    secondMovieList,
+                    1
+                )
+            )
         }
         viewModel.viewState.test {
             assertThat(awaitItem()).isEqualTo(SearchViewState(Idle))
             viewModel.searchMovies("Abc")
+            awaitItem()
             assertThat(awaitItem()).isEqualTo(
                 SearchViewState(
                     Success(
                         SearchUi(
                             keyword = "Abc",
-                            movies = firstMovieList,
+                            movies = firstMovieList.map(::toUiModel),
                             page = 1,
                             totalPages = 20,
-                            nextPageLoading = false,
-                            showReloadNextPage = false,
+                            footer = null,
                         )
                     ), "Abc"
                 )
@@ -202,27 +222,25 @@ class SearchViewModelTest {
                     Success(
                         SearchUi(
                             keyword = "Abc",
-                            movies = firstMovieList,
+                            movies = firstMovieList.map(::toUiModel),
                             page = 1,
                             totalPages = 20,
-                            nextPageLoading = true,
-                            showReloadNextPage = false,
+                            footer = LoadingNextPage,
                         )
                     ), "Abc"
                 )
             )
             viewModel.searchMovies("Batman")
-            delay(100)
+            awaitItem()
             assertThat(awaitItem()).isEqualTo(
                 SearchViewState(
                     Success(
                         SearchUi(
                             keyword = "Batman",
-                            movies = secondMovieList,
+                            movies = secondMovieList.map(::toUiModel),
                             page = 1,
                             totalPages = 1,
-                            nextPageLoading = false,
-                            showReloadNextPage = false,
+                            footer = null,
                         )
                     ), "Batman"
                 )
@@ -260,23 +278,38 @@ class SearchViewModelTest {
             )
         )
         with(useCase) {
-            coEvery { execute("Abc") } returns MovieSearchResult(firstMovieList, 200)
-            coEvery { execute("Abc", 2) } returns MovieSearchResult(secondMovieList, 200)
-            coEvery { execute("Batman") } returns MovieSearchResult(newSearchMovieList, 1)
+            coEvery { execute("Abc") } returns Result.success(
+                MovieSearchResult(
+                    firstMovieList,
+                    200
+                )
+            )
+            coEvery { execute("Abc", 2) } returns Result.success(
+                MovieSearchResult(
+                    secondMovieList,
+                    200
+                )
+            )
+            coEvery { execute("Batman") } returns Result.success(
+                MovieSearchResult(
+                    newSearchMovieList,
+                    1
+                )
+            )
         }
         viewModel.viewState.test {
             assertThat(awaitItem()).isEqualTo(SearchViewState(Idle))
             viewModel.searchMovies("Abc")
+            awaitItem()
             assertThat(awaitItem()).isEqualTo(
                 SearchViewState(
                     Success(
                         SearchUi(
                             keyword = "Abc",
-                            movies = firstMovieList,
+                            movies = firstMovieList.map(::toUiModel),
                             page = 1,
                             totalPages = 20,
-                            nextPageLoading = false,
-                            showReloadNextPage = false,
+                            footer = null
                         )
                     ), "Abc"
                 )
@@ -287,11 +320,10 @@ class SearchViewModelTest {
                     Success(
                         SearchUi(
                             keyword = "Abc",
-                            movies = firstMovieList,
+                            movies = firstMovieList.map(::toUiModel),
                             page = 1,
                             totalPages = 20,
-                            nextPageLoading = true,
-                            showReloadNextPage = false,
+                            footer = LoadingNextPage
                         )
                     ), "Abc"
                 )
@@ -301,26 +333,25 @@ class SearchViewModelTest {
                     Success(
                         SearchUi(
                             keyword = "Abc",
-                            movies = firstMovieList + secondMovieList,
+                            movies = (firstMovieList + secondMovieList).map(::toUiModel),
                             page = 2,
                             totalPages = 20,
-                            nextPageLoading = false,
-                            showReloadNextPage = false,
+                            footer = null
                         )
                     ), "Abc"
                 )
             )
             viewModel.searchMovies("Batman")
+            awaitItem()
             assertThat(awaitItem()).isEqualTo(
                 SearchViewState(
                     Success(
                         SearchUi(
                             keyword = "Batman",
-                            movies = newSearchMovieList,
+                            movies = newSearchMovieList.map(::toUiModel),
                             page = 1,
                             totalPages = 1,
-                            nextPageLoading = false,
-                            showReloadNextPage = false,
+                            footer = null
                         )
                     ), "Batman"
                 )
@@ -330,10 +361,16 @@ class SearchViewModelTest {
 
     @Test
     fun `should move to MovieNotFound state`() = runTest {
-        coEvery { useCase.execute(any(), any()) } throws OmdbErrorException("Movie not found!")
+        coEvery {
+            useCase.execute(
+                any(),
+                any()
+            )
+        } returns Result.failure(OmdbErrorException("Movie not found!"))
         viewModel.viewState.test {
             assertThat(awaitItem()).isEqualTo(SearchViewState(Idle))
             viewModel.searchMovies("Abc")
+            awaitItem()
             assertThat(awaitItem()).isEqualTo(
                 SearchViewState(
                     searchState = DataState.Failure(
@@ -347,16 +384,18 @@ class SearchViewModelTest {
     @Test
     fun `should move to SearchFailed state`() = runTest {
         with(useCase) {
-            coEvery { execute("Abc") } throws OmdbErrorException("empty")
-            coEvery { execute("Def") } throws Exception()
+            coEvery { execute("Abc") } returns Result.failure(OmdbErrorException("empty"))
+            coEvery { execute("Def") } returns Result.failure(Exception())
         }
         viewModel.viewState.test {
             assertThat(awaitItem()).isEqualTo(SearchViewState(Idle))
             viewModel.searchMovies("Abc")
+            assertThat(awaitItem()).matches { it.searchState.loading && it.keyword == "Abc" }
             assertThat(awaitItem()).matches {
                 it.searchState.failed && it.searchState.requireError().message == null && it.keyword == "Abc"
             }
             viewModel.searchMovies("Def")
+            assertThat(awaitItem()).matches { it.searchState.loading && it.keyword == "Def" }
             assertThat(awaitItem()).matches {
                 it.searchState.failed && it.searchState.requireError().message == null && it.keyword == "Def"
             }
@@ -384,22 +423,32 @@ class SearchViewModelTest {
             )
         }
         with(useCase) {
-            coEvery { execute("Abc") } returns MovieSearchResult(firstMovieList, 200)
-            coEvery { execute("Abc", 2) } returns MovieSearchResult(secondMovieList, 200)
+            coEvery { execute("Abc") } returns Result.success(
+                MovieSearchResult(
+                    firstMovieList,
+                    200
+                )
+            )
+            coEvery { execute("Abc", 2) } returns Result.success(
+                MovieSearchResult(
+                    secondMovieList,
+                    200
+                )
+            )
         }
         viewModel.viewState.test {
             assertThat(awaitItem()).isEqualTo(SearchViewState(Idle))
             viewModel.searchMovies("Abc")
+            awaitItem()
             assertThat(awaitItem()).isEqualTo(
                 SearchViewState(
                     Success(
                         SearchUi(
                             keyword = "Abc",
-                            movies = firstMovieList,
+                            movies = firstMovieList.map(::toUiModel),
                             page = 1,
                             totalPages = 20,
-                            nextPageLoading = false,
-                            showReloadNextPage = false,
+                            footer = null,
                         )
                     ), "Abc"
                 )
@@ -410,11 +459,10 @@ class SearchViewModelTest {
                     Success(
                         SearchUi(
                             keyword = "Abc",
-                            movies = firstMovieList,
+                            movies = firstMovieList.map(::toUiModel),
                             page = 1,
                             totalPages = 20,
-                            nextPageLoading = true,
-                            showReloadNextPage = false,
+                            footer = LoadingNextPage,
                         )
                     ), "Abc"
                 )
@@ -424,11 +472,10 @@ class SearchViewModelTest {
                     Success(
                         SearchUi(
                             keyword = "Abc",
-                            movies = firstMovieList + secondMovieList,
+                            movies = (firstMovieList + secondMovieList).map(::toUiModel),
                             page = 2,
                             totalPages = 20,
-                            nextPageLoading = false,
-                            showReloadNextPage = false,
+                            footer = null,
                         )
                     ), "Abc"
                 )
@@ -437,7 +484,7 @@ class SearchViewModelTest {
     }
 
     @Test
-    fun `shouldn't load next page at all if total result is less than 10`() = runTest {
+    fun `shouldn't load next page at all if total page is 1`() = runTest {
         val firstMovieList = List(3) {
             Movie(
                 "Abc",
@@ -449,20 +496,20 @@ class SearchViewModelTest {
         }
         coEvery {
             useCase.execute("Abc")
-        } returns MovieSearchResult(firstMovieList, 3)
+        } returns Result.success(MovieSearchResult(firstMovieList, 3))
         viewModel.viewState.test {
             assertThat(awaitItem()).isEqualTo(SearchViewState(Idle))
             viewModel.searchMovies("Abc")
+            awaitItem()
             assertThat(awaitItem()).isEqualTo(
                 SearchViewState(
                     Success(
                         SearchUi(
                             keyword = "Abc",
-                            movies = firstMovieList,
+                            movies = firstMovieList.map(::toUiModel),
                             page = 1,
                             totalPages = 1,
-                            nextPageLoading = false,
-                            showReloadNextPage = false,
+                            footer = null
                         )
                     ), "Abc"
                 )
@@ -487,24 +534,24 @@ class SearchViewModelTest {
         }
         coEvery {
             useCase.execute("Abc")
-        } returns MovieSearchResult(firstMovieList, 200)
+        } returns Result.success(MovieSearchResult(firstMovieList, 200))
         coEvery {
             useCase.execute("Abc", 2)
-        } throws Exception()
+        } returns Result.failure(Exception())
 
         viewModel.viewState.test {
             assertThat(awaitItem()).isEqualTo(SearchViewState(Idle))
             viewModel.searchMovies("Abc")
+            awaitItem()
             assertThat(awaitItem()).isEqualTo(
                 SearchViewState(
                     Success(
                         SearchUi(
                             keyword = "Abc",
-                            movies = firstMovieList,
+                            movies = firstMovieList.map(::toUiModel),
                             page = 1,
                             totalPages = 20,
-                            nextPageLoading = false,
-                            showReloadNextPage = false,
+                            footer = null,
                         )
                     ), "Abc"
                 )
@@ -516,11 +563,10 @@ class SearchViewModelTest {
                     Success(
                         SearchUi(
                             keyword = "Abc",
-                            movies = firstMovieList,
+                            movies = firstMovieList.map(::toUiModel),
                             page = 1,
                             totalPages = 20,
-                            nextPageLoading = false,
-                            showReloadNextPage = true,
+                            footer = ReloadNextPage,
                         )
                     ), "Abc"
                 )
@@ -532,11 +578,10 @@ class SearchViewModelTest {
                     Success(
                         SearchUi(
                             keyword = "Abc",
-                            movies = firstMovieList,
+                            movies = firstMovieList.map(::toUiModel),
                             page = 1,
                             totalPages = 20,
-                            nextPageLoading = false,
-                            showReloadNextPage = true,
+                            footer = ReloadNextPage,
                         )
                     ), "Abc"
                 )
@@ -568,47 +613,54 @@ class SearchViewModelTest {
             )
         }
         with(useCase) {
-            coEvery { execute("Abc") } returns MovieSearchResult(firstMovieList, 200)
+            coEvery { execute("Abc") } returns Result.success(
+                MovieSearchResult(
+                    firstMovieList,
+                    200
+                )
+            )
             coEvery { execute("Abc", 2) } coAnswers {
                 delay(1000)
-                MovieSearchResult(secondMovieList, 200)
+                Result.success(MovieSearchResult(secondMovieList, 200))
             }
         }
         viewModel.viewState.test {
             assertThat(awaitItem()).isEqualTo(SearchViewState(Idle))
             viewModel.searchMovies("Abc")
+            awaitItem()
             assertThat(awaitItem()).isEqualTo(
                 SearchViewState(
                     Success(
                         SearchUi(
                             keyword = "Abc",
-                            movies = firstMovieList,
+                            movies = firstMovieList.map(::toUiModel),
                             page = 1,
                             totalPages = 20,
-                            nextPageLoading = false,
-                            showReloadNextPage = false,
+                            footer = null,
                         )
                     ), "Abc"
                 )
             )
             viewModel.loadNextPage()
-            assertThat(awaitItem()).isEqualTo(
+            assertThat(expectMostRecentItem()).isEqualTo(
                 SearchViewState(
                     Success(
                         SearchUi(
                             keyword = "Abc",
-                            movies = firstMovieList,
+                            movies = firstMovieList.map(::toUiModel),
                             page = 1,
                             totalPages = 20,
-                            nextPageLoading = true,
-                            showReloadNextPage = false,
+                            footer = LoadingNextPage,
                         )
                     ), "Abc"
                 )
             )
-            viewModel.resetSearch()
+            viewModel.searchMovies("")
             assertThat(awaitItem()).isEqualTo(SearchViewState(Idle))
         }
     }
+
+    private fun toUiModel(movie: Movie) =
+        movie.let { SearchUi.Movie(it.title, it.poster, it.imdbId) }
 
 }

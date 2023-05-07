@@ -49,17 +49,21 @@ class SearchMoviesUseCaseImplTest {
                 repository.searchMoviesByKeyword("Batman", 2)
             } returns desiredResult
             val actualResult = useCase.execute("Batman", 2)
-            assertThat(actualResult).isEqualTo(desiredResult)
+            assertThat(actualResult).isEqualTo(Result.success(desiredResult))
             coVerify { repository.searchMoviesByKeyword("Batman", 2) }
         }
     }
-    @Test(expected = Exception::class)
+    @Test
     fun `should propagate exception if repository raises one`() {
         runBlocking {
             coEvery {
                 repository.searchMoviesByKeyword("Batman", 2)
             } throws Exception()
-            useCase.execute("Batman", 2)
+            val actualResult = useCase.execute("Batman", 2)
+            assertThat(actualResult).matches {
+                it.isFailure
+            }
+            coVerify { repository.searchMoviesByKeyword("Batman", 2) }
         }
     }
 }

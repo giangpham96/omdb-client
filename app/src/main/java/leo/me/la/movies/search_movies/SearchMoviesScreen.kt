@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.wrapContentSize
@@ -64,7 +65,9 @@ fun SearchMoviesScreen(
     modifier: Modifier = Modifier,
 ) {
     Column(
-        modifier = modifier.background(Color(0xFF121212)),
+        modifier = modifier
+            .background(Color(0xFF121212))
+            .imePadding(),
     ) {
         SearchBar(
             value = viewState.keyword,

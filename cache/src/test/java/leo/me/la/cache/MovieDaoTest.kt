@@ -1,10 +1,13 @@
-package leo.me.la.cache.room
+package leo.me.la.cache
 
 import android.content.Context
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import kotlinx.coroutines.runBlocking
+import leo.me.la.cache.room.MovieCacheModel
+import leo.me.la.cache.room.MovieDao
+import leo.me.la.cache.room.OmdbDatabase
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.After
 import org.junit.Before

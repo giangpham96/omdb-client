@@ -1,18 +1,19 @@
 package leo.me.la.remote.adapter
 
 import com.squareup.moshi.FromJson
+import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.JsonReader
 import com.squareup.moshi.JsonWriter
 import com.squareup.moshi.ToJson
-import leo.me.la.common.model.MovieSearchResult
 import leo.me.la.exception.OmdbErrorException
 import leo.me.la.remote.model.MovieRemoteModel
 import leo.me.la.remote.model.MovieSearchResultRemoteModel
 import java.rmi.UnexpectedException
 
-internal class MovieSearchAdapter(private val movieAdapter: MovieAdapter) {
+internal class MovieSearchAdapter(private val movieAdapter: MovieAdapter):
+    JsonAdapter<MovieSearchResultRemoteModel>() {
     @FromJson
-    fun fromJson(
+    override fun fromJson(
         reader: JsonReader
     ): MovieSearchResultRemoteModel {
         val result = mutableListOf<MovieRemoteModel>()
@@ -47,12 +48,8 @@ internal class MovieSearchAdapter(private val movieAdapter: MovieAdapter) {
         }
     }
 
-    @Suppress("Unused", "UNUSED_PARAMETER")
     @ToJson
-    fun toJson(
-        writer: JsonWriter,
-        content: MovieSearchResult?
-    ) {
-        throw UnsupportedOperationException("Cannot deserialize RemoteMovieSearchModel")
+    override fun toJson(writer: JsonWriter, value: MovieSearchResultRemoteModel?) {
+        throw UnsupportedOperationException("Cannot deserialize MovieSearchResultRemoteModel")
     }
 }

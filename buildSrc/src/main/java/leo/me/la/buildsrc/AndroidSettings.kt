@@ -6,8 +6,8 @@ object AndroidSettings {
     const val compileSdkVersion = 33
     const val targetSdkVersion = 33
 
-    val sourceCompatibility = JavaVersion.VERSION_1_8
-    val targetCompatibility = JavaVersion.VERSION_1_8
+    val sourceCompatibility = JavaVersion.VERSION_17
+    val targetCompatibility = JavaVersion.VERSION_17
 
     const val testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 }

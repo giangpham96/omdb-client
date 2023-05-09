@@ -3,7 +3,7 @@ plugins {
 }
 
 dependencies {
-    implementation(Dependencies.kotlinStdLib)
+    implementation(libs.kotlin.std.lib)
 }
 
 java {

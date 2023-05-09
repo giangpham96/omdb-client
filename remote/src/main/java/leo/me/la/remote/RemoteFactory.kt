@@ -1,6 +1,5 @@
 package leo.me.la.remote
 
-import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
@@ -57,7 +56,6 @@ object RemoteFactory {
         okHttpClient: OkHttpClient
     ): T {
         return Retrofit.Builder()
-            .addCallAdapterFactory(CoroutineCallAdapterFactory())
             .addConverterFactory(moshiConverterFactory)
             .baseUrl(baseUrl)
             .client(okHttpClient)

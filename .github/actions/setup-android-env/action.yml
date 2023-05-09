@@ -8,7 +8,7 @@ runs:
       uses: actions/setup-java@2c7a4878f5d120bd643426d54ae1209b29cc01a3
       with:
         distribution: "zulu"
-        java-version: "11"
+        java-version: "17"
     - name: Setup Gradle
       uses: gradle/gradle-build-action@cd579d970f8aec1cf0cae5f62a8e418768970015
     - name: Setup Android SDK

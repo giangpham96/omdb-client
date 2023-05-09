@@ -13,7 +13,6 @@ internal class MovieRemoteDataSourceImpl(
         return try {
             omdbRestApi
                 .searchByImdbIdAsync(imdbId)
-                .await()
                 .let {
                     mapMovieRemoteModelToMovieDataModel(it)
                 }
@@ -29,7 +28,6 @@ internal class MovieRemoteDataSourceImpl(
         return try {
             omdbRestApi
                 .searchByKeywordAsync(keyword, page)
-                .await()
                 .let {
                     MovieSearchResultDataModel(
                         it.movies.map { movie ->

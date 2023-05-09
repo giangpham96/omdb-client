@@ -8,22 +8,20 @@ dependencies {
     implementation(project(":data"))
     implementation(project(":exception"))
 
-    implementation(Dependencies.koinCore)
-    implementation(Dependencies.kotlinStdLib)
-    implementation(Dependencies.okHttp)
-    implementation(Dependencies.okHttpLoggingInterceptor)
-    api(Dependencies.retrofit) {
+    implementation(libs.coroutines.core)
+    implementation(libs.koin.core)
+    implementation(libs.kotlin.std.lib)
+    implementation(libs.okhttp)
+    implementation(libs.okhttp.logging.interceptor)
+    api(libs.retrofit) {
         exclude(module = "okhttp")
     }
-    implementation(Dependencies.moshi)
-    implementation(Dependencies.retrofitCoroutinesAdapter)
-    implementation(Dependencies.retrofitConverterMoshi)
+    implementation(libs.moshi)
+    implementation(libs.retrofit.converter.moshi)
 
-    kapt(Dependencies.moshiCodeGen)
-
-    testImplementation(TestDependencies.assertJ)
-    testImplementation(TestDependencies.junit)
-    testImplementation(TestDependencies.mockWebServer)
+    testImplementation(libs.assert.j)
+    testImplementation(libs.junit)
+    testImplementation(libs.mock.webserver)
 }
 
 java {

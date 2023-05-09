@@ -5,10 +5,10 @@ plugins {
 }
 
 android {
-    compileSdkVersion(AndroidSettings.compileSdkVersion)
+    compileSdk = AndroidSettings.compileSdkVersion
+    namespace = "leo.me.la.presentation"
     defaultConfig {
-        minSdkVersion(AndroidSettings.minSdkVersion)
-        targetSdkVersion(AndroidSettings.targetSdkVersion)
+        minSdk = AndroidSettings.minSdkVersion
     }
     compileOptions {
         sourceCompatibility = AndroidSettings.sourceCompatibility
@@ -21,17 +21,17 @@ dependencies {
     implementation(project(":domain"))
     implementation(project(":exception"))
 
-    implementation(Dependencies.coroutinesAndroid)
-    implementation(Dependencies.koinViewModel)
-    implementation(Dependencies.kotlinStdLib)
-    implementation(Dependencies.lifecycleExtensions)
-    implementation(Dependencies.lifecycleViewModelKtx)
-    kapt(Dependencies.lifecycleCompiler)
+    implementation(libs.coroutines.android)
+    implementation(libs.koin.view.model)
+    implementation(libs.kotlin.std.lib)
+    implementation(libs.lifecycle.extensions)
+    implementation(libs.lifecycle.view.model.ktx)
+    kapt(libs.lifecycle.compiler)
 
-    testImplementation(TestDependencies.archCoreTesting)
-    testImplementation(TestDependencies.assertJ)
-    testImplementation(TestDependencies.mockk)
-    testImplementation(TestDependencies.coroutinesTest)
-    testImplementation(TestDependencies.junit)
-    testImplementation(TestDependencies.turbine)
+    testImplementation(libs.arch.core.testing)
+    testImplementation(libs.assert.j)
+    testImplementation(libs.mockk)
+    testImplementation(libs.coroutines.test)
+    testImplementation(libs.junit)
+    testImplementation(libs.turbine)
 }

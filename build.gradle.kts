@@ -1,5 +1,6 @@
 
 import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
+import io.netty.util.concurrent.RejectedExecutionHandlers.reject
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
 import org.gradle.api.tasks.testing.logging.TestLogEvent.FAILED
 import org.gradle.api.tasks.testing.logging.TestLogEvent.PASSED
@@ -14,16 +15,16 @@ buildscript {
         maven { url = uri("https://jitpack.io") }
     }
     dependencies {
-        classpath("com.android.tools.build:gradle:${Versions.androidGradlePlugin}")
-        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${Versions.kotlin}")
-        classpath("com.github.ben-manes:gradle-versions-plugin:${Versions.outdatedVersion}")
+        classpath(libs.agp)
+        classpath(libs.kotlin.gradle.plugin)
+        classpath(libs.gradle.versions.plugin)
     }
 }
 
-
 plugins {
-    id("com.github.ben-manes.versions") version Versions.outdatedVersion
+    alias(libs.plugins.versions)
 }
+
 allprojects {
     repositories {
         google()

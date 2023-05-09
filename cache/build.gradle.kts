@@ -5,10 +5,10 @@ plugins {
 }
 
 android {
-    compileSdkVersion(AndroidSettings.compileSdkVersion)
+    compileSdk = AndroidSettings.compileSdkVersion
+    namespace = "leo.me.la.cache"
     defaultConfig {
-        minSdkVersion(AndroidSettings.minSdkVersion)
-        targetSdkVersion(AndroidSettings.targetSdkVersion)
+        minSdk = AndroidSettings.minSdkVersion
         testInstrumentationRunner = AndroidSettings.testInstrumentationRunner
     }
     compileOptions {
@@ -20,22 +20,20 @@ android {
 dependencies {
     implementation(project(":data"))
 
-    implementation(Dependencies.coroutinesCore)
-    implementation(Dependencies.kotlinStdLib)
-    implementation(Dependencies.koinCore)
-    implementation(Dependencies.roomKtx)
-    implementation(Dependencies.roomRuntime)
+    implementation(libs.coroutines.core)
+    implementation(libs.kotlin.std.lib)
+    implementation(libs.koin.core)
+    implementation(libs.room.ktx)
+    implementation(libs.room.runtime)
 
-    kapt(Dependencies.roomCompiler)
+    kapt(libs.room.compiler)
 
-    testImplementation(TestDependencies.assertJ)
-    testImplementation(TestDependencies.junit)
-    testImplementation(TestDependencies.mockk)
-
-    androidTestImplementation(TestDependencies.assertJ)
-    androidTestImplementation(TestDependencies.junit)
-    androidTestImplementation(TestDependencies.roomTest)
-    androidTestImplementation(TestDependencies.testExt)
-    androidTestImplementation(TestDependencies.testRunner)
-    androidTestImplementation(TestDependencies.testRule)
+    testImplementation(libs.assert.j)
+    testImplementation(libs.junit)
+    testImplementation(libs.mockk)
+    testImplementation(libs.robolectric)
+    testImplementation(libs.room.test)
+    testImplementation(libs.test.ext)
+    testImplementation(libs.test.runner)
+    testImplementation(libs.test.rule)
 }

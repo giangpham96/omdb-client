@@ -1,2 +1,1 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          package="leo.me.la.cache"/>
+<manifest package="leo.me.la.cache" />

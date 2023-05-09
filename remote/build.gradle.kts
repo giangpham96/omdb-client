@@ -8,6 +8,7 @@ dependencies {
     implementation(project(":data"))
     implementation(project(":exception"))
 
+    implementation(libs.coroutines.core)
     implementation(libs.koin.core)
     implementation(libs.kotlin.std.lib)
     implementation(libs.okhttp)
